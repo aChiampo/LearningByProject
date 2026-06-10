@@ -12,7 +12,7 @@
 - esami
 - vaccini
 - farmaci
-- VIEW prenotazioni
+- VIEW prenotazioni future
   
 ## Utenti app	  
 - desc cliente

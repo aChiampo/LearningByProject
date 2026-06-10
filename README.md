@@ -6,11 +6,13 @@ Attualmente perde molto tempo nella gestione di attività ripetitive:
 telefonate per prenotazioni, richieste via WhatsApp, ricette smarrite,
 informazioni cliniche incomplete e libretti vaccinali cartacei.
 
-Vorrebbe uno strumento digitale semplice che aiuti lui, la receptioniste i proprietari degli animali a gestire meglio le informazioni principali.
+Vorrebbe uno strumento digitale semplice che aiuti lui, I receptionist e i proprietari degli animali a gestire meglio le informazioni principali.
 
 ## Componente Tecnica
 ### Stack applicativo
-  Livello     | Tecnologia                     |
+
+
+ | Livello     | Tecnologia                     |
  |-------------|--------------------------------|
  | Frontend    | React                          |
  | Backend     | Spring Boot 3.5.x, Java 21 LTS |
