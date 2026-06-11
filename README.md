@@ -12,13 +12,13 @@ Vorrebbe uno strumento digitale semplice che aiuti lui, I receptionist e i propr
 ### Stack applicativo
 
 
- | Livello     | Tecnologia                     |
- |-------------|--------------------------------|
- | Frontend    | React                          |
- | Backend     | Spring Boot 3.5.x, Java 21 LTS |
- | Database    | PostgreSQL                     |
- | Versionamento | GitHub                        |
-
+| Livello             | Tecnologia                     |
+| ------------------- | ------------------------------ |
+| Frontend            | React                          |
+| Backend             | Spring Boot 3.5.x, Java 21 LTS |
+| Database            | PostgreSQL                     |
+| Versionamento       | GitHub                         |
+| Infrastruttura Host |                                |
 
  ## Descrizione Progetto
 
