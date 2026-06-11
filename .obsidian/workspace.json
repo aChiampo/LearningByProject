@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Documentazione/Funzionalità.md",
+                "file": "Documentazione/Domande.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Funzionalità"
+              "title": "Domande"
             }
           }
         ]
@@ -223,14 +223,14 @@
       "bases:Crea nuova Base": false
     }
   },
-  "active": "376bbeb24e8b4226",
+  "active": "ed8136e7f4299fb6",
   "lastOpenFiles": [
+    "Documentazione/Funzionalità.md",
     "Senza nome",
     "Documentazione/Soluzioni.md",
     "README.md",
     "Documentazione/Domande.md",
     "Link_Discord.md",
-    "Documentazione/Funzionalità.md",
     "test.md",
     "Domande per il cliente.md",
     "Documentazione"

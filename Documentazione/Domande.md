@@ -17,3 +17,7 @@
 	- numero di disdette
 	- numero di caricamenti file
 	- stat su tipi di animali
+
+
+
+STATISTICHE
