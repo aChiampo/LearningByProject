@@ -20,7 +20,7 @@ Vorrebbe uno strumento digitale semplice che aiuti lui, I receptionist e i propr
 | Versionamento       | GitHub                         |
 | Infrastruttura Host |                                |
 
- ## Descrizione Progetto
+## Descrizione Progetto
 
  Il progetto deve essere strutturato come una web application.
 

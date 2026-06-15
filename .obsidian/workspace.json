@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Documentazione/Tecnologie da imparare.md",
+                "file": "Documentazione/Domande.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Tecnologie da imparare"
+              "title": "Domande"
             }
           }
         ]
@@ -182,11 +182,12 @@
   },
   "active": "ed8136e7f4299fb6",
   "lastOpenFiles": [
-    "Documentazione/Domande.md",
-    "README.md",
+    "Documentazione/Funzionalità.md",
     "Documentazione/Soluzioni.md",
     "Documentazione/Tecnologie da imparare.md",
-    "Documentazione/Funzionalità.md",
+    "Documentazione/temp_contenutoApplicativo.md",
+    "README.md",
+    "Documentazione/Domande.md",
     "Senza nome",
     "Link_Discord.md",
     "test.md",
