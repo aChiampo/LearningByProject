@@ -44,3 +44,23 @@
 - Data_Visita, Not Null, Date;
 - ID_Tipo, Not Null, int;
 - Note, text;
+
+### TIPI VISITA 
+- ID, Primary Key, int;
+- Durata, int; <!--Durata espressa in minuti->
+- Descrizione, text;
+- Prezzo, Not Null, double;
+- ID_Dottore, Not Null, int;
+
+
+## PRENOTAZIONI
+- ID, Primary Key, int;
+- Data_Visita, Not Null, Date;
+- Tipo_Visita, varchar(30);
+
+
+## PAGAMENTI
+- ID, Primary Key, int;
+- Data, Not Null, Date;
+- Tipo_Pagamento, varchar(30); <!--Oppure bool se pos / contanti->
+- Importo_Totale, Not Null, double;
