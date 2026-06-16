@@ -79,6 +79,7 @@
     ],
     "direction": "horizontal",
     "width": 300
+    "collapsed": true
   },
   "right": {
     "id": "adfa4aae48e873f7",
@@ -182,14 +183,15 @@
   },
   "active": "ed8136e7f4299fb6",
   "lastOpenFiles": [
-    "Documentazione/Soluzioni.md",
+    "view-clients-receptionist.md",
     "Documentazione/temp_contenutoApplicativo.md",
+    "Documentazione/Domande.md",
+    "Documentazione/Funzionalità.md",
+    "Documentazione/Soluzioni.md",
     "Documentazione/Tecnologie da imparare.md",
     "Documentazione/Tabelle.md",
     "CoverLetter_en.pdf",
     "README.md",
-    "Documentazione/Domande.md",
-    "Documentazione/Funzionalità.md",
     "Senza nome",
     "Link_Discord.md",
     "test.md",
