@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clinica Veterinaria Aurora - Mockup</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#homepage" aria-label="Vai alla homepage">
+        <span class="brand-mark">A</span>
+        <span>
+          <strong>Clinica Aurora</strong>
+          <small>Portale veterinario</small>
+        </span>
+      </a>
+
+      <nav class="role-switch" aria-label="Cambio tipo utente">
+        <span>Tipo utente</span>
+        <a href="#dashboard-super-admin">Super admin</a>
+        <a href="#dashboard-doctor">Veterinario</a>
+        <a href="#dashboard-receptionist">Reception</a>
+        <a href="#dashboard-client">Cliente</a>
+      </nav>
+
+      <form class="theme-switches" aria-label="Personalizzazione colori">
+        <fieldset>
+          <legend>Primario</legend>
+          <input checked type="radio" name="primary" id="primary-teal">
+          <label class="swatch teal" for="primary-teal">Verde</label>
+          <input type="radio" name="primary" id="primary-blue">
+          <label class="swatch blue" for="primary-blue">Blu</label>
+          <input type="radio" name="primary" id="primary-red">
+          <label class="swatch red" for="primary-red">Rosso</label>
+          <input type="radio" name="primary" id="primary-violet">
+          <label class="swatch violet" for="primary-violet">Viola</label>
+          <input type="radio" name="primary" id="primary-amber">
+          <label class="swatch amber" for="primary-amber">Ambra</label>
+          <input type="radio" name="primary" id="primary-slate">
+          <label class="swatch slate" for="primary-slate">Ardesia</label>
+        </fieldset>
+        <fieldset>
+          <legend>Secondario</legend>
+          <input checked type="radio" name="secondary" id="secondary-coral">
+          <label class="swatch coral" for="secondary-coral">Corallo</label>
+          <input type="radio" name="secondary" id="secondary-mint">
+          <label class="swatch mint" for="secondary-mint">Menta</label>
+          <input type="radio" name="secondary" id="secondary-gold">
+          <label class="swatch gold" for="secondary-gold">Oro</label>
+          <input type="radio" name="secondary" id="secondary-lilac">
+          <label class="swatch lilac" for="secondary-lilac">Lilla</label>
+          <input type="radio" name="secondary" id="secondary-cyan">
+          <label class="swatch cyan" for="secondary-cyan">Ciano</label>
+          <input type="radio" name="secondary" id="secondary-rose">
+          <label class="swatch rose" for="secondary-rose">Rosa</label>
+        </fieldset>
+      </form>
+    </header>
+
+    <main>
+      <section class="screen homepage" id="homepage">
+        <div class="hero-copy">
+          <p class="eyebrow">Clinica veterinaria a Milano</p>
+          <h1>Visite, appuntamenti e cartelle cliniche in un unico portale.</h1>
+          <p>
+            La Clinica Veterinaria Aurora segue cani, gatti e piccoli animali con ambulatori
+            dedicati a prevenzione, diagnostica, chirurgia leggera e piani vaccinali.
+          </p>
+          <div class="button-row">
+            <a class="btn primary" href="#dashboard-client">Registrati</a>
+            <a class="btn" href="#dashboard-client">Accedi</a>
+          </div>
+        </div>
+        <aside class="hero-panel">
+          <h2>Orari e servizi</h2>
+          <div class="info-row"><span>Lun-Ven</span><strong>08:30 - 19:30</strong></div>
+          <div class="info-row"><span>Sabato</span><strong>09:00 - 13:00</strong></div>
+          <div class="info-row"><span>Urgenze</span><strong>Su prenotazione</strong></div>
+          <div class="info-row"><span>Specialita</span><strong>Dermatologia, nutrizione, vaccini</strong></div>
+        </aside>
+      </section>
+
+      <section class="screen simple" id="dashboard-super-admin">
+        <div class="page-shell">
+          <p class="eyebrow">Super admin</p>
+          <h1>Dashboard super admin</h1>
+          <div class="empty-state">
+            <h2>Pagina da implementare</h2>
+            <p>Questa vista e presente nel mockup ma non contiene ancora funzioni operative.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen page" id="dashboard-doctor">
+        <div class="page-shell">
+          <nav class="navbar" id="navbar-doctor" aria-label="Menu veterinario">
+            <a href="#dashboard-doctor">Dashboard</a>
+            <a href="#view-animal-doctor">Gestisci animali</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Dashboard veterinario</p>
+            <h1>Agenda clinica</h1>
+          </div>
+          <section class="panel">
+            <div class="section-head">
+              <h2>Settimana 15-21 giugno 2026</h2>
+              <div class="button-row compact">
+                <a class="btn small" href="#dashboard-doctor">Precedente</a>
+                <a class="btn small" href="#dashboard-doctor">Successiva</a>
+                <a class="btn small primary" href="#dashboard-doctor">Nuovo evento</a>
+              </div>
+            </div>
+            <div class="calendar">
+              <article><strong>Lun 15</strong><span>09:30 Milo - Controllo</span><span>15:00 Nina - Vaccino</span></article>
+              <article><strong>Mar 16</strong><span>10:00 Argo - Zoppia</span><span>16:30 Olivia - Esame</span></article>
+              <article><strong>Mer 17</strong><span>08:45 Luna - Dermatologia</span><span>12:15 Kira - Richiamo</span></article>
+              <article><strong>Gio 18</strong><span>11:30 Pepe - Controllo</span></article>
+              <article><strong>Ven 19</strong><span>09:00 Mia - Visita base</span><span>17:00 Thor - Medicazione</span></article>
+              <article><strong>Sab 20</strong><span>10:30 Zoe - Vaccino</span></article>
+              <article><strong>Dom 21</strong><span>Chiuso</span></article>
+            </div>
+          </section>
+          <section class="panel">
+            <h2>Cerca animale</h2>
+            <form class="search-form">
+              <input type="search" placeholder="Cerca per: proprietario o nome animale">
+              <button class="btn primary" type="button">Cerca</button>
+            </form>
+            <div class="card-list">
+              <article class="data-card">
+                <h3>Milo</h3>
+                <p>Cliente: Andrea Rossi</p>
+                <p>Razza: Labrador</p>
+                <a class="btn small" href="#view-record-doctor">Cartella clinica</a>
+              </article>
+              <article class="data-card">
+                <h3>Luna</h3>
+                <p>Cliente: Sara Bianchi</p>
+                <p>Razza: Europeo</p>
+                <a class="btn small" href="#view-record-doctor">Cartella clinica</a>
+              </article>
+            </div>
+          </section>
+          <section class="panel">
+            <h2>Prossimi appuntamenti</h2>
+            <div class="appointment-list">
+              <article><span>Milo</span><span>Controllo</span><span>09:30 - 10:00</span><a class="btn small" href="#view-visit-report-doctor">Crea referto</a><a class="btn small danger" href="#dashboard-doctor">Elimina</a></article>
+              <article><span>Nina</span><span>Vaccino</span><span>15:00 - 15:20</span><a class="btn small" href="#view-visit-report-doctor">Crea referto</a><a class="btn small danger" href="#dashboard-doctor">Elimina</a></article>
+              <article><span>Argo</span><span>Ortopedia</span><span>10:00 - 10:45</span><a class="btn small" href="#view-visit-report-doctor">Crea referto</a><a class="btn small danger" href="#dashboard-doctor">Elimina</a></article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="dashboard-receptionist">
+        <div class="page-shell">
+          <nav class="navbar" id="navbar-receptionist" aria-label="Menu reception">
+            <a href="#dashboard-receptionist">Dashboard</a>
+            <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
+            <a href="#view-clients-receptionist">Gestisci clienti</a>
+            <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Dashboard reception</p>
+            <h1>Operativita giornaliera</h1>
+          </div>
+          <section class="panel">
+            <div class="section-head">
+              <h2>Settimana 15-21 giugno 2026</h2>
+              <div class="button-row compact">
+                <a class="btn small" href="#dashboard-receptionist">Precedente</a>
+                <a class="btn small" href="#dashboard-receptionist">Successiva</a>
+                <a class="btn small primary" href="#dashboard-receptionist">Nuovo evento</a>
+              </div>
+            </div>
+            <div class="calendar">
+              <article><strong>Lun 15</strong><span>09:30 Milo - Dott.ssa Neri</span><span>15:00 Nina - Dott. Gallo</span></article>
+              <article><strong>Mar 16</strong><span>10:00 Argo - Sala 2</span><span>16:30 Olivia - Sala 1</span></article>
+              <article><strong>Mer 17</strong><span>08:45 Luna - Dermatologia</span><span>12:15 Kira - Vaccino</span></article>
+              <article><strong>Gio 18</strong><span>11:30 Pepe - Controllo</span></article>
+              <article><strong>Ven 19</strong><span>09:00 Mia - Visita base</span><span>17:00 Thor - Medicazione</span></article>
+              <article><strong>Sab 20</strong><span>10:30 Zoe - Vaccino</span></article>
+              <article><strong>Dom 21</strong><span>Chiuso</span></article>
+            </div>
+          </section>
+          <section class="panel">
+            <h2>Prossimi appuntamenti</h2>
+            <div class="appointment-list">
+              <article><span>Milo</span><span>Controllo</span><span>09:30 - 10:00</span><a class="btn small" href="#view-appointment-receptionist">Modifica</a><a class="btn small danger" href="#dashboard-receptionist">Elimina</a></article>
+              <article><span>Luna</span><span>Dermatologia</span><span>08:45 - 09:30</span><a class="btn small" href="#view-appointment-receptionist">Modifica</a><a class="btn small danger" href="#dashboard-receptionist">Elimina</a></article>
+              <article><span>Thor</span><span>Medicazione</span><span>17:00 - 17:20</span><a class="btn small" href="#view-appointment-receptionist">Modifica</a><a class="btn small danger" href="#dashboard-receptionist">Elimina</a></article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="dashboard-client">
+        <div class="page-shell">
+          <nav class="navbar" id="navbar-client" aria-label="Menu cliente">
+            <a href="#dashboard-client">Dashboard</a>
+            <a href="#booking-client">Prenota appuntamento</a>
+            <a href="#view-payment-client">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Dashboard cliente</p>
+            <h1>I tuoi animali</h1>
+          </div>
+          <section class="panel">
+            <h2>Prossimi appuntamenti</h2>
+            <div class="appointment-list">
+              <article><span>Milo</span><span>Controllo annuale</span><span>19 giugno, 09:00 - 09:30</span><a class="btn small" href="#booking-client">Modifica</a><a class="btn small danger" href="#dashboard-client">Elimina</a></article>
+              <article><span>Luna</span><span>Vaccino</span><span>20 giugno, 10:30 - 10:50</span><a class="btn small" href="#booking-client">Modifica</a><a class="btn small danger" href="#dashboard-client">Elimina</a></article>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h2>Animali</h2>
+              <a class="btn small primary" href="#dashboard-client">Aggiungi animale</a>
+            </div>
+            <div class="card-list">
+              <article class="data-card">
+                <h3>Milo</h3>
+                <p>Razza: Labrador</p>
+                <p>Sesso: maschio</p>
+                <a class="btn small" href="#view-record-client">Apri cartella</a>
+                <a class="btn small primary" href="#booking-client">Prenota visita</a>
+              </article>
+              <article class="data-card">
+                <h3>Luna</h3>
+                <p>Razza: Europeo</p>
+                <p>Sesso: femmina</p>
+                <a class="btn small" href="#view-record-client">Apri cartella</a>
+                <a class="btn small primary" href="#booking-client">Prenota visita</a>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-record-client">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu cliente cartella">
+            <a href="#dashboard-client">Dashboard</a>
+            <a href="#booking-client">Prenota appuntamento</a>
+            <a href="#view-payment-client">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Cartella clinica cliente</p>
+            <h1>Milo Rossi</h1>
+          </div>
+          <section class="grid-two">
+            <article class="panel">
+              <h2>Dati animale</h2>
+              <dl class="details">
+                <div><dt>Nome</dt><dd>Milo</dd></div>
+                <div><dt>Cognome</dt><dd>Rossi</dd></div>
+                <div><dt>Razza</dt><dd>Labrador</dd></div>
+                <div><dt>Nascita</dt><dd>12 marzo 2021</dd></div>
+                <div><dt>Sesso</dt><dd>Maschio</dd></div>
+                <div><dt>Peso</dt><dd>28 kg</dd></div>
+                <div><dt>Microchip</dt><dd>380260101234567</dd></div>
+              </dl>
+            </article>
+            <article class="panel">
+              <h2>Vaccini</h2>
+              <ul class="check-list">
+                <li>Polivalente - 15 aprile 2026</li>
+                <li>Rabbia - 11 febbraio 2026</li>
+                <li>Leptospirosi - 15 aprile 2026</li>
+              </ul>
+            </article>
+          </section>
+          <section class="panel">
+            <h2>Referti visite</h2>
+            <div class="card-list">
+              <article class="data-card">
+                <h3>Controllo annuale - 19 giugno 2026</h3>
+                <p>Nota pubblica: parametri nella norma, continuare dieta attuale.</p>
+                <p>Allegati: esame-sangue.pdf, piano-alimentare.pdf</p>
+                <a class="btn small" href="#view-visit-report-client">Apri referto</a>
+              </article>
+            </div>
+          </section>
+          <section class="panel">
+            <h2>Carica documenti clinici</h2>
+            <div class="upload-box">Trascina qui un file o seleziona dal dispositivo</div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-record-doctor">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu veterinario cartella">
+            <a href="#dashboard-doctor">Dashboard</a>
+            <a href="#view-animal-doctor">Gestisci animali</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Cartella clinica veterinario</p>
+            <h1>Milo Rossi</h1>
+          </div>
+          <section class="grid-two">
+            <article class="panel">
+              <h2>Proprietario</h2>
+              <p>Andrea Rossi</p>
+            </article>
+            <article class="panel">
+              <h2>Vaccini</h2>
+              <ul class="check-list">
+                <li>Polivalente - 15 aprile 2026</li>
+                <li>Rabbia - 11 febbraio 2026</li>
+                <li>Leptospirosi - 15 aprile 2026</li>
+              </ul>
+            </article>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h2>Dati animale</h2>
+              <a class="btn small primary" href="#view-record-doctor">Modifica dati</a>
+            </div>
+            <dl class="details">
+              <div><dt>Nome</dt><dd>Milo</dd></div>
+              <div><dt>Cognome</dt><dd>Rossi</dd></div>
+              <div><dt>Razza</dt><dd>Labrador</dd></div>
+              <div><dt>Nascita</dt><dd>12 marzo 2021</dd></div>
+              <div><dt>Sesso</dt><dd>Maschio</dd></div>
+              <div><dt>Peso</dt><dd>28 kg</dd></div>
+              <div><dt>Microchip</dt><dd>380260101234567</dd></div>
+            </dl>
+          </section>
+          <section class="panel">
+            <h2>Referti visite</h2>
+            <div class="card-list">
+              <article class="data-card">
+                <h3>Controllo annuale - 19 giugno 2026</h3>
+                <p>Nota pubblica: parametri nella norma.</p>
+                <p>Nota privata: monitorare peso e dermatite stagionale.</p>
+                <p>Allegati: esame-sangue.pdf, piano-alimentare.pdf</p>
+                <a class="btn small" href="#view-visit-report-doctor">Apri referto</a>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-visit-report-client">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu referto cliente">
+            <a href="#view-record-client">Cartella clinica</a>
+            <a href="#dashboard-client">Dashboard</a>
+          </nav>
+          <article class="panel report-card">
+            <p class="eyebrow">Referto visita cliente</p>
+            <h1>Controllo annuale</h1>
+            <p><strong>Data:</strong> 19 giugno 2026</p>
+            <p><strong>Nota pubblica:</strong> parametri nella norma, continuare dieta attuale e attivita moderata.</p>
+            <p><strong>Allegati:</strong> esame-sangue.pdf, piano-alimentare.pdf</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-visit-report-doctor">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu referto veterinario">
+            <a href="#view-record-doctor">Cartella clinica</a>
+            <a href="#dashboard-doctor">Dashboard</a>
+          </nav>
+          <article class="panel report-card">
+            <p class="eyebrow">Referto visita veterinario</p>
+            <h1>Controllo annuale</h1>
+            <p><strong>Data:</strong> 19 giugno 2026</p>
+            <p><strong>Nota pubblica:</strong> parametri nella norma, continuare dieta attuale.</p>
+            <p><strong>Nota privata:</strong> rivalutare peso tra tre mesi e controllare cute.</p>
+            <p><strong>Allegati:</strong> esame-sangue.pdf, piano-alimentare.pdf</p>
+            <a class="btn primary" href="#view-visit-report-doctor">Modifica referto</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-animal-doctor">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu gestione animali">
+            <a href="#dashboard-doctor">Dashboard</a>
+            <a href="#view-animal-doctor">Gestisci animali</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Gestione animali</p>
+            <h1>Ricerca cartelle</h1>
+          </div>
+          <section class="panel">
+            <form class="search-form">
+              <input type="search" placeholder="Cerca per: proprietario o nome animale">
+              <button class="btn primary" type="button">Cerca</button>
+            </form>
+            <div class="card-list">
+              <article class="data-card"><h3>Milo</h3><p>Cliente: Andrea Rossi</p><p>Razza: Labrador</p><a class="btn small" href="#view-record-doctor">Cartella clinica</a></article>
+              <article class="data-card"><h3>Luna</h3><p>Cliente: Sara Bianchi</p><p>Razza: Europeo</p><a class="btn small" href="#view-record-doctor">Cartella clinica</a></article>
+              <article class="data-card"><h3>Argo</h3><p>Cliente: Paolo Verdi</p><p>Razza: Border Collie</p><a class="btn small" href="#view-record-doctor">Cartella clinica</a></article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-appointment-receptionist">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu appuntamenti reception">
+            <a href="#dashboard-receptionist">Dashboard</a>
+            <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
+            <a href="#view-clients-receptionist">Gestisci clienti</a>
+            <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Appuntamenti reception</p>
+            <h1>Agenda prenotazioni</h1>
+          </div>
+          <section class="panel">
+            <form class="search-form">
+              <input type="search" placeholder="Cerca per: proprietario o nome animale">
+              <button class="btn primary" type="button">Filtra</button>
+            </form>
+            <div class="appointment-list">
+              <article><span>Andrea Rossi - Milo</span><span>Controllo</span><span>19 giugno, 09:00</span><a class="btn small" href="#view-appointment-receptionist">Modifica</a><a class="btn small danger" href="#view-appointment-receptionist">Elimina</a></article>
+              <article><span>Sara Bianchi - Luna</span><span>Vaccino</span><span>20 giugno, 10:30</span><a class="btn small" href="#view-appointment-receptionist">Modifica</a><a class="btn small danger" href="#view-appointment-receptionist">Elimina</a></article>
+            </div>
+            <a class="btn primary" href="#booking-client">Prenota nuovo appuntamento</a>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-clients-receptionist">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu clienti reception">
+            <a href="#dashboard-receptionist">Dashboard</a>
+            <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
+            <a href="#view-clients-receptionist">Gestisci clienti</a>
+            <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Clienti reception</p>
+            <h1>Anagrafica clienti</h1>
+          </div>
+          <section class="panel">
+            <form class="search-form">
+              <input type="search" placeholder="Cerca per: proprietario o nome animale">
+              <button class="btn primary" type="button">Filtra</button>
+            </form>
+            <div class="card-list">
+              <article class="data-card"><h3>Andrea Rossi</h3><p>Animali: Milo</p><a class="btn small" href="#view-clients-receptionist">Modifica dati</a><a class="btn small" href="#view-payment-receptionist">Pagamenti</a><a class="btn small primary" href="#booking-client">Prenota</a></article>
+              <article class="data-card"><h3>Sara Bianchi</h3><p>Animali: Luna, Pepe</p><a class="btn small" href="#view-clients-receptionist">Modifica dati</a><a class="btn small" href="#view-payment-receptionist">Pagamenti</a><a class="btn small primary" href="#booking-client">Prenota</a></article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="booking-client">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu prenotazione">
+            <a href="#dashboard-client">Dashboard cliente</a>
+            <a href="#dashboard-receptionist">Dashboard reception</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Prenotazione appuntamento</p>
+            <h1>Nuova visita</h1>
+          </div>
+          <form class="panel form-panel">
+            <label>Animale
+              <select><option>Milo</option><option>Luna</option><option>Pepe</option></select>
+            </label>
+            <label>Tipo di visita
+              <select><option>Controllo annuale</option><option>Vaccino</option><option>Dermatologia</option><option>Urgenza</option></select>
+            </label>
+            <label>Veterinario
+              <select><option>Dott.ssa Neri</option><option>Dott. Gallo</option><option>Dott.ssa Conti</option></select>
+            </label>
+            <label>Fascia disponibile
+              <select><option>19 giugno 2026, 09:00</option><option>19 giugno 2026, 11:30</option><option>20 giugno 2026, 10:30</option></select>
+            </label>
+            <button class="btn primary" type="button">Conferma richiesta</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-payment-client">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu pagamenti cliente">
+            <a href="#dashboard-client">Dashboard</a>
+            <a href="#booking-client">Prenota appuntamento</a>
+            <a href="#view-payment-client">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Pagina pagamenti</p>
+            <h1>Pagamenti cliente</h1>
+          </div>
+          <section class="grid-two">
+            <article class="panel">
+              <h2>Pagamenti in sospeso</h2>
+              <div class="payment-row"><span>Controllo Milo</span><strong>72,00 euro</strong><a class="btn small primary" href="#view-payment-client">Paga</a></div>
+            </article>
+            <article class="panel">
+              <h2>Pagamenti precedenti</h2>
+              <div class="payment-row"><span>Vaccino Luna</span><strong>48,00 euro</strong><a class="btn small" href="#view-payment-client">Scarica</a></div>
+            </article>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page" id="view-payment-receptionist">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu pagamenti reception">
+            <a href="#dashboard-receptionist">Dashboard</a>
+            <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
+            <a href="#view-clients-receptionist">Gestisci clienti</a>
+            <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Pagina pagamenti</p>
+            <h1>Pagamenti reception</h1>
+          </div>
+          <section class="panel">
+            <form class="search-form">
+              <input type="search" placeholder="Cerca per: proprietario">
+              <button class="btn primary" type="button">Filtra</button>
+            </form>
+          </section>
+          <section class="grid-two">
+            <article class="panel">
+              <div class="section-head">
+                <h2>Pagamenti in sospeso</h2>
+                <a class="btn small primary" href="#view-payment-receptionist">Invia promemoria a tutti</a>
+              </div>
+              <div class="payment-row"><span>Andrea Rossi</span><strong>72,00 euro</strong><a class="btn small primary" href="#view-payment-receptionist">Invia promemoria</a></div>
+              <div class="payment-row"><span>Sara Bianchi</span><strong>48,00 euro</strong><a class="btn small primary" href="#view-payment-receptionist">Invia promemoria</a></div>
+            </article>
+            <article class="panel">
+              <div class="section-head">
+                <h2>Pagamenti precedenti</h2>
+                <a class="btn small" href="#view-payment-receptionist">Scarica tutte</a>
+              </div>
+              <div class="payment-row"><span>Paolo Verdi</span><strong>95,00 euro</strong><a class="btn small" href="#view-payment-receptionist">Scarica</a></div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
