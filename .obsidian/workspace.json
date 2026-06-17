@@ -11,14 +11,10 @@
             "id": "ed8136e7f4299fb6",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Documentazione/temp_contenutoApplicativo.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "temp_contenutoApplicativo"
+              "title": "Nuova scheda"
             }
           }
         ]
@@ -79,7 +75,6 @@
     ],
     "direction": "horizontal",
     "width": 300
-    "collapsed": true
   },
   "right": {
     "id": "adfa4aae48e873f7",
@@ -183,8 +178,19 @@
   },
   "active": "ed8136e7f4299fb6",
   "lastOpenFiles": [
-    "view-clients-receptionist.md",
     "Documentazione/temp_contenutoApplicativo.md",
+    "contenutoApplicativo_english_corrected.md",
+    "Mockup/Doc/contenutoApplicativo_english_corrected.md",
+    "Mockup/Doc",
+    "Mockup/Nuova cartella",
+    "Mockup/Code/styles.css",
+    "Mockup/Code/index.html",
+    "Mockup/Code",
+    "Mockup/styles.css",
+    "Mockup/index.html",
+    "Mockup",
+    "Nuova cartella",
+    "view-clients-receptionist.md",
     "Documentazione/Domande.md",
     "Documentazione/Funzionalità.md",
     "Documentazione/Soluzioni.md",
@@ -192,10 +198,8 @@
     "Documentazione/Tabelle.md",
     "CoverLetter_en.pdf",
     "README.md",
-    "Senza nome",
     "Link_Discord.md",
     "test.md",
-    "Domande per il cliente.md",
-    "Documentazione"
+    "Domande per il cliente.md"
   ]
 }
