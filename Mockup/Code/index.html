@@ -61,7 +61,7 @@
     <main>
       <section class="screen homepage" id="homepage">
         <div class="hero-copy">
-          <p class="eyebrow">Clinica veterinaria a Milano</p>
+          <p class="eyebrow">Clinica veterinaria a Bergamo Alta, IT</p>
           <h1>Visite, appuntamenti e cartelle cliniche in un unico portale.</h1>
           <p>
             La Clinica Veterinaria Aurora segue cani, gatti e piccoli animali con ambulatori
@@ -74,6 +74,8 @@
         </div>
         <aside class="hero-panel">
           <h2>Orari e servizi</h2>
+          <div class="info-row"><span>Medico</span><strong>Dott. Camillo Zampetti</strong></div>
+          <div class="info-row"><span>Sede principale</span><strong>Bergamo Alta, IT</strong></div>
           <div class="info-row"><span>Lun-Ven</span><strong>08:30 - 19:30</strong></div>
           <div class="info-row"><span>Sabato</span><strong>09:00 - 13:00</strong></div>
           <div class="info-row"><span>Urgenze</span><strong>Su prenotazione</strong></div>
@@ -83,6 +85,13 @@
 
       <section class="screen simple" id="dashboard-super-admin">
         <div class="page-shell">
+          <nav class="navbar" aria-label="Menu super admin">
+            <div class="nav-user">
+              <span>Super admin</span>
+              <strong>Admin Aurora</strong>
+            </div>
+            <a href="#dashboard-super-admin">Dashboard</a>
+          </nav>
           <p class="eyebrow">Super admin</p>
           <h1>Dashboard super admin</h1>
           <div class="empty-state">
@@ -95,6 +104,10 @@
       <section class="screen page" id="dashboard-doctor">
         <div class="page-shell">
           <nav class="navbar" id="navbar-doctor" aria-label="Menu veterinario">
+            <div class="nav-user">
+              <span>Veterinario</span>
+              <strong>Dott. Camillo Zampetti</strong>
+            </div>
             <a href="#dashboard-doctor">Dashboard</a>
             <a href="#view-animal-doctor">Gestisci animali</a>
           </nav>
@@ -156,6 +169,10 @@
       <section class="screen page" id="dashboard-receptionist">
         <div class="page-shell">
           <nav class="navbar" id="navbar-receptionist" aria-label="Menu reception">
+            <div class="nav-user">
+              <span>Reception</span>
+              <strong>Giulia Ferri</strong>
+            </div>
             <a href="#dashboard-receptionist">Dashboard</a>
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
@@ -175,7 +192,7 @@
               </div>
             </div>
             <div class="calendar">
-              <article><strong>Lun 15</strong><span>09:30 Milo - Dott.ssa Neri</span><span>15:00 Nina - Dott. Gallo</span></article>
+              <article><strong>Lun 15</strong><span>09:30 Milo - Dott. Zampetti</span><span>15:00 Nina - Dott. Zampetti</span></article>
               <article><strong>Mar 16</strong><span>10:00 Argo - Sala 2</span><span>16:30 Olivia - Sala 1</span></article>
               <article><strong>Mer 17</strong><span>08:45 Luna - Dermatologia</span><span>12:15 Kira - Vaccino</span></article>
               <article><strong>Gio 18</strong><span>11:30 Pepe - Controllo</span></article>
@@ -198,6 +215,10 @@
       <section class="screen page" id="dashboard-client">
         <div class="page-shell">
           <nav class="navbar" id="navbar-client" aria-label="Menu cliente">
+            <div class="nav-user">
+              <span>Cliente</span>
+              <strong>Andrea Rossi</strong>
+            </div>
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
@@ -241,6 +262,10 @@
       <section class="screen page" id="view-record-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu cliente cartella">
+            <div class="nav-user">
+              <span>Cliente</span>
+              <strong>Andrea Rossi</strong>
+            </div>
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
@@ -292,6 +317,10 @@
       <section class="screen page" id="view-record-doctor">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu veterinario cartella">
+            <div class="nav-user">
+              <span>Veterinario</span>
+              <strong>Dott. Camillo Zampetti</strong>
+            </div>
             <a href="#dashboard-doctor">Dashboard</a>
             <a href="#view-animal-doctor">Gestisci animali</a>
           </nav>
@@ -346,8 +375,13 @@
       <section class="screen page" id="view-visit-report-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu referto cliente">
-            <a href="#view-record-client">Cartella clinica</a>
+            <div class="nav-user">
+              <span>Cliente</span>
+              <strong>Andrea Rossi</strong>
+            </div>
             <a href="#dashboard-client">Dashboard</a>
+            <a href="#booking-client">Prenota appuntamento</a>
+            <a href="#view-payment-client">Gestisci pagamenti</a>
           </nav>
           <article class="panel report-card">
             <p class="eyebrow">Referto visita cliente</p>
@@ -362,8 +396,12 @@
       <section class="screen page" id="view-visit-report-doctor">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu referto veterinario">
-            <a href="#view-record-doctor">Cartella clinica</a>
+            <div class="nav-user">
+              <span>Veterinario</span>
+              <strong>Dott. Camillo Zampetti</strong>
+            </div>
             <a href="#dashboard-doctor">Dashboard</a>
+            <a href="#view-animal-doctor">Gestisci animali</a>
           </nav>
           <article class="panel report-card">
             <p class="eyebrow">Referto visita veterinario</p>
@@ -380,6 +418,10 @@
       <section class="screen page" id="view-animal-doctor">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu gestione animali">
+            <div class="nav-user">
+              <span>Veterinario</span>
+              <strong>Dott. Camillo Zampetti</strong>
+            </div>
             <a href="#dashboard-doctor">Dashboard</a>
             <a href="#view-animal-doctor">Gestisci animali</a>
           </nav>
@@ -404,6 +446,10 @@
       <section class="screen page" id="view-appointment-receptionist">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu appuntamenti reception">
+            <div class="nav-user">
+              <span>Reception</span>
+              <strong>Giulia Ferri</strong>
+            </div>
             <a href="#dashboard-receptionist">Dashboard</a>
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
@@ -422,7 +468,7 @@
               <article><span>Andrea Rossi - Milo</span><span>Controllo</span><span>19 giugno, 09:00</span><a class="btn small" href="#view-appointment-receptionist">Modifica</a><a class="btn small danger" href="#view-appointment-receptionist">Elimina</a></article>
               <article><span>Sara Bianchi - Luna</span><span>Vaccino</span><span>20 giugno, 10:30</span><a class="btn small" href="#view-appointment-receptionist">Modifica</a><a class="btn small danger" href="#view-appointment-receptionist">Elimina</a></article>
             </div>
-            <a class="btn primary" href="#booking-client">Prenota nuovo appuntamento</a>
+            <a class="btn primary" href="#booking-receptionist">Prenota nuovo appuntamento</a>
           </section>
         </div>
       </section>
@@ -430,6 +476,10 @@
       <section class="screen page" id="view-clients-receptionist">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu clienti reception">
+            <div class="nav-user">
+              <span>Reception</span>
+              <strong>Giulia Ferri</strong>
+            </div>
             <a href="#dashboard-receptionist">Dashboard</a>
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
@@ -445,8 +495,8 @@
               <button class="btn primary" type="button">Filtra</button>
             </form>
             <div class="card-list">
-              <article class="data-card"><h3>Andrea Rossi</h3><p>Animali: Milo</p><a class="btn small" href="#view-clients-receptionist">Modifica dati</a><a class="btn small" href="#view-payment-receptionist">Pagamenti</a><a class="btn small primary" href="#booking-client">Prenota</a></article>
-              <article class="data-card"><h3>Sara Bianchi</h3><p>Animali: Luna, Pepe</p><a class="btn small" href="#view-clients-receptionist">Modifica dati</a><a class="btn small" href="#view-payment-receptionist">Pagamenti</a><a class="btn small primary" href="#booking-client">Prenota</a></article>
+              <article class="data-card"><h3>Andrea Rossi</h3><p>Animali: Milo</p><a class="btn small" href="#view-clients-receptionist">Modifica dati</a><a class="btn small" href="#view-payment-receptionist">Pagamenti</a><a class="btn small primary" href="#booking-receptionist">Prenota</a></article>
+              <article class="data-card"><h3>Sara Bianchi</h3><p>Animali: Luna, Pepe</p><a class="btn small" href="#view-clients-receptionist">Modifica dati</a><a class="btn small" href="#view-payment-receptionist">Pagamenti</a><a class="btn small primary" href="#booking-receptionist">Prenota</a></article>
             </div>
           </section>
         </div>
@@ -455,8 +505,13 @@
       <section class="screen page" id="booking-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu prenotazione">
-            <a href="#dashboard-client">Dashboard cliente</a>
-            <a href="#dashboard-receptionist">Dashboard reception</a>
+            <div class="nav-user">
+              <span>Cliente</span>
+              <strong>Andrea Rossi</strong>
+            </div>
+            <a href="#dashboard-client">Dashboard</a>
+            <a href="#booking-client">Prenota appuntamento</a>
+            <a href="#view-payment-client">Gestisci pagamenti</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Prenotazione appuntamento</p>
@@ -470,7 +525,7 @@
               <select><option>Controllo annuale</option><option>Vaccino</option><option>Dermatologia</option><option>Urgenza</option></select>
             </label>
             <label>Veterinario
-              <select><option>Dott.ssa Neri</option><option>Dott. Gallo</option><option>Dott.ssa Conti</option></select>
+              <select><option>Dott. Camillo Zampetti</option></select>
             </label>
             <label>Fascia disponibile
               <select><option>19 giugno 2026, 09:00</option><option>19 giugno 2026, 11:30</option><option>20 giugno 2026, 10:30</option></select>
@@ -483,6 +538,10 @@
       <section class="screen page" id="view-payment-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu pagamenti cliente">
+            <div class="nav-user">
+              <span>Cliente</span>
+              <strong>Andrea Rossi</strong>
+            </div>
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
@@ -504,9 +563,50 @@
         </div>
       </section>
 
+      <section class="screen page" id="booking-receptionist">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu prenotazione reception">
+            <div class="nav-user">
+              <span>Reception</span>
+              <strong>Giulia Ferri</strong>
+            </div>
+            <a href="#dashboard-receptionist">Dashboard</a>
+            <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
+            <a href="#view-clients-receptionist">Gestisci clienti</a>
+            <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Prenotazione reception</p>
+            <h1>Nuova visita</h1>
+          </div>
+          <form class="panel form-panel">
+            <label>Cliente
+              <select><option>Andrea Rossi</option><option>Sara Bianchi</option><option>Paolo Verdi</option></select>
+            </label>
+            <label>Animale
+              <select><option>Milo</option><option>Luna</option><option>Pepe</option></select>
+            </label>
+            <label>Tipo di visita
+              <select><option>Controllo annuale</option><option>Vaccino</option><option>Dermatologia</option><option>Urgenza</option></select>
+            </label>
+            <label>Veterinario
+              <select><option>Dott. Camillo Zampetti</option></select>
+            </label>
+            <label>Fascia disponibile
+              <select><option>19 giugno 2026, 09:00</option><option>19 giugno 2026, 11:30</option><option>20 giugno 2026, 10:30</option></select>
+            </label>
+            <button class="btn primary" type="button">Conferma prenotazione</button>
+          </form>
+        </div>
+      </section>
+
       <section class="screen page" id="view-payment-receptionist">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu pagamenti reception">
+            <div class="nav-user">
+              <span>Reception</span>
+              <strong>Giulia Ferri</strong>
+            </div>
             <a href="#dashboard-receptionist">Dashboard</a>
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
