@@ -31,3 +31,5 @@
 
 
 5. Quanta persistenza dobbiamo garantire ai dati? In termini di tempo?
+
+6. Back end: service unico, controllo vista lato backend o react
