@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Clinica Veterinaria Aurora - Mockup</title>
+    <title>VetManager - Portale veterinario</title>
     <link rel="stylesheet" href="./styles.css">
     <script src="./script.js" defer></script>
   </head>
@@ -12,7 +12,7 @@
       <a class="brand" href="#homepage" aria-label="Vai alla homepage">
         <span class="brand-mark">A</span>
         <span>
-          <strong>Clinica Aurora</strong>
+          <strong>VetManager</strong>
           <small>Portale veterinario</small>
         </span>
       </a>
@@ -46,27 +46,232 @@
 
     <main>
       <section class="screen homepage" id="homepage">
-        <div class="hero-copy">
-          <p class="eyebrow">Clinica veterinaria a Bergamo Alta, IT</p>
-          <h1>Visite, appuntamenti e cartelle cliniche in un unico portale.</h1>
-          <p>
-            La Clinica Veterinaria Aurora segue cani, gatti e piccoli animali con ambulatori
-            dedicati a prevenzione, diagnostica, chirurgia leggera e piani vaccinali.
-          </p>
-          <div class="button-row">
-            <a class="btn primary" href="#dashboard-client">Registrati</a>
-            <a class="btn" href="#dashboard-client">Accedi</a>
+        <div class="home-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Cura veterinaria a Bergamo Alta</p>
+            <h1>Più attenzione per loro, più serenità per te.</h1>
+            <p>
+              VetManager riunisce visite, appuntamenti e informazioni cliniche in uno spazio
+              semplice, pensato per accompagnare ogni fase della cura.
+            </p>
+            <div class="button-row">
+              <a class="btn primary" href="#login">Accedi</a>
+              <a class="btn hero-secondary" href="#sign-in">Registrati</a>
+            </div>
           </div>
         </div>
-        <aside class="hero-panel">
-          <h2>Orari e servizi</h2>
-          <div class="info-row"><span>Medico</span><strong>Dott. Camillo Zampetti</strong></div>
-          <div class="info-row"><span>Sede principale</span><strong>Bergamo Alta, IT</strong></div>
-          <div class="info-row"><span>Lun-Ven</span><strong>08:30 - 19:30</strong></div>
-          <div class="info-row"><span>Sabato</span><strong>09:00 - 13:00</strong></div>
-          <div class="info-row"><span>Urgenze</span><strong>Su prenotazione</strong></div>
-          <div class="info-row"><span>Specialita</span><strong>Dermatologia, nutrizione, vaccini</strong></div>
-        </aside>
+
+        <div class="home-highlights" aria-label="Vantaggi del portale">
+          <div><strong>Cura continua</strong><span>Dalla prevenzione ai controlli periodici</span></div>
+          <div><strong>Tutto a portata di mano</strong><span>Appuntamenti, referti e pagamenti</span></div>
+          <div><strong>Un contatto diretto</strong><span>Informazioni chiare prima e dopo la visita</span></div>
+        </div>
+
+        <div class="home-content">
+          <section class="home-intro">
+            <div>
+              <p class="eyebrow">Un supporto quotidiano</p>
+              <h2>La salute del tuo animale, senza complicazioni.</h2>
+            </div>
+            <p>
+              Un ambiente accogliente, un riferimento professionale e strumenti digitali utili:
+              tutto ciò che serve per gestire con tranquillità le esigenze del tuo animale.
+            </p>
+          </section>
+
+          <section class="service-list" aria-label="Servizi principali">
+            <article class="service-item">
+              <span class="service-number">01</span>
+              <h3>Prevenzione e benessere</h3>
+              <p>Controlli periodici, vaccinazioni e indicazioni personalizzate per ogni fase della vita.</p>
+            </article>
+            <article class="service-item">
+              <span class="service-number">02</span>
+              <h3>Visite e continuità</h3>
+              <p>Un percorso chiaro, dalla prenotazione alla consultazione di referti e documenti clinici.</p>
+            </article>
+            <article class="service-item">
+              <span class="service-number">03</span>
+              <h3>Portale sempre disponibile</h3>
+              <p>Gestisci animali, appuntamenti e pagamenti in un unico spazio semplice da consultare.</p>
+            </article>
+          </section>
+
+          <section class="clinic-details">
+            <div class="clinic-message">
+              <p class="eyebrow">Vicini quando serve</p>
+              <h2>Un punto di riferimento per la cura di ogni giorno.</h2>
+              <p>Dott. Camillo Zampetti · Bergamo Alta, IT</p>
+              <a class="btn primary" href="#router">Prenota una visita</a>
+            </div>
+            <div class="clinic-hours">
+              <h3>Orari</h3>
+              <div class="info-row"><span>Lunedì - Venerdì</span><strong>08:30 - 19:30</strong></div>
+              <div class="info-row"><span>Sabato</span><strong>09:00 - 13:00</strong></div>
+              <div class="info-row"><span>Urgenze</span><strong>Su prenotazione</strong></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen route-screen" id="router">
+        <div class="route-shell">
+          <a class="login-back" href="#homepage">Torna alla homepage</a>
+          <div class="route-heading">
+            <p class="eyebrow">Prenota una visita</p>
+            <h1>Come vuoi iniziare?</h1>
+            <p>Scegli il percorso più adatto. Potrai sempre tornare qui e selezionare un'altra opzione.</p>
+          </div>
+          <div class="route-options">
+            <a class="route-option" href="#login">
+              <span>Hai già un profilo</span>
+              <strong>Accedi</strong>
+              <small>Entra nel portale e prenota per uno dei tuoi animali.</small>
+            </a>
+            <a class="route-option" href="#sign-in">
+              <span>Nuovo cliente</span>
+              <strong>Registrati</strong>
+              <small>Crea un profilo personale prima di accedere ai servizi.</small>
+            </a>
+            <a class="route-option" href="#first-appointment">
+              <span>Prima visita</span>
+              <strong>Primo appuntamento</strong>
+              <small>Invia una richiesta iniziale senza avere ancora un profilo.</small>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen login-screen" id="login">
+        <div class="login-shell">
+          <div class="login-copy">
+            <a class="login-back" href="#homepage">Torna alla homepage</a>
+            <p class="eyebrow">Area riservata VetManager</p>
+            <h1>Bentornato.</h1>
+            <p>
+              Accedi per consultare appuntamenti, informazioni cliniche e attività
+              disponibili per il tuo profilo.
+            </p>
+          </div>
+
+          <form class="login-form" aria-label="Modulo di accesso">
+            <div>
+              <p class="eyebrow">Accesso al portale</p>
+              <h2>Inserisci le tue credenziali</h2>
+            </div>
+            <label for="login-username">Username
+              <input id="login-username" name="username" type="text" autocomplete="username" placeholder="Il tuo username">
+            </label>
+            <label for="login-password">Password
+              <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="La tua password">
+            </label>
+            <div class="login-options">
+              <label class="remember-row" for="remember-login">
+                <input id="remember-login" type="checkbox">
+                <span>Ricordami</span>
+              </label>
+              <a href="#login">Password dimenticata?</a>
+            </div>
+            <a class="btn primary" href="#dashboard-client">Accedi</a>
+            <p class="login-note">Non hai ancora un profilo? <a href="#sign-in">Registrati</a></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="screen login-screen public-form-screen" id="sign-in">
+        <div class="login-shell public-form-shell">
+          <div class="login-copy">
+            <a class="login-back" href="#router">Torna alle opzioni</a>
+            <p class="eyebrow">Nuovo profilo VetManager</p>
+            <h1>Inizia da qui.</h1>
+            <p>
+              Crea il tuo profilo per gestire animali, appuntamenti, documenti clinici e pagamenti
+              in un unico spazio.
+            </p>
+          </div>
+
+          <form class="login-form public-form" aria-label="Modulo di registrazione">
+            <div>
+              <p class="eyebrow">Registrazione</p>
+              <h2>Crea il tuo account</h2>
+            </div>
+            <div class="form-grid-two">
+              <label for="sign-in-name">Nome
+                <input id="sign-in-name" name="name" type="text" autocomplete="given-name" placeholder="Nome">
+              </label>
+              <label for="sign-in-surname">Cognome
+                <input id="sign-in-surname" name="surname" type="text" autocomplete="family-name" placeholder="Cognome">
+              </label>
+            </div>
+            <label for="sign-in-email">Email
+              <input id="sign-in-email" name="email" type="email" autocomplete="email" placeholder="nome@esempio.it">
+            </label>
+            <label for="sign-in-username">Username
+              <input id="sign-in-username" name="username" type="text" autocomplete="username" placeholder="Scegli uno username">
+            </label>
+            <label for="sign-in-password">Password
+              <input id="sign-in-password" name="password" type="password" autocomplete="new-password" placeholder="Crea una password">
+            </label>
+            <button class="btn primary" type="button">Crea account</button>
+            <p class="login-note">Hai già un profilo? <a href="#login">Accedi</a></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="screen login-screen public-form-screen" id="first-appointment">
+        <div class="login-shell public-form-shell">
+          <div class="login-copy">
+            <a class="login-back" href="#router">Torna alle opzioni</a>
+            <p class="eyebrow">Prima visita</p>
+            <h1>Conosciamoci.</h1>
+            <p>
+              Lascia alcune informazioni essenziali. La reception potrà ricontattarti per concordare
+              il momento più adatto per il primo appuntamento.
+            </p>
+          </div>
+
+          <form class="login-form public-form" aria-label="Richiesta primo appuntamento">
+            <div>
+              <p class="eyebrow">Richiesta appuntamento</p>
+              <h2>Parlaci di voi</h2>
+            </div>
+            <label for="first-owner">Nome e cognome
+              <input id="first-owner" name="owner" type="text" autocomplete="name" placeholder="Il tuo nome">
+            </label>
+            <div class="form-grid-two">
+              <label for="first-email">Email
+                <input id="first-email" name="email" type="email" autocomplete="email" placeholder="nome@esempio.it">
+              </label>
+              <label for="first-phone">Telefono
+                <input id="first-phone" name="phone" type="tel" autocomplete="tel" placeholder="Numero di telefono">
+              </label>
+            </div>
+            <div class="form-grid-two">
+              <label for="first-animal">Nome dell'animale
+                <input id="first-animal" name="animal" type="text" placeholder="Nome">
+              </label>
+              <label for="first-species">Animale
+                <select id="first-species" name="species">
+                  <option>Cane</option>
+                  <option>Gatto</option>
+                  <option>Altro piccolo animale</option>
+                </select>
+              </label>
+            </div>
+            <label for="first-reason">Motivo della visita
+              <select id="first-reason" name="reason">
+                <option>Controllo generale</option>
+                <option>Vaccinazione</option>
+                <option>Consulenza</option>
+                <option>Altro</option>
+              </select>
+            </label>
+            <label for="first-notes">Informazioni utili
+              <textarea id="first-notes" name="notes" rows="4" placeholder="Aggiungi una breve nota, se necessario"></textarea>
+            </label>
+            <button class="btn primary" type="button">Invia richiesta</button>
+          </form>
+        </div>
       </section>
 
       <section class="screen simple role-super-admin" id="dashboard-super-admin">

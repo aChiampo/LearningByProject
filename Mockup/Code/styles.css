@@ -84,7 +84,8 @@ a {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -277,7 +278,8 @@ fieldset input:checked + .palette-option {
 }
 
 #homepage {
-  display: grid;
+  display: block;
+  padding: 0;
 }
 
 .screen:target {
@@ -285,7 +287,7 @@ fieldset input:checked + .palette-option {
 }
 
 #homepage:target {
-  display: grid;
+  display: block;
 }
 
 body:has(.screen:target) #homepage {
@@ -293,17 +295,347 @@ body:has(.screen:target) #homepage {
 }
 
 body:has(#homepage:target) #homepage {
-  display: grid;
+  display: block;
 }
 
 .homepage {
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 430px);
-  align-items: center;
-  gap: clamp(24px, 6vw, 80px);
+  background: var(--paper);
 }
 
-.hero-copy {
-  max-width: 780px;
+.home-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: min(700px, calc(100svh - 170px));
+  padding: 64px max(24px, calc((100vw - 1280px) / 2));
+  overflow: hidden;
+  background-image: url("./assets/vetmanager-hero.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.home-hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: rgba(13, 32, 30, 0.52);
+  content: "";
+}
+
+.home-hero .hero-copy {
+  width: min(100%, 760px);
+}
+
+.home-hero .eyebrow,
+.home-hero h1,
+.home-hero .hero-copy p {
+  color: white;
+}
+
+.home-hero h1 {
+  max-width: 760px;
+  font-size: 64px;
+  line-height: 1.02;
+}
+
+.home-hero .hero-copy p {
+  max-width: 640px;
+  font-size: 19px;
+}
+
+.hero-secondary {
+  border-color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  backdrop-filter: blur(8px);
+}
+
+.home-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--primary-dark);
+  color: white;
+}
+
+.home-highlights div {
+  min-width: 0;
+  padding: 22px clamp(20px, 4vw, 48px);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.home-highlights div:last-child {
+  border-right: 0;
+}
+
+.home-highlights strong,
+.home-highlights span {
+  display: block;
+}
+
+.home-highlights span {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+}
+
+.home-content {
+  width: min(100%, 1280px);
+  margin: 0 auto;
+  padding: 76px 40px 88px;
+}
+
+.home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.7fr);
+  gap: 64px;
+  align-items: end;
+  margin-bottom: 44px;
+}
+
+.home-intro h2,
+.clinic-message h2 {
+  max-width: 720px;
+  margin-bottom: 0;
+  color: var(--primary-dark);
+  font-size: 42px;
+  line-height: 1.12;
+}
+
+.home-intro > p {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.service-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 64px;
+}
+
+.service-item {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--secondary);
+  border-radius: 8px;
+  background: white;
+}
+
+.service-number {
+  display: block;
+  margin-bottom: 26px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.service-item p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.clinic-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.7fr);
+  gap: 56px;
+  align-items: center;
+  padding: 44px;
+  border-top: 4px solid var(--primary);
+  border-bottom: 1px solid var(--line);
+  background: var(--primary-soft);
+}
+
+.clinic-message p:not(.eyebrow) {
+  color: var(--muted);
+}
+
+.clinic-message .btn {
+  margin-top: 10px;
+}
+
+.clinic-hours h3 {
+  color: var(--primary-dark);
+}
+
+.login-screen {
+  background: color-mix(in srgb, var(--primary-soft) 72%, var(--paper));
+}
+
+.login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
+  gap: 72px;
+  align-items: center;
+  width: min(100%, 1080px);
+  min-height: calc(100vh - 190px);
+  margin: 0 auto;
+}
+
+.login-copy h1 {
+  margin-bottom: 20px;
+  color: var(--primary-dark);
+  font-size: 60px;
+}
+
+.login-copy > p:not(.eyebrow) {
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.login-back {
+  display: inline-block;
+  margin-bottom: 44px;
+  color: var(--primary-dark);
+  font-weight: 800;
+}
+
+.login-back:hover,
+.login-options a:hover,
+.login-note a:hover {
+  text-decoration: underline;
+}
+
+.login-form {
+  padding: 32px;
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--line));
+  border-top: 4px solid var(--primary);
+  border-radius: 8px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.login-form h2 {
+  margin-bottom: 28px;
+  color: var(--primary-dark);
+  font-size: 28px;
+}
+
+.login-options {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 22px;
+  font-size: 14px;
+}
+
+.remember-row {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.remember-row input {
+  width: 18px;
+  min-height: 18px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.login-options a,
+.login-note a {
+  color: var(--primary-dark);
+  font-weight: 800;
+}
+
+.login-form > .btn {
+  width: 100%;
+}
+
+.login-note {
+  margin: 20px 0 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.route-screen {
+  background: color-mix(in srgb, var(--secondary-soft) 68%, var(--paper));
+}
+
+.route-shell {
+  width: min(100%, 1180px);
+  min-height: calc(100vh - 190px);
+  margin: 0 auto;
+}
+
+.route-heading {
+  max-width: 760px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.route-heading h1 {
+  margin-bottom: 18px;
+  color: var(--primary-dark);
+  font-size: 58px;
+}
+
+.route-heading > p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.route-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.route-option {
+  display: flex;
+  min-width: 0;
+  min-height: 230px;
+  padding: 26px;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
+  border-top: 4px solid var(--secondary);
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 12px 32px rgba(24, 32, 31, 0.08);
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.route-option:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.route-option span {
+  margin-bottom: 28px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.route-option strong {
+  margin-bottom: 10px;
+  color: var(--primary-dark);
+  font-size: 24px;
+}
+
+.route-option small {
+  margin-top: auto;
+  font-size: 15px;
+}
+
+.public-form-shell {
+  grid-template-columns: minmax(0, 1fr) minmax(480px, 620px);
+  width: min(100%, 1180px);
+}
+
+.form-grid-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .eyebrow {
@@ -336,12 +668,6 @@ h2 {
 h3 {
   margin-bottom: 10px;
   font-size: 20px;
-}
-
-.hero-copy p {
-  max-width: 680px;
-  color: var(--muted);
-  font-size: 18px;
 }
 
 .btn.primary {
@@ -530,7 +856,8 @@ h3 {
 }
 
 input,
-select {
+select,
+textarea {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
@@ -541,9 +868,14 @@ select {
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   border-color: var(--primary);
   outline: 3px solid color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+textarea {
+  resize: vertical;
 }
 
 label {
@@ -764,6 +1096,46 @@ dd {
     grid-template-columns: 1fr;
   }
 
+  .home-hero {
+    min-height: 620px;
+    padding: 56px 32px;
+    background-position: 62% center;
+  }
+
+  .home-content {
+    padding: 56px 24px 72px;
+  }
+
+  .home-intro,
+  .clinic-details {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .login-shell {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    min-height: auto;
+  }
+
+  .login-copy,
+  .login-form {
+    width: min(100%, 620px);
+    margin: 0 auto;
+  }
+
+  .login-back {
+    margin-bottom: 32px;
+  }
+
+  .route-shell {
+    min-height: auto;
+  }
+
+  .route-heading h1 {
+    font-size: 48px;
+  }
+
   .calendar {
     grid-template-columns: repeat(7, 180px);
   }
@@ -781,6 +1153,78 @@ dd {
   h1,
   .page-title h1 {
     font-size: 34px;
+  }
+
+  .home-hero {
+    min-height: 560px;
+    padding: 40px 20px;
+    background-position: 68% center;
+  }
+
+  .home-hero h1 {
+    font-size: 42px;
+  }
+
+  .home-hero .hero-copy p {
+    font-size: 17px;
+  }
+
+  .home-highlights,
+  .service-list {
+    grid-template-columns: 1fr;
+  }
+
+  .home-highlights div {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .home-highlights div:last-child {
+    border-bottom: 0;
+  }
+
+  .home-content {
+    padding: 48px 16px 64px;
+  }
+
+  .home-intro h2,
+  .clinic-message h2 {
+    font-size: 32px;
+  }
+
+  .clinic-details {
+    padding: 28px 20px;
+  }
+
+  .login-copy h1 {
+    font-size: 42px;
+  }
+
+  .login-form {
+    padding: 24px 20px;
+  }
+
+  .login-options {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .route-heading {
+    margin-bottom: 32px;
+    text-align: left;
+  }
+
+  .route-heading h1 {
+    font-size: 40px;
+  }
+
+  .route-options,
+  .form-grid-two {
+    grid-template-columns: 1fr;
+  }
+
+  .route-option {
+    min-height: 200px;
   }
 
   .section-head,

@@ -1,35 +1,16 @@
+### Prima visita
+- Come funziona la prima visita? 
+	Vuole selezionare a priori se accettare nuovi pazienti?
+	O solo se è una razza particolare?
 
-
-
-2. va stabilito quanto spazio è necessario su DB / fileSystem ->
+### Dimensioni DB
+va stabilito quanto spazio è necessario su DB / fileSystem ->
 	- chiarire il tipo di ogni campo 
 	- i referti degli esami sono file da uploadare e downlodare -> 
 		- estensioni? 
 		- quanti +- per paziente?
 
 
+### quali animali?
+ Basic domestici + 1 `Altro` ?
 
-3. server locale o cloud?
-	 - avete già un server proprietario? 
-### Docker
-
-
-3. quali animali?
-### Basic domestici + 1 generico
-
-
-
-4. Può essere utile la raccolta di statistiche come:
-	- Numero di nuovi appuntamenti
-	- numero di disdette
-	- numero di caricamenti file
-	- stat su tipi di animali
-### SI
-
-
-4. Preferenze sulla lingua?
-
-
-5. Quanta persistenza dobbiamo garantire ai dati? In termini di tempo?
-
-6. Back end: service unico, controllo vista lato backend o react
