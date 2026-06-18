@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Clinica Veterinaria Aurora - Mockup</title>
     <link rel="stylesheet" href="./styles.css">
+    <script src="./script.js" defer></script>
   </head>
   <body>
     <header class="topbar">
@@ -25,35 +26,20 @@
       </nav>
 
       <form class="theme-switches" aria-label="Personalizzazione colori">
-        <fieldset>
-          <legend>Primario</legend>
-          <input checked type="radio" name="primary" id="primary-teal">
-          <label class="swatch teal" for="primary-teal">Verde</label>
-          <input type="radio" name="primary" id="primary-blue">
-          <label class="swatch blue" for="primary-blue">Blu</label>
-          <input type="radio" name="primary" id="primary-red">
-          <label class="swatch red" for="primary-red">Rosso</label>
-          <input type="radio" name="primary" id="primary-violet">
-          <label class="swatch violet" for="primary-violet">Viola</label>
-          <input type="radio" name="primary" id="primary-amber">
-          <label class="swatch amber" for="primary-amber">Ambra</label>
-          <input type="radio" name="primary" id="primary-slate">
-          <label class="swatch slate" for="primary-slate">Ardesia</label>
-        </fieldset>
-        <fieldset>
-          <legend>Secondario</legend>
-          <input checked type="radio" name="secondary" id="secondary-coral">
-          <label class="swatch coral" for="secondary-coral">Corallo</label>
-          <input type="radio" name="secondary" id="secondary-mint">
-          <label class="swatch mint" for="secondary-mint">Menta</label>
-          <input type="radio" name="secondary" id="secondary-gold">
-          <label class="swatch gold" for="secondary-gold">Oro</label>
-          <input type="radio" name="secondary" id="secondary-lilac">
-          <label class="swatch lilac" for="secondary-lilac">Lilla</label>
-          <input type="radio" name="secondary" id="secondary-cyan">
-          <label class="swatch cyan" for="secondary-cyan">Ciano</label>
-          <input type="radio" name="secondary" id="secondary-rose">
-          <label class="swatch rose" for="secondary-rose">Rosa</label>
+        <fieldset class="palette-picker">
+          <legend>Palette</legend>
+          <input checked type="radio" name="palette" id="palette-aurora">
+          <label class="palette-option aurora" for="palette-aurora"><span></span>Aurora</label>
+          <input type="radio" name="palette" id="palette-lago">
+          <label class="palette-option lago" for="palette-lago"><span></span>Lago</label>
+          <input type="radio" name="palette" id="palette-energia">
+          <label class="palette-option energia" for="palette-energia"><span></span>Energia</label>
+          <input type="radio" name="palette" id="palette-iris">
+          <label class="palette-option iris" for="palette-iris"><span></span>Iris</label>
+          <input type="radio" name="palette" id="palette-cielo">
+          <label class="palette-option cielo" for="palette-cielo"><span></span>Cielo</label>
+          <input type="radio" name="palette" id="palette-rosa">
+          <label class="palette-option rosa" for="palette-rosa"><span></span>Rosa</label>
         </fieldset>
       </form>
     </header>
@@ -83,7 +69,7 @@
         </aside>
       </section>
 
-      <section class="screen simple" id="dashboard-super-admin">
+      <section class="screen simple role-super-admin" id="dashboard-super-admin">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu super admin">
             <div class="nav-user">
@@ -91,6 +77,7 @@
               <strong>Admin Aurora</strong>
             </div>
             <a href="#dashboard-super-admin">Dashboard</a>
+            <a href="#faq-super-admin">FAQ</a>
           </nav>
           <p class="eyebrow">Super admin</p>
           <h1>Dashboard super admin</h1>
@@ -101,7 +88,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="dashboard-doctor">
+      <section class="screen page role-doctor" id="dashboard-doctor">
         <div class="page-shell">
           <nav class="navbar" id="navbar-doctor" aria-label="Menu veterinario">
             <div class="nav-user">
@@ -110,6 +97,7 @@
             </div>
             <a href="#dashboard-doctor">Dashboard</a>
             <a href="#view-animal-doctor">Gestisci animali</a>
+            <a href="#faq-doctor">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Dashboard veterinario</p>
@@ -166,7 +154,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="dashboard-receptionist">
+      <section class="screen page role-receptionist" id="dashboard-receptionist">
         <div class="page-shell">
           <nav class="navbar" id="navbar-receptionist" aria-label="Menu reception">
             <div class="nav-user">
@@ -177,6 +165,7 @@
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
             <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+            <a href="#faq-receptionist">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Dashboard reception</p>
@@ -212,7 +201,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="dashboard-client">
+      <section class="screen page role-client" id="dashboard-client">
         <div class="page-shell">
           <nav class="navbar" id="navbar-client" aria-label="Menu cliente">
             <div class="nav-user">
@@ -222,6 +211,7 @@
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
+            <a href="#faq-client">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Dashboard cliente</p>
@@ -259,7 +249,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-record-client">
+      <section class="screen page role-client" id="view-record-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu cliente cartella">
             <div class="nav-user">
@@ -269,6 +259,7 @@
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
+            <a href="#faq-client">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Cartella clinica cliente</p>
@@ -314,7 +305,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-record-doctor">
+      <section class="screen page role-doctor" id="view-record-doctor">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu veterinario cartella">
             <div class="nav-user">
@@ -323,6 +314,7 @@
             </div>
             <a href="#dashboard-doctor">Dashboard</a>
             <a href="#view-animal-doctor">Gestisci animali</a>
+            <a href="#faq-doctor">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Cartella clinica veterinario</p>
@@ -372,7 +364,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-visit-report-client">
+      <section class="screen page role-client" id="view-visit-report-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu referto cliente">
             <div class="nav-user">
@@ -382,6 +374,7 @@
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
+            <a href="#faq-client">FAQ</a>
           </nav>
           <article class="panel report-card">
             <p class="eyebrow">Referto visita cliente</p>
@@ -393,7 +386,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-visit-report-doctor">
+      <section class="screen page role-doctor" id="view-visit-report-doctor">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu referto veterinario">
             <div class="nav-user">
@@ -402,6 +395,7 @@
             </div>
             <a href="#dashboard-doctor">Dashboard</a>
             <a href="#view-animal-doctor">Gestisci animali</a>
+            <a href="#faq-doctor">FAQ</a>
           </nav>
           <article class="panel report-card">
             <p class="eyebrow">Referto visita veterinario</p>
@@ -415,7 +409,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-animal-doctor">
+      <section class="screen page role-doctor" id="view-animal-doctor">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu gestione animali">
             <div class="nav-user">
@@ -424,6 +418,7 @@
             </div>
             <a href="#dashboard-doctor">Dashboard</a>
             <a href="#view-animal-doctor">Gestisci animali</a>
+            <a href="#faq-doctor">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Gestione animali</p>
@@ -443,7 +438,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-appointment-receptionist">
+      <section class="screen page role-receptionist" id="view-appointment-receptionist">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu appuntamenti reception">
             <div class="nav-user">
@@ -454,6 +449,7 @@
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
             <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+            <a href="#faq-receptionist">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Appuntamenti reception</p>
@@ -473,7 +469,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-clients-receptionist">
+      <section class="screen page role-receptionist" id="view-clients-receptionist">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu clienti reception">
             <div class="nav-user">
@@ -484,6 +480,7 @@
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
             <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+            <a href="#faq-receptionist">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Clienti reception</p>
@@ -502,7 +499,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="booking-client">
+      <section class="screen page role-client" id="booking-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu prenotazione">
             <div class="nav-user">
@@ -512,6 +509,7 @@
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
+            <a href="#faq-client">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Prenotazione appuntamento</p>
@@ -535,7 +533,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-payment-client">
+      <section class="screen page role-client" id="view-payment-client">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu pagamenti cliente">
             <div class="nav-user">
@@ -545,6 +543,7 @@
             <a href="#dashboard-client">Dashboard</a>
             <a href="#booking-client">Prenota appuntamento</a>
             <a href="#view-payment-client">Gestisci pagamenti</a>
+            <a href="#faq-client">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Pagina pagamenti</p>
@@ -563,7 +562,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="booking-receptionist">
+      <section class="screen page role-receptionist" id="booking-receptionist">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu prenotazione reception">
             <div class="nav-user">
@@ -574,6 +573,7 @@
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
             <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+            <a href="#faq-receptionist">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Prenotazione reception</p>
@@ -600,7 +600,7 @@
         </div>
       </section>
 
-      <section class="screen page" id="view-payment-receptionist">
+      <section class="screen page role-receptionist" id="view-payment-receptionist">
         <div class="page-shell">
           <nav class="navbar" aria-label="Menu pagamenti reception">
             <div class="nav-user">
@@ -611,6 +611,7 @@
             <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
             <a href="#view-clients-receptionist">Gestisci clienti</a>
             <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+            <a href="#faq-receptionist">FAQ</a>
           </nav>
           <div class="page-title">
             <p class="eyebrow">Pagina pagamenti</p>
@@ -641,6 +642,150 @@
           </section>
         </div>
       </section>
+
+      <section class="screen page role-super-admin" id="faq-super-admin">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu super admin FAQ">
+            <div class="nav-user">
+              <span>Super admin</span>
+              <strong>Admin Aurora</strong>
+            </div>
+            <a href="#dashboard-super-admin">Dashboard</a>
+            <a href="#faq-super-admin">FAQ</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Supporto super admin</p>
+            <h1>FAQ</h1>
+          </div>
+          <section class="panel faq-list">
+            <details>
+              <summary>Come controllo lo stato del portale?</summary>
+              <p>Apri la Dashboard per verificare le funzioni disponibili e le aree ancora in fase di implementazione.</p>
+            </details>
+            <details>
+              <summary>Come verifico le viste dei diversi utenti?</summary>
+              <p>Usa il selettore Tipo utente nella barra superiore e scegli Veterinario, Reception o Cliente.</p>
+            </details>
+            <details>
+              <summary>Come cambio la palette del portale?</summary>
+              <p>Scegli una delle palette nella barra superiore. La selezione aggiorna immediatamente colori e accenti.</p>
+            </details>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page role-doctor" id="faq-doctor">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu veterinario FAQ">
+            <div class="nav-user">
+              <span>Veterinario</span>
+              <strong>Dott. Camillo Zampetti</strong>
+            </div>
+            <a href="#dashboard-doctor">Dashboard</a>
+            <a href="#view-animal-doctor">Gestisci animali</a>
+            <a href="#faq-doctor">FAQ</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Supporto veterinario</p>
+            <h1>FAQ</h1>
+          </div>
+          <section class="panel faq-list">
+            <details>
+              <summary>Come consulto l'agenda clinica?</summary>
+              <p>Apri la Dashboard. Usa Precedente e Successiva per cambiare settimana e seleziona Nuovo evento per aggiungere un'attivita.</p>
+            </details>
+            <details>
+              <summary>Come trovo la cartella di un animale?</summary>
+              <p>Apri Gestisci animali, cerca il proprietario o il nome dell'animale e seleziona Cartella clinica.</p>
+            </details>
+            <details>
+              <summary>Come creo o modifico un referto?</summary>
+              <p>Dalla Dashboard seleziona Crea referto vicino all'appuntamento, oppure apri un referto esistente dalla cartella clinica.</p>
+            </details>
+            <details>
+              <summary>Come aggiorno i dati clinici?</summary>
+              <p>Apri la cartella dell'animale e seleziona Modifica dati nella sezione Dati animale.</p>
+            </details>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page role-receptionist" id="faq-receptionist">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu reception FAQ">
+            <div class="nav-user">
+              <span>Reception</span>
+              <strong>Giulia Ferri</strong>
+            </div>
+            <a href="#dashboard-receptionist">Dashboard</a>
+            <a href="#view-appointment-receptionist">Gestisci appuntamenti</a>
+            <a href="#view-clients-receptionist">Gestisci clienti</a>
+            <a href="#view-payment-receptionist">Gestisci pagamenti</a>
+            <a href="#faq-receptionist">FAQ</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Supporto reception</p>
+            <h1>FAQ</h1>
+          </div>
+          <section class="panel faq-list">
+            <details>
+              <summary>Come prenoto un nuovo appuntamento?</summary>
+              <p>Apri Gestisci appuntamenti, seleziona Prenota nuovo appuntamento e completa cliente, animale, visita e fascia oraria.</p>
+            </details>
+            <details>
+              <summary>Come modifico i dati di un cliente?</summary>
+              <p>Apri Gestisci clienti, cerca il proprietario e seleziona Modifica dati nella relativa scheda.</p>
+            </details>
+            <details>
+              <summary>Come gestisco un pagamento in sospeso?</summary>
+              <p>Apri Gestisci pagamenti. Seleziona Paga per registrare il pagamento oppure Invia promemoria per contattare il cliente.</p>
+            </details>
+            <details>
+              <summary>Come modifico o elimino un appuntamento?</summary>
+              <p>Apri Gestisci appuntamenti e usa Modifica o Elimina sulla riga della prenotazione interessata.</p>
+            </details>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen page role-client" id="faq-client">
+        <div class="page-shell">
+          <nav class="navbar" aria-label="Menu cliente FAQ">
+            <div class="nav-user">
+              <span>Cliente</span>
+              <strong>Andrea Rossi</strong>
+            </div>
+            <a href="#dashboard-client">Dashboard</a>
+            <a href="#booking-client">Prenota appuntamento</a>
+            <a href="#view-payment-client">Gestisci pagamenti</a>
+            <a href="#faq-client">FAQ</a>
+          </nav>
+          <div class="page-title">
+            <p class="eyebrow">Supporto cliente</p>
+            <h1>FAQ</h1>
+          </div>
+          <section class="panel faq-list">
+            <details>
+              <summary>Come prenoto una visita?</summary>
+              <p>Apri Prenota appuntamento, scegli animale, tipo di visita, veterinario e fascia disponibile, quindi conferma la richiesta.</p>
+            </details>
+            <details>
+              <summary>Come consulto la cartella clinica?</summary>
+              <p>Dalla Dashboard seleziona Apri cartella nella scheda dell'animale per vedere dati, vaccini, referti e documenti.</p>
+            </details>
+            <details>
+              <summary>Come carico un documento clinico?</summary>
+              <p>Apri la cartella dell'animale e usa l'area Carica documenti clinici per selezionare il file dal dispositivo.</p>
+            </details>
+            <details>
+              <summary>Come pago una visita?</summary>
+              <p>Apri Gestisci pagamenti e seleziona Paga vicino alla voce presente nella sezione Pagamenti in sospeso.</p>
+            </details>
+          </section>
+        </div>
+      </section>
     </main>
+
+    <a class="help-action" id="help-action" href="#" aria-live="polite"></a>
   </body>
 </html>
