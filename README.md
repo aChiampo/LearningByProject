@@ -26,6 +26,162 @@ Vorrebbe uno strumento digitale semplice che aiuti lui, I receptionist e i propr
 | Infrastruttura Host | Cloud gestito (AWS) consigliato|
 | Database Hosting    | To be implemented              |
 
+### Struttura del Progetto
+
+```
+veterinary-clinic/
+│
+├── frontend/                          # React Application
+│   ├── public/
+│   │   ├── index.html
+│   │   └── favicon.ico
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Auth/
+│   │   │   │   ├── LoginForm.jsx
+│   │   │   │   └── RoleBasedRoute.jsx
+│   │   │   ├── Common/
+│   │   │   │   ├── Header.jsx
+│   │   │   │   ├── Sidebar.jsx
+│   │   │   │   └── Footer.jsx
+│   │   │   ├── Client/
+│   │   │   │   ├── AppointmentBook.jsx
+│   │   │   │   ├── MedicalRecord.jsx
+│   │   │   │   └── InvoiceView.jsx
+│   │   │   ├── Receptionist/
+│   │   │   │   ├── AppointmentManagement.jsx
+│   │   │   │   ├── WaitingList.jsx
+│   │   │   │   └── PaymentRecording.jsx
+│   │   │   └── Doctor/
+│   │   │       ├── DoctorDashboard.jsx
+│   │   │       ├── PatientChart.jsx
+│   │   │       └── PrescriptionForm.jsx
+│   │   ├── pages/
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── DashboardPage.jsx
+│   │   │   ├── AppointmentsPage.jsx
+│   │   │   └── ProfilePage.jsx
+│   │   ├── services/
+│   │   │   ├── api.js
+│   │   │   ├── authService.js
+│   │   │   ├── appointmentService.js
+│   │   │   └── patientService.js
+│   │   ├── hooks/
+│   │   │   ├── useAuth.js
+│   │   │   └── useFetch.js
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── utils/
+│   │   │   ├── validators.js
+│   │   │   └── formatters.js
+│   │   ├── styles/
+│   │   │   ├── App.css
+│   │   │   └── variables.css
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── package.json
+│   ├── vite.config.js
+│   └── .env.example
+│
+├── backend/                           # Spring Boot Application
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── com/veterinaryapp/
+│   │   │   │       ├── config/
+│   │   │   │       │   ├── SecurityConfig.java
+│   │   │   │       │   ├── CorsConfig.java
+│   │   │   │       │   └── JwtConfig.java
+│   │   │   │       ├── controller/
+│   │   │   │       │   ├── AuthController.java
+│   │   │   │       │   ├── AppointmentController.java
+│   │   │   │       │   ├── PatientController.java
+│   │   │   │       │   ├── UserController.java
+│   │   │   │       │   └── PaymentController.java
+│   │   │   │       ├── service/
+│   │   │   │       │   ├── AuthService.java
+│   │   │   │       │   ├── AppointmentService.java
+│   │   │   │       │   ├── PatientService.java
+│   │   │   │       │   ├── UserService.java
+│   │   │   │       │   └── PaymentService.java
+│   │   │   │       ├── repository/
+│   │   │   │       │   ├── UserRepository.java
+│   │   │   │       │   ├── AppointmentRepository.java
+│   │   │   │       │   ├── PatientRepository.java
+│   │   │   │       │   └── PaymentRepository.java
+│   │   │   │       ├── entity/
+│   │   │   │       │   ├── User.java
+│   │   │   │       │   ├── Patient.java
+│   │   │   │       │   ├── Appointment.java
+│   │   │   │       │   ├── MedicalRecord.java
+│   │   │   │       │   └── Payment.java
+│   │   │   │       ├── dto/
+│   │   │   │       │   ├── UserDTO.java
+│   │   │   │       │   ├── AppointmentDTO.java
+│   │   │   │       │   └── PaymentDTO.java
+│   │   │   │       ├── exception/
+│   │   │   │       │   ├── ResourceNotFoundException.java
+│   │   │   │       │   └── UnauthorizedException.java
+│   │   │   │       ├── security/
+│   │   │   │       │   ├── JwtTokenProvider.java
+│   │   │   │       │   └── CustomUserDetailsService.java
+│   │   │   │       └── VeterinaryClinicApplication.java
+│   │   │   └── resources/
+│   │   │       ├── application.yml
+│   │   │       ├── application-prod.yml
+│   │   │       ├── application-dev.yml
+│   │   │       └── db/
+│   │   │           └── migration/
+│   │   │               ├── V1__initial_schema.sql
+│   │   │               └── V2__seed_data.sql
+│   │   └── test/
+│   │       └── java/
+│   │           └── com/veterinaryapp/
+│   │               ├── service/
+│   │               └── controller/
+│   ├── pom.xml
+│   ├── Dockerfile
+│   └── .gitignore
+│
+├── database/                          # Database Configuration
+│   ├── schema/
+│   │   ├── users.sql
+│   │   ├── patients.sql
+│   │   ├── appointments.sql
+│   │   ├── medical_records.sql
+│   │   └── payments.sql
+│   ├── migrations/
+│   │   └── (Flyway migrations)
+│   └── seed/
+│       └── sample_data.sql
+│
+├── docs/                              # Documentation
+│   ├── API_DOCUMENTATION.md
+│   ├── DATABASE_SCHEMA.md
+│   ├── ARCHITECTURE.md
+│   ├── DEPLOYMENT.md
+│   └── USER_GUIDE.md
+│
+├── .github/
+│   └── workflows/                     # CI/CD Pipelines
+│       ├── frontend-tests.yml
+│       ├── backend-tests.yml
+│       └── deploy.yml
+│
+├── docker-compose.yml                 # Local Development Setup
+├── .gitignore
+├── LICENSE
+└── README.md
+```
+
+**Descrizione Struttura:**
+
+- **frontend/** - Applicazione React con componenti organizzati per ruolo (Client, Receptionist, Doctor)
+- **backend/** - Applicazione Spring Boot con architettura a layer (Controller → Service → Repository)
+- **database/** - Script SQL per schema, migrazioni e dati di seed
+- **docs/** - Documentazione tecnica e guide utente
+- **.github/workflows/** - Pipeline CI/CD per testing e deployment automatico
+
 # Descrizione Progetto
 
  Il progetto deve essere strutturato come una web application.
