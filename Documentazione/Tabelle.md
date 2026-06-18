@@ -3,11 +3,15 @@
 - Nome, Not Null, varchar(30);
 - Cognome, Not Null, varchar(30);
 - Email, Not Null, varchar(40);
+- Password, Not Null, varchar(40);      <!--Da cryptare prima dell'inserimento nel->
 - Telefono, Not Null, varchar(10);
 - Indirizzo, varchar(30);
 - Citta, varchar(20);
 - Data_Registrazione, Not Null, Date;
 - Riferimento, varchar(30);
+
+- Foreign Key  ID_Animale --> FROM Animale ID;
+- Foreign Key  ID_Ruolo --> FROM Ruolo ID;
 
 ### RUOLO
 - ID, Primary Key, int;
@@ -25,6 +29,8 @@
 - Microchip, Not Null, int;
 - Note, text;
 
+- Foreign Key  ID_Utente --> FROM Utente ID;
+
 
 ## VACCINAZIONI 
 - ID, Primary Key, int;
@@ -33,22 +39,26 @@
 - Lotto, varchar(10);
 - Stato, Not Null, bool;
 
+- Foreign Key  ID_Animale --> FROM Animale ID;
+- Foreign Key  ID_Tipo_Vaccino --> FROM Tipo_Vaccino ID;
+
 ### TIPO VACCINO
 - ID, Primary Key, int;
-- Durata, Not Null, int; <!--Durata espressa in mesi-->
+- Durata, Not Null, int;                <!--Durata espressa in mesi->
 - Note, text;
 
 
 ## VISITA
-- ID, Primary Key, int; 
+- ID, Primary Key, int;
 - Data_Visita, Not Null, Date;
 - ID_Tipo, Not Null, int;
 - Note, text;
-- ID_Pagamento int null **FK**
+
+- Foreign Key  ID_Animale --> FROM Animale ID;
 
 ### TIPI VISITA 
 - ID, Primary Key, int;
-- Durata, int; <!--Durata espressa in minuti-->
+- Durata, int;                          <!--Durata espressa in minuti->
 - Descrizione, text;
 - Prezzo, Not Null, double;
 - ID_Dottore, Not Null, int;
@@ -59,9 +69,27 @@
 - Data_Visita, Not Null, Date;
 - Tipo_Visita, varchar(30);
 
+- Foreign Key  ID_Utente --> FROM Utente ID;
+- Foreign Key  ID_Tipi_Visita --> FROM Tipi_Visita ID;
+
 
 ## PAGAMENTI
 - ID, Primary Key, int;
 - Data, Not Null, Date;
-- Tipo_Pagamento, varchar(30); <!--Oppure bool se pos / contanti-->
+- Tipo_Pagamento, varchar(30);          <!--Oppure bool se pos / contanti->
 - Importo_Totale, Not Null, double;
+
+- Foreign Key  ID_Utente --> FROM Utente ID;
+
+
+## EVENTI APP
+- ID_Utente, Primary Key, int;
+- ID_Oggetto, Primary Key, int;
+- Tipo_Evento, Not Null, varchar(20);
+- Ruolo, varchar(30);
+- Oggetto_Azione, varchar(30);
+- Time_Stamp, timestap();               <!--Data e ora->
+- Metadata, text;
+
+- Foreign Key  ID_Utente --> FROM Utente ID;
+- Foreign Key  ID_Ruolo --> FROM Ruolo ID;
