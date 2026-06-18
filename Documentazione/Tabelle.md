@@ -35,19 +35,20 @@
 
 ### TIPO VACCINO
 - ID, Primary Key, int;
-- Durata, Not Null, int; <!--Durata espressa in mesi->
+- Durata, Not Null, int; <!--Durata espressa in mesi-->
 - Note, text;
 
 
 ## VISITA
-- ID, Primary Key, int;
+- ID, Primary Key, int; 
 - Data_Visita, Not Null, Date;
 - ID_Tipo, Not Null, int;
 - Note, text;
+- ID_Pagamento int null **FK**
 
 ### TIPI VISITA 
 - ID, Primary Key, int;
-- Durata, int; <!--Durata espressa in minuti->
+- Durata, int; <!--Durata espressa in minuti-->
 - Descrizione, text;
 - Prezzo, Not Null, double;
 - ID_Dottore, Not Null, int;
@@ -62,5 +63,5 @@
 ## PAGAMENTI
 - ID, Primary Key, int;
 - Data, Not Null, Date;
-- Tipo_Pagamento, varchar(30); <!--Oppure bool se pos / contanti->
+- Tipo_Pagamento, varchar(30); <!--Oppure bool se pos / contanti-->
 - Importo_Totale, Not Null, double;
