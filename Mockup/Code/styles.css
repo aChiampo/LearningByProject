@@ -348,7 +348,6 @@ body:has(#homepage:target) #homepage {
   border-color: rgba(255, 255, 255, 0.72);
   background: rgba(255, 255, 255, 0.12);
   color: white;
-  backdrop-filter: blur(8px);
 }
 
 .home-highlights {
@@ -547,6 +546,16 @@ body:has(#homepage:target) #homepage {
 
 .login-form > .btn {
   width: 100%;
+}
+
+.login-form > .btn + .btn {
+  margin-top: 10px;
+}
+
+.login-form .hero-secondary {
+  border-color: color-mix(in srgb, var(--primary) 42%, var(--line));
+  background: var(--primary-soft);
+  color: var(--primary-dark);
 }
 
 .login-note {

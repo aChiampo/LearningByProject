@@ -1,7 +1,7 @@
 const ROLE_CONFIG = {
   "super-admin": {
-    label: "Super admin",
-    userName: "Admin Aurora",
+    label: "Studio",
+    userName: "Amministrazione",
     faq: "#faq-super-admin",
     navigation: [
       ["Dashboard", "#dashboard-super-admin"],
