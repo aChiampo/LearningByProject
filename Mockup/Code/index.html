@@ -470,27 +470,62 @@
             <p class="eyebrow">Cartella clinica cliente</p>
             <h1>Milo Rossi</h1>
           </div>
-          <section class="grid-two">
-            <article class="panel">
-              <h2>Dati animale</h2>
-              <dl class="details">
-                <div><dt>Nome</dt><dd>Milo</dd></div>
-                <div><dt>Cognome</dt><dd>Rossi</dd></div>
-                <div><dt>Razza</dt><dd>Labrador</dd></div>
-                <div><dt>Nascita</dt><dd>12 marzo 2021</dd></div>
-                <div><dt>Sesso</dt><dd>Maschio</dd></div>
-                <div><dt>Peso</dt><dd>28 kg</dd></div>
-                <div><dt>Microchip</dt><dd>380260101234567</dd></div>
-              </dl>
-            </article>
-            <article class="panel">
-              <h2>Vaccini</h2>
-              <ul class="check-list">
-                <li>Polivalente - 15 aprile 2026</li>
-                <li>Rabbia - 11 febbraio 2026</li>
-                <li>Leptospirosi - 15 aprile 2026</li>
-              </ul>
-            </article>
+          <section class="panel">
+            <h2>Dati animale</h2>
+            <dl class="details">
+              <div><dt>Nome</dt><dd>Milo</dd></div>
+              <div><dt>Razza</dt><dd>Labrador</dd></div>
+              <div><dt>Nascita</dt><dd>12 marzo 2021</dd></div>
+              <div><dt>Sesso</dt><dd>Maschio</dd></div>
+              <div><dt>Peso</dt><dd>28 kg</dd></div>
+              <div><dt>Microchip</dt><dd>380260101234567</dd></div>
+            </dl>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h2>Vaccinazioni</h2>
+              <a class="btn small primary" href="#view-record-client">Aggiungi</a>
+            </div>
+            <div class="table-scroll">
+              <table class="vaccination-table">
+                <thead>
+                  <tr>
+                    <th>Tipo vaccino</th>
+                    <th>Data somministrazione</th>
+                    <th>Data scadenza</th>
+                    <th>Lotto</th>
+                    <th>Stato</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Polivalente</td>
+                    <td>15 aprile 2026</td>
+                    <td>15 aprile 2027</td>
+                    <td>PV-260415</td>
+                    <td><span class="status valid">Valido</span></td>
+                    <td>Richiamo annuale</td>
+                  </tr>
+                  <tr>
+                    <td>Rabbia</td>
+                    <td>11 febbraio 2026</td>
+                    <td>11 febbraio 2027</td>
+                    <td>RB-260211</td>
+                    <td><span class="status valid">Valido</span></td>
+                    <td>Documentazione registrata</td>
+                  </tr>
+                  <tr>
+                    <td>Leptospirosi</td>
+                    <td>10 gennaio 2025</td>
+                    <td>10 gennaio 2026</td>
+                    <td>LP-250110</td>
+                    <td><span class="status expired">Scaduto</span></td>
+                    <td>Richiamo da programmare</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </section>
           <section class="panel">
             <h2>Referti visite</h2>
@@ -525,19 +560,9 @@
             <p class="eyebrow">Cartella clinica veterinario</p>
             <h1>Milo Rossi</h1>
           </div>
-          <section class="grid-two">
-            <article class="panel">
-              <h2>Proprietario</h2>
-              <p>Andrea Rossi</p>
-            </article>
-            <article class="panel">
-              <h2>Vaccini</h2>
-              <ul class="check-list">
-                <li>Polivalente - 15 aprile 2026</li>
-                <li>Rabbia - 11 febbraio 2026</li>
-                <li>Leptospirosi - 15 aprile 2026</li>
-              </ul>
-            </article>
+          <section class="panel">
+            <h2>Proprietario</h2>
+            <p>Andrea Rossi</p>
           </section>
           <section class="panel">
             <div class="section-head">
@@ -546,13 +571,58 @@
             </div>
             <dl class="details">
               <div><dt>Nome</dt><dd>Milo</dd></div>
-              <div><dt>Cognome</dt><dd>Rossi</dd></div>
               <div><dt>Razza</dt><dd>Labrador</dd></div>
               <div><dt>Nascita</dt><dd>12 marzo 2021</dd></div>
               <div><dt>Sesso</dt><dd>Maschio</dd></div>
               <div><dt>Peso</dt><dd>28 kg</dd></div>
               <div><dt>Microchip</dt><dd>380260101234567</dd></div>
             </dl>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h2>Vaccinazioni</h2>
+              <a class="btn small primary" href="#view-record-doctor">Aggiungi</a>
+            </div>
+            <div class="table-scroll">
+              <table class="vaccination-table">
+                <thead>
+                  <tr>
+                    <th>Tipo vaccino</th>
+                    <th>Data somministrazione</th>
+                    <th>Data scadenza</th>
+                    <th>Lotto</th>
+                    <th>Stato</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Polivalente</td>
+                    <td>15 aprile 2026</td>
+                    <td>15 aprile 2027</td>
+                    <td>PV-260415</td>
+                    <td><span class="status valid">Valido</span></td>
+                    <td>Richiamo annuale</td>
+                  </tr>
+                  <tr>
+                    <td>Rabbia</td>
+                    <td>11 febbraio 2026</td>
+                    <td>11 febbraio 2027</td>
+                    <td>RB-260211</td>
+                    <td><span class="status valid">Valido</span></td>
+                    <td>Documentazione registrata</td>
+                  </tr>
+                  <tr>
+                    <td>Leptospirosi</td>
+                    <td>10 gennaio 2025</td>
+                    <td>10 gennaio 2026</td>
+                    <td>LP-250110</td>
+                    <td><span class="status expired">Scaduto</span></td>
+                    <td>Richiamo da programmare</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </section>
           <section class="panel">
             <h2>Referti visite</h2>
@@ -838,10 +908,7 @@
               <div class="payment-row"><span>Sara Bianchi</span><strong>48,00 euro</strong><a class="btn small primary" href="#view-payment-receptionist">Invia promemoria</a><a class="btn small" href="#view-payment-receptionist">Paga</a></div>
             </article>
             <article class="panel">
-              <div class="section-head">
-                <h2>Pagamenti precedenti</h2>
-                <a class="btn small" href="#view-payment-receptionist">Scarica tutte</a>
-              </div>
+              <h2>Pagamenti precedenti</h2>
               <div class="payment-row"><span>Paolo Verdi</span><strong>95,00 euro</strong><a class="btn small" href="#view-payment-receptionist">Scarica</a></div>
             </article>
           </section>

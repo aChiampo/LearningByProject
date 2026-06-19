@@ -1,3 +1,6 @@
+
+### Aziende
+- Lavora con aziende?
 ### Prima visita
 - Come funziona la prima visita? 
 	Vuole selezionare a priori se accettare nuovi pazienti?
