@@ -36,7 +36,7 @@
 | Peso         | double      |             |                        |                                             |
 | Microchip    | varchar(15) |             |                        | Nullabile: i conigli non hanno il microchip |
 | Note         | text        |             |                        |                                             |
-| ID_Utente    | int         | Not Null    | [`UTENTE.ID`](#utente) |                                             |
+
 
 ## VACCINAZIONI
 
