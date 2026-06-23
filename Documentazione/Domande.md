@@ -1,12 +1,15 @@
 
 ### Aziende
 - Lavora con aziende?
-forse quindi si
+*per ora no, non escludo in futuro*
+
 
 ### Protocollo Prima visita
 - Come funziona la prima visita? 
 	Vuole selezionare a priori se accettare nuovi pazienti?
 	O solo se è una razza particolare?
+
+*se si aggiunge un'animale strano si fa una richiesta al dottore. se invece è un'animale normale si effettua la prenotazione aggiungendo una descrizione ma senza inserire i dati(viene creato un animale con i dati a 0)*
 
 ### Dimensioni DB
 va stabilito quanto spazio è necessario su DB / fileSystem ->
@@ -15,25 +18,29 @@ va stabilito quanto spazio è necessario su DB / fileSystem ->
 		- estensioni? 
 		- quanti +- per paziente?
 
+*solo pdf*
+
 
 ### quali animali?
  Basic domestici + 1 `Altro` ?
-Cane - Gatto - Conigli?
+*Cane - Gatto - Conigli - AltroGenerico*
 
 ### tipo di visite?
 - \[nome],\[durata],\[costo]
-vaccino 30 
-visita 30 
+
+*da consegnare*
 
 ### Orario appuntamenti?
-Flessibile a piacere o fisso con appuntamenti filler? Standard
+Flessibile a piacere o fisso con appuntamenti filler?
+
+* Standard 9-13 14-18*
 
 ### Statistiche?
 Interessano si/no?
 - Richieste particolari?
-Usage appuntamenti 
-per collaboratori
-a piacere
+
+
+*Usage appuntamenti, collaboratori/ utenti più attivi ,a piacere*
 
 
 ### Aggiungere nuovi dipendenti
