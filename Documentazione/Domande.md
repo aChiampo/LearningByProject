@@ -2,7 +2,7 @@
 ### Aziende
 - Lavora con aziende?
 *per ora no, non escludo in futuro*
-
+-> direi di aggiungere un campo int ad 'Utenti' che riferisce ad una nuova tabella 'Dati aziendali' che contiene le informazioni relative ( in pratica solo quelle utili ad emettere fatture)
 
 ### Protocollo Prima visita
 - Come funziona la prima visita? 
