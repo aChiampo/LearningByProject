@@ -21,19 +21,25 @@ Cane - Gatto - Conigli?
 
 ### tipo di visite?
 - \[nome],\[durata],\[costo]
+vaccino 30 
+visita 30 
 
 ### Orario appuntamenti?
-Flessibile a piacere o fisso con appuntamenti filler?
+Flessibile a piacere o fisso con appuntamenti filler? Standard
 
 ### Statistiche?
 Interessano si/no?
 - Richieste particolari?
+Usage appuntamenti 
+per collaboratori
+a piacere
+
 
 ### Aggiungere nuovi dipendenti
 - lo fa l'assistenza oppure il propietario dell'admin
 
 ### Richieste aggiuntive? Discutere
 
+avvisi in scadenza
 
-
-
+reception>notifiche ritardi
