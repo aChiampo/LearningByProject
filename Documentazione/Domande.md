@@ -1,6 +1,7 @@
 
 ### Aziende
 - Lavora con aziende?
+forse quindi si
 
 ### Protocollo Prima visita
 - Come funziona la prima visita? 
