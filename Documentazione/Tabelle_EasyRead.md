@@ -88,10 +88,10 @@
 | ID | int | Primary Key | | |
 | Nome | VARchar | not null | | |
 | Durata | int | not null | | Durata espressa in minuti |
-| Categoria | int | | [Categoirie_visite](CATEGORIE.ID) |  |
+| Categoria | int | | [CATEGORIE.ID](#CATEGORIE-VISITE) |  |
 | Prezzo | double | Not Null | | |
 | attivo | BOOLEAN | Not Null | | defaul true - usato per disabilitare le visite da parte del dottore|
-| ID_Dottore | int | Not Null | [Utenti](UTENTI.ID) | ogni dottore ha le proprie visite |
+| ID_Dottore | int | Not Null | [UTENTI.ID](#utenti) | ogni dottore ha le proprie visite |
 
 ## CATEGORIE-VISITE  
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
