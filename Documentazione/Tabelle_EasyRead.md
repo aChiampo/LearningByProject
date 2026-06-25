@@ -13,8 +13,18 @@
 | Indirizzo          | varchar(30) |             |                      |                                    |
 | Citta              | varchar(20) |             |                      |                                    |
 | Data_Registrazione | Date        | Not Null    |                      |                                    |
+| isAzienda | int        |     |  [AZIENDE.ID](#aziende)        |  Se esiste questo campo, questo utente è un azienda, quindi per i pagamenti bisonga prendere i dati necessari all creazione della fattura  |
 | Riferimento        | varchar(30) |             |                      |                                    |
 | ID_Ruolo           | int         |             | [`RUOLO.ID`](#ruolo) |                                    |
+
+### AZIENDE
+
+| Nome | TipoDato | Flag | ForeignKey | Commenti |
+| --- | --- | --- | --- | --- |
+| ID | int | Primary Key | | |
+| RagioneSociale | varchar(100) | not null | |  |
+| Partita_IVA | varchar(100) | not null | |  |
+| FormaGiuridica | varchar(100) | not null | |  |
 
 ### RUOLO
 
