@@ -51,14 +51,14 @@
 
 ## VACCINAZIONI
 
-| Nome | TipoDato | Flag | ForeignKey | Commenti |
-| --- | --- | --- | --- | --- |
-| ID | int | Primary Key | | |
-| ID_Tipo | int | Not Null | | |
-| Data_Vaccinazione | Date | | | |
-| Lotto | varchar(10) | | | |
-| ID_Animale | int |Not Null | [`ANIMALE.ID`](#animale) | |
-| ID_Tipo_Vaccino | int |Not Null | [`TIPO VACCINO.ID`](#tipo-vaccino) | |
+| Nome              | TipoDato    | Flag        | ForeignKey                         | Commenti |
+| ----------------- | ----------- | ----------- | ---------------------------------- | -------- |
+| ID                | int         | Primary Key |                                    |          |
+| ID_Tipo           | int         | Not Null    |                                    |          |
+| Data_Vaccinazione | Date        |             |                                    |          |
+| Lotto             | varchar(10) |             |                                    |          |
+| ID_Animale        | int         |             | [`ANIMALE.ID`](#animale)           |          |
+| ID_Tipo_Vaccino   | int         |             | [`TIPO VACCINO.ID`](#tipo-vaccino) |          |
 
 ### TIPO VACCINO
 
@@ -102,13 +102,13 @@
 
 ## PRENOTAZIONI
 
-| Nome | TipoDato | Flag | ForeignKey | Commenti |
-| --- | --- | --- | --- | --- |
-| ID | int | Primary Key | | |
-| Data_Visita | Date | Not Null | | |
-| Tipo_Visita | varchar(30) | | | |
-| ID_Utente | int | | [`UTENTE.ID`](#utente) | |
-| ID_Tipi_Visita | int | | [`TIPI VISITA.ID`](#tipi-visita) | |
+| Nome           | TipoDato    | Flag        | ForeignKey                       | Commenti |
+| -------------- | ----------- | ----------- | -------------------------------- | -------- |
+| ID             | int         | Primary Key |                                  |          |
+| Data_Visita    | Date        | Not Null    |                                  |          |
+| Tipo_Visita    | varchar(30) |             |                                  |          |
+| ID_Utente      | int         |             | [`UTENTE.ID`](#utente)           |          |
+| ID_Tipi_Visita | int         |             | [`TIPI VISITA.ID`](#tipi-visita) |          |
 
 ## PAGAMENTI
 
