@@ -71,15 +71,24 @@
 | ID_Pagamento | int | | [`PAGAMENTI.ID`](#pagamenti) | |
 | Note | text | | | |
 
-### TIPI VISITA
+## TIPI VISITA
 
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
 | --- | --- | --- | --- | --- |
 | ID | int | Primary Key | | |
-| Durata | int | | | Durata espressa in minuti |
-| Descrizione | text | | | |
+| Nome | VARchar | not null | | |
+| Durata | int | not null | | Durata espressa in minuti |
+| Categoria | int | | [Categoirie_visite](CATEGORIE.ID) |  |
 | Prezzo | double | Not Null | | |
-| ID_Dottore | int | Not Null | | |
+| attivo | BOOLEAN | Not Null | | defaul true - usato per disabilitare le visite da parte del dottore|
+| ID_Dottore | int | Not Null | [Utenti](UTENTI.ID) | ogni dottore ha le proprie visite |
+
+## CATEGORIE-VISITE  
+| Nome | TipoDato | Flag | ForeignKey | Commenti |
+| --- | --- | --- | --- | --- |
+| ID | int | Primary Key | | |
+| Nome | varchar(100) | not null | | prendere dati dal file del cliente |
+
 
 ## PRENOTAZIONI
 
