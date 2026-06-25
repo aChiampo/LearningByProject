@@ -124,7 +124,8 @@
 
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
 | --- | --- | --- | --- | --- |
-| ID_Utente | int | Primary Key | [`UTENTE.ID`](#utente) | |
+| ID | int | Primary Key | | |
+| ID_Utente | int | | [`UTENTE.ID`](#utente) | |
 | ID_Oggetto | int | Primary Key | | |
 | Tipo_Evento | varchar(20) | Not Null | | |
 | Ruolo | varchar(30) | | | |
@@ -137,7 +138,8 @@
 
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
 | --- | --- | --- | --- | --- |
-| ID_Utente | int | Primary Key | | |
+| ID | int | Primary Key | | |
+| ID_Utente | int |  |[`UTENTE.ID`](#utente) | |
 | GiornoSettimana | int | Not Null | | Valore da 1 a 7 |
 | MattinaInizio | Date | Not Null | | |
 | MattinaFine | Date | Not Null | | |
