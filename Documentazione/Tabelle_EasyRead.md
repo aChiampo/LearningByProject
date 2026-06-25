@@ -1,39 +1,39 @@
 # Tabelle
 
-## UTENTE
+## UTENTI
 
-| Nome               | TipoDato    | Flag        | ForeignKey           | Commenti                           |
-| ------------------ | ----------- | ----------- | -------------------- | ---------------------------------- |
-| ID                 | int         | Primary Key |                      |                                    |
-| Nome               | varchar(30) | Not Null    |                      |                                    |
-| Cognome            | varchar(30) | Not Null    |                      |                                    |
-| Email              | varchar(100) | Not Null, UNIQUE    |                      |                                    |
-| Password           | varchar(255) | Not Null    |                      | Da criptare prima dell'inserimento |
-| Telefono           | varchar(20) | Not Null    |                      |                                    |
-| Indirizzo          | varchar(30) |             |                      |                                    |
-| Citta              | varchar(20) |             |                      |                                    |
-| Data_Registrazione | Date        | Not Null    |                      |                                    |
-| IDAzienda | int        |     |  [AZIENDE.ID](#aziende)        |  Se esiste questo campo, questo utente è un azienda, quindi per i pagamenti bisonga prendere i dati necessari all creazione della fattura  |
-| Riferimento        | varchar(30) |             |                      |                                    |
-| ID_Ruolo           | int         |             | [`RUOLO.ID`](#ruolo) |                                    |
+| Nome               | TipoDato     | Flag        | ForeignKey             | Commenti                                                                                                                                 |
+| ------------------ | ------------ | ----------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| ID                 | int          | Primary Key |                        |                                                                                                                                          |
+| Nome               | varchar(30)  | Not Null    |                        |                                                                                                                                          |
+| Cognome            | varchar(30)  | Not Null    |                        |                                                                                                                                          |
+| Email              | varchar(100) | UNIQUE      |                        |                                                                                                                                          |
+| Password           | varchar(255) | Not Null    |                        | Da criptare prima dell'inserimento                                                                                                       |
+| Telefono           | varchar(20)  | Not Null    |                        |                                                                                                                                          |
+| Indirizzo          | varchar(30)  |             |                        |                                                                                                                                          |
+| Citta              | varchar(20)  |             |                        |                                                                                                                                          |
+| Data_Registrazione | Date         | Not Null    |                        |                                                                                                                                          |
+| IDAzienda          | int          |             | [AZIENDE.ID](#aziende) | Se esiste questo campo, questo utente è un azienda, quindi per i pagamenti bisonga prendere i dati necessari all creazione della fattura |
+| Riferimento        | varchar(30)  |             |                        |                                                                                                                                          |
+| ID_Ruolo           | int          |             | [`RUOLI.ID`](#ruoli)   |                                                                                                                                          |
 
 ### AZIENDE
 
-| Nome | TipoDato | Flag | ForeignKey | Commenti |
-| --- | --- | --- | --- | --- |
-| ID | int | Primary Key | | |
-| RagioneSociale | varchar(100) | not null | |  |
-| Partita_IVA | varchar(100) | not null | |  |
-| FormaGiuridica | varchar(100) | not null | |  |
+| Nome           | TipoDato     | Flag             | ForeignKey | Commenti |
+| -------------- | ------------ | ---------------- | ---------- | -------- |
+| ID             | int          | Primary Key      |            |          |
+| RagioneSociale | varchar(100) | not null         |            |          |
+| Partita_IVA    | varchar(100) | not null, unique |            |          |
+| FormaGiuridica | varchar(100) | not null         |            |          |
 
-### RUOLO
+### RUOLI
 
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
 | --- | --- | --- | --- | --- |
 | ID | int | Primary Key | | |
 | Ruolo | varchar(15) | Not Null, UNIQUE | | |
 
-## ANIMALE
+## ANIMALI
 
 | Nome         | TipoDato    | Flag        | ForeignKey             | Commenti                                    |
 | ------------ | ----------- | ----------- | ---------------------- | ------------------------------------------- |
@@ -41,12 +41,12 @@
 | Nome         | varchar(30) | Not Null    |                        |                                             |
 | Specie       | varchar(15) |             |                        |                                             |
 | Razza        | varchar(20) |             |                        |                                             |
-| Sesso        | varchar(10)        |             |                        |                                             |
+| Sesso        | varchar(10) |             |                        |                                             |
 | Data_Nascita | Date        | Not Null    |                        |                                             |
 | Peso         | double      |             |                        |                                             |
-| Microchip    | varchar(15) |             |                        | Nullabile: i conigli non hanno il microchip |
+| Microchip    | varchar(15) | unique      |                        | Nullabile: i conigli non hanno il microchip |
 | Note         | text        |             |                        |                                             |
-| ID_Utente    | int         | NOT null       |[`UTENTE.ID`](#utente)  |                                             |
+| ID_Utente    | int         | NOT null    | [`UTENTI.ID`](#utenti) |                                             |
 
 
 ## VACCINAZIONI
@@ -54,13 +54,13 @@
 | Nome              | TipoDato    | Flag        | ForeignKey                         | Commenti |
 | ----------------- | ----------- | ----------- | ---------------------------------- | -------- |
 | ID                | int         | Primary Key |                                    |          |
-| ID_Tipo           | int         | Not Null    |                                    |          |
+| ID_Tipo           | int         | Not Null    | [`TIPI_VACCINO.ID`](#tipi_vaccino) |          |
 | Data_Vaccinazione | Date        |             |                                    |          |
 | Lotto             | varchar(10) |             |                                    |          |
-| ID_Animale        | int         |             | [`ANIMALE.ID`](#animale)           |          |
-| ID_Tipo_Vaccino   | int         |             | [`TIPO VACCINO.ID`](#tipo-vaccino) |          |
+| ID_Animale        | int         | not null    | [`ANIMALI.ID`](#animali)           |          |
 
-### TIPO VACCINO
+
+### TIPI_VACCINO
 
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
 | --- | --- | --- | --- | --- |
@@ -69,31 +69,31 @@
 | Durata | int | Not Null | | Durata espressa in mesi |
 | Note | text | | | |
 
-## VISITA
+## VISITE
 
-| Nome | TipoDato | Flag | ForeignKey | Commenti |
-| --- | --- | --- | --- | --- |
-| ID | int | Primary Key | | |
-| ID_Animale | int | Not Null | [`ANIMALE.ID`](#animale) | |
-| Data_Visita | timestamp | Not Null | | |
-| ID_Tipo | int | Not Null | [`TIPI VISITA.ID`](#tipi-visita) | |
-| ID_Dottore | int | Not Null | [`UTENTE.ID`](#utente) | |
-| ID_Pagamento | int | | [`PAGAMENTI.ID`](#pagamenti) | |
-| Note | text | | | |
+| Nome         | TipoDato  | Flag        | ForeignKey                       | Commenti |
+| ------------ | --------- | ----------- | -------------------------------- | -------- |
+| ID           | int       | Primary Key |                                  |          |
+| ID_Animale   | int       | Not Null    | [`ANIMALI.ID`](#animali)         |          |
+| Data_Visita  | timestamp | Not Null    |                                  |          |
+| ID_Tipo      | int       | Not Null    | [`TIPI_VISITE.ID`](#tipi_visite) |          |
+| ID_Dottore   | int       | Not Null    | [`UTENTI.ID`](#utenti)           |          |
+| ID_Pagamento | int       |             | [`PAGAMENTI.ID`](#pagamenti)     |          |
+| Note         | text      |             |                                  |          |
 
-## TIPI VISITA
+## TIPI_VISITE
 
-| Nome | TipoDato | Flag | ForeignKey | Commenti |
-| --- | --- | --- | --- | --- |
-| ID | int | Primary Key | | |
-| Nome | VARchar(80) | not null | | |
-| Durata | int | not null | | Durata espressa in minuti |
-| Categoria | int | | [CATEGORIE.ID](#CATEGORIE-VISITE) |  |
-| Prezzo | double | Not Null | | |
-| attivo | BOOLEAN | Not Null | | defaul true - usato per disabilitare le visite da parte del dottore|
-| ID_Dottore | int | Not Null | [UTENTI.ID](#utenti) | ogni dottore ha le proprie visite |
+| Nome         | TipoDato     | Flag        | ForeignKey                               | Commenti                                                            |
+| ------------ | ------------ | ----------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| ID           | int          | Primary Key |                                          |                                                                     |
+| Nome         | VARchar(80)  | not null    |                                          |                                                                     |
+| Durata       | int          | not null    |                                          | Durata espressa in minuti                                           |
+| ID_Categoria | int          |             | [CATEGORIE_VISITE.ID](#categorie_visite) |                                                                     |
+| Prezzo       | decimal(8,2) | Not Null    |                                          |                                                                     |
+| attivo       | BOOLEAN      | Not Null    |                                          | defaul true - usato per disabilitare le visite da parte del dottore |
+| ID_Dottore   | int          | Not Null    | [UTENTI.ID](#utenti)                     | ogni dottore ha le proprie visite                                   |
 
-## CATEGORIE_VISITA  
+## CATEGORIE_VISITE  
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
 | --- | --- | --- | --- | --- |
 | ID | int | Primary Key | | |
@@ -102,46 +102,44 @@
 
 ## PRENOTAZIONI
 
-| Nome           | TipoDato    | Flag        | ForeignKey                       | Commenti |
-| -------------- | ----------- | ----------- | -------------------------------- | -------- |
-| ID             | int         | Primary Key |                                  |          |
-| Data_Visita    | Date        | Not Null    |                                  |          |
-| Tipo_Visita    | varchar(30) |             |                                  |          |
-| ID_Utente      | int         |             | [`UTENTE.ID`](#utente)           |          |
-| ID_Tipi_Visita | int         |             | [`TIPI VISITA.ID`](#tipi-visita) |          |
+| Nome           | TipoDato  | Flag        | ForeignKey                       | Commenti |
+| -------------- | --------- | ----------- | -------------------------------- | -------- |
+| ID             | int       | Primary Key |                                  |          |
+| Data_Visita    | timestamp | Not Null    |                                  |          |
+| ID_Animale     | int       | not null    | [`ANIMALI.ID`](#animali)         |          |
+| ID_Tipi_Visita | int       | not null    | [`TIPI_VISITE.ID`](#tipi_visite) |          |
 
 ## PAGAMENTI
 
-| Nome           | TipoDato    | Flag        | ForeignKey  | Commenti                                           |
-| -------------- | ----------- | ----------- | ----------- | -------------------------------------------------- |
-| ID             | int         | Primary Key |             |                                                    |
-| Data           | Date        | Not Null    |             |                                                    |
-| Tipo_Pagamento | varchar(30) |             |             | In alternativa, usare un booleano per POS/contanti |
-| Importo_Totale | double      | Not Null    |             |                                                    |
-| ID_Utente      | int         |             | [`UTENTE.ID`](#utente) |                                                    |
+| Nome           | TipoDato     | Flag        | ForeignKey             | Commenti                                           |
+| -------------- | ------------ | ----------- | ---------------------- | -------------------------------------------------- |
+| ID             | int          | Primary Key |                        |                                                    |
+| Data           | Date         | Not Null    |                        |                                                    |
+| Tipo_Pagamento | varchar(30)  |             |                        | In alternativa, usare un booleano per POS/contanti |
+| Importo_Totale | decimal(8,2) | Not Null    |                        |                                                    |
+| ID_Utente      | int          |             | [`UTENTI.ID`](#utenti) |                                                    |
 
-## EVENTI APP
+## EVENTI_APP
 
-| Nome | TipoDato | Flag | ForeignKey | Commenti |
-| --- | --- | --- | --- | --- |
-| ID | int | Primary Key | | |
-| ID_Utente | int | | [`UTENTE.ID`](#utente) | |
-| ID_Oggetto | int | Primary Key | | |
-| Tipo_Evento | varchar(20) | Not Null | | |
-| Ruolo | varchar(30) | | | |
-| Oggetto_Azione | varchar(30) | | | |
-| Time_Stamp | timestamp | | | Data e ora |
-| Metadata | text | | | |
-| ID_Ruolo | int | | [`RUOLO.ID`](#ruolo) | |
+| Nome           | TipoDato    | Flag        | ForeignKey             | Commenti    |
+| -------------- | ----------- | ----------- | ---------------------- | ----------- |
+| ID             | int         | Primary Key |                        |             |
+| ID_Utente      | int         | not null    | [`UTENTI.ID`](#utenti) |             |
+| ID_Ruolo       | int         | not null    | [`RUOLI.ID`](#ruoli)   |             |
+| Tipo_Evento    | varchar(20) | Not Null    |                        |             |
+| ID_Oggetto     | int         |             |                        |             |
+| Oggetto_Azione | varchar(30) |             |                        |             |
+| Time_Stamp     | timestamp   |             |                        | Data e ora  |
+| Metadata       | jsonb       |             |                        | json format |
 
-## ORARIO SETTIMANALE
+## ORARIO_SETTIMANALE
 
-| Nome | TipoDato | Flag | ForeignKey | Commenti |
-| --- | --- | --- | --- | --- |
-| ID | int | Primary Key | | |
-| ID_Utente | int |  |[`UTENTE.ID`](#utente) | |
-| GiornoSettimana | int | Not Null | | Valore da 1 a 7 |
-| MattinaInizio | Date | Not Null | | |
-| MattinaFine | Date | Not Null | | |
-| PomeriggioInizio | Date | Not Null | | |
-| PomeriggioFine | Date | Not Null | | |
+| Nome             | TipoDato | Flag        | ForeignKey             | Commenti        |
+| ---------------- | -------- | ----------- | ---------------------- | --------------- |
+| ID               | int      | Primary Key |                        |                 |
+| ID_Utente        | int      | not null    | [`UTENTI.ID`](#utenti) |                 |
+| GiornoSettimana  | int      | Not Null    |                        | Valore da 1 a 7 |
+| MattinaInizio    | time     | Not Null    |                        |                 |
+| MattinaFine      | time     | Not Null    |                        |                 |
+| PomeriggioInizio | time     | Not Null    |                        |                 |
+| PomeriggioFine   | time     | Not Null    |                        |                 |
