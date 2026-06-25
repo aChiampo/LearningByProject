@@ -14,13 +14,11 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
  
 
 import java.time.LocalDate;
  
 
-import org.hibernate.annotations.ManyToAny;
  
 
 @Entity
@@ -47,7 +45,7 @@ private String nome;
 @Column(name = "Cognome", length = 30, nullable = false)
 private String cognome;
 
-@Column(name = "Email", length = 100, nullable = false, unique = true)
+@Column(name = "Email", length = 100, nullable = false)
 private String email;
   
 @Column(name = "Password", length = 255, nullable = false)

@@ -2,20 +2,20 @@
 
 ## UTENTI
 
-| Nome               | TipoDato     | Flag        | ForeignKey             | Commenti                                                                                                                                 |
-| ------------------ | ------------ | ----------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| ID                 | int          | Primary Key |                        |                                                                                                                                          |
-| Nome               | varchar(30)  | Not Null    |                        |                                                                                                                                          |
-| Cognome            | varchar(30)  | Not Null    |                        |                                                                                                                                          |
-| Email              | varchar(100) | UNIQUE      |                        |                                                                                                                                          |
-| Password           | varchar(255) | Not Null    |                        | Da criptare prima dell'inserimento                                                                                                       |
-| Telefono           | varchar(20)  | Not Null    |                        |                                                                                                                                          |
-| Indirizzo          | varchar(30)  |             |                        |                                                                                                                                          |
-| Citta              | varchar(20)  |             |                        |                                                                                                                                          |
-| Data_Registrazione | Date         | Not Null    |                        |                                                                                                                                          |
-| IDAzienda          | int          |             | [AZIENDE.ID](#aziende) | Se esiste questo campo, questo utente è un azienda, quindi per i pagamenti bisonga prendere i dati necessari all creazione della fattura |
-| Riferimento        | varchar(30)  |             |                        |                                                                                                                                          |
-| ID_Ruolo           | int          |             | [`RUOLI.ID`](#ruoli)   |                                                                                                                                          |
+| Nome               | TipoDato     | Flag             | ForeignKey             | Commenti                                                                                                                                 |
+| ------------------ | ------------ | ---------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| ID                 | int          | Primary Key      |                        |                                                                                                                                          |
+| Nome               | varchar(30)  | Not Null         |                        |                                                                                                                                          |
+| Cognome            | varchar(30)  | Not Null         |                        |                                                                                                                                          |
+| Email              | varchar(100) | not null, UNIQUE |                        |                                                                                                                                          |
+| Password           | varchar(255) | Not Null         |                        | Da criptare prima dell'inserimento                                                                                                       |
+| Telefono           | varchar(20)  | Not Null         |                        |                                                                                                                                          |
+| Indirizzo          | varchar(30)  |                  |                        |                                                                                                                                          |
+| Citta              | varchar(20)  |                  |                        |                                                                                                                                          |
+| Data_Registrazione | Date         | Not Null         |                        |                                                                                                                                          |
+| IDAzienda          | int          |                  | [AZIENDE.ID](#aziende) | Se esiste questo campo, questo utente è un azienda, quindi per i pagamenti bisonga prendere i dati necessari all creazione della fattura |
+| Riferimento        | varchar(30)  |                  |                        |                                                                                                                                          |
+| ID_Ruolo           | int          | not null         | [`RUOLI.ID`](#ruoli)   |                                                                                                                                          |
 
 ### AZIENDE
 
@@ -35,18 +35,18 @@
 
 ## ANIMALI
 
-| Nome         | TipoDato    | Flag        | ForeignKey             | Commenti                                    |
-| ------------ | ----------- | ----------- | ---------------------- | ------------------------------------------- |
-| ID           | int         | Primary Key |                        |                                             |
-| Nome         | varchar(30) | Not Null    |                        |                                             |
-| Specie       | varchar(15) |             |                        |                                             |
-| Razza        | varchar(20) |             |                        |                                             |
-| Sesso        | varchar(10) |             |                        |                                             |
-| Data_Nascita | Date        | Not Null    |                        |                                             |
-| Peso         | double      |             |                        |                                             |
-| Microchip    | varchar(15) | unique      |                        | Nullabile: i conigli non hanno il microchip |
-| Note         | text        |             |                        |                                             |
-| ID_Utente    | int         | NOT null    | [`UTENTI.ID`](#utenti) |                                             |
+| Nome         | TipoDato     | Flag        | ForeignKey             | Commenti                                    |
+| ------------ | ------------ | ----------- | ---------------------- | ------------------------------------------- |
+| ID           | int          | Primary Key |                        |                                             |
+| Nome         | varchar(30)  | Not Null    |                        |                                             |
+| Specie       | varchar(15)  |             |                        |                                             |
+| Razza        | varchar(20)  |             |                        |                                             |
+| Sesso        | varchar(10)  |             |                        |                                             |
+| Data_Nascita | Date         | Not Null    |                        |                                             |
+| Peso         | decimal(5,2) |             |                        |                                             |
+| Microchip    | varchar(15)  | unique      |                        | Nullabile: i conigli non hanno il microchip |
+| Note         | text         |             |                        |                                             |
+| ID_Utente    | int          | NOT null    | [`UTENTI.ID`](#utenti) |                                             |
 
 
 ## VACCINAZIONI
@@ -54,7 +54,7 @@
 | Nome              | TipoDato    | Flag        | ForeignKey                         | Commenti |
 | ----------------- | ----------- | ----------- | ---------------------------------- | -------- |
 | ID                | int         | Primary Key |                                    |          |
-| ID_Tipo           | int         | Not Null    | [`TIPI_VACCINO.ID`](#tipi_vaccino) |          |
+| ID_Tipo_Vaccino   | int         | Not Null    | [`TIPI_VACCINO.ID`](#tipi_vaccino) |          |
 | Data_Vaccinazione | Date        |             |                                    |          |
 | Lotto             | varchar(10) |             |                                    |          |
 | ID_Animale        | int         | not null    | [`ANIMALI.ID`](#animali)           |          |
@@ -83,15 +83,15 @@
 
 ## TIPI_VISITE
 
-| Nome         | TipoDato     | Flag        | ForeignKey                               | Commenti                                                            |
-| ------------ | ------------ | ----------- | ---------------------------------------- | ------------------------------------------------------------------- |
-| ID           | int          | Primary Key |                                          |                                                                     |
-| Nome         | VARchar(80)  | not null    |                                          |                                                                     |
-| Durata       | int          | not null    |                                          | Durata espressa in minuti                                           |
-| ID_Categoria | int          |             | [CATEGORIE_VISITE.ID](#categorie_visite) |                                                                     |
-| Prezzo       | decimal(8,2) | Not Null    |                                          |                                                                     |
-| attivo       | BOOLEAN      | Not Null    |                                          | defaul true - usato per disabilitare le visite da parte del dottore |
-| ID_Dottore   | int          | Not Null    | [UTENTI.ID](#utenti)                     | ogni dottore ha le proprie visite                                   |
+| Nome         | TipoDato     | Flag                   | ForeignKey                               | Commenti                                                            |
+| ------------ | ------------ | ---------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| ID           | int          | Primary Key            |                                          |                                                                     |
+| Nome         | varchar(80)  | not null               |                                          |                                                                     |
+| Durata       | int          | not null               |                                          | Durata espressa in minuti                                           |
+| ID_Categoria | int          |                        | [CATEGORIE_VISITE.ID](#categorie_visite) |                                                                     |
+| Prezzo       | decimal(8,2) | Not Null               |                                          |                                                                     |
+| attivo       | BOOLEAN      | Not Null, defaul= True |                                          | defaul true - usato per disabilitare le visite da parte del dottore |
+| ID_Dottore   | int          | Not Null               | [UTENTI.ID](#utenti)                     | ogni dottore ha le proprie visite                                   |
 
 ## CATEGORIE_VISITE  
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
