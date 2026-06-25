@@ -8,7 +8,7 @@
 | Nome               | varchar(30) | Not Null    |                      |                                    |
 | Cognome            | varchar(30) | Not Null    |                      |                                    |
 | Email              | varchar(100) | Not Null, UNIQUE    |                      |                                    |
-| Password           | varchar(40) | Not Null    |                      | Da criptare prima dell'inserimento |
+| Password           | varchar(255) | Not Null    |                      | Da criptare prima dell'inserimento |
 | Telefono           | varchar(20) | Not Null    |                      |                                    |
 | Indirizzo          | varchar(30) |             |                      |                                    |
 | Citta              | varchar(20) |             |                      |                                    |
