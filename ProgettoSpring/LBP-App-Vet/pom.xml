@@ -8,7 +8,7 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.W.W</groupId>
+	<groupId>com.WW</groupId>
 	<artifactId>App</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>LBP-App-Vet</name>
@@ -50,8 +50,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
