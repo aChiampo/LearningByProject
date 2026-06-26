@@ -43,3 +43,6 @@ out/
 .env
 .env.*
 !.env.example
+
+# Local study notes
+StudyMaterial/

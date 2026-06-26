@@ -14,13 +14,15 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
- 
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
  
-
- 
-
+/** 
+ * @author: A. Chiampo
+ * Modello di entità per la tabella UTENTE
+ * Last update: 26/06/2026
+ */
 @Entity
 @Table(
   name = "UTENTE",
@@ -30,6 +32,7 @@ import java.time.LocalDate;
 )
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Utente {
   
