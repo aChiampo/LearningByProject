@@ -10,13 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
  
 /** 
  * @author: A. Chiampo
@@ -24,12 +23,7 @@ import java.time.LocalDate;
  * Last update: 26/06/2026
  */
 @Entity
-@Table(
-  name = "UTENTE",
-  uniqueConstraints = {
-    @UniqueConstraint(name = "uk_utente_email", columnNames = "Email")
-  }
-)
+@Table(name = "UTENTI")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,7 +42,7 @@ private String nome;
 @Column(name = "Cognome", length = 30, nullable = false)
 private String cognome;
 
-@Column(name = "Email", length = 100, nullable = false)
+@Column(name = "Email", length = 100, nullable = false, unique=true)
 private String email;
   
 @Column(name = "Password", length = 255, nullable = false)
@@ -57,25 +51,25 @@ private String passwordHash;
 @Column(name = "Telefono", length = 20, nullable = false)
 private String telefono;
 
-@Column(name = "Indirizzo", length = 30)
+@Column(name = "Indirizzo", length = 30, nullable = true)
 private String indirizzo;
 
-@Column(name = "Citta", length = 20)
+@Column(name = "Citta", length = 20, nullable = true)
 private String citta;
 
-@Column(name = "Data_Registrazione", nullable = false)
-private LocalDate dataRegistrazione;
+@Column(name = "Data_Registrazione", nullable = false, updatable=false)
+@Builder.Default
+private LocalDateTime dataRegistrazione = LocalDateTime.now();
 
 @ManyToOne
-@JoinColumn(name = "IDAzienda", referencedColumnName = "ID")
+@JoinColumn(name = "IDAzienda", referencedColumnName = "ID", nullable=true)
 private Azienda azienda;
 
 @Column(name = "Riferimento", length = 30)
 private String riferimento;
 
 @ManyToOne
-@JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID")
-
+@JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID", nullable=false)
 private Ruolo ruolo;
 
 }
