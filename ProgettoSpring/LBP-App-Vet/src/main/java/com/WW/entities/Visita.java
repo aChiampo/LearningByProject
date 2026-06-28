@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 /** 
  * @author: cristian.pappalardo
  * Modello di entità per la tabella VISITA
- * Last update: 26/06/2026
+ * Last update: 28/06/2026
  */
 @Entity
 @Table(name = "VISITA")
@@ -34,6 +34,8 @@ public class Visita {
     private Integer id;
     @Column(name = "Data_Visita", nullable = false, updatable=false)
     private LocalDateTime dataVisita;
+    @Column(name = "Pagato", nullable = false)
+    private boolean pagato;
     @ManyToOne
     @JoinColumn(name = "ID_TIPO_VISITA", nullable = false)
     private TipoVisite tipoVisita;
@@ -46,6 +48,7 @@ public class Visita {
     @OneToOne
     @JoinColumn(name = "ID_PAGAMENTO", nullable = true)
     private Pagamento pagamento;
-    
+    @Column(name = "Note", nullable = true)
+    private String note;
 
 }

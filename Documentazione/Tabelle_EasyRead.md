@@ -74,6 +74,7 @@
 | Nome         | TipoDato  | Flag        | ForeignKey                       | Commenti |
 | ------------ | --------- | ----------- | -------------------------------- | -------- |
 | ID           | int       | Primary Key |                                  |          |
+| Pagato       | boolean   | Not Null    |                                  |          |
 | ID_Animale   | int       | Not Null    | [`ANIMALI.ID`](#animali)         |          |
 | Data_Visita  | timestamp | Not Null    |                                  |          |
 | ID_Tipo      | int       | Not Null    | [`TIPI_VISITE.ID`](#tipi_visite) |          |
