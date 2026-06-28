@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EventiApp {
+public class EventoApp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
