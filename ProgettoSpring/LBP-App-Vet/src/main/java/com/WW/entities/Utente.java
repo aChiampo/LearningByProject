@@ -16,6 +16,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
  
 /** 
  * @author: A. Chiampo
@@ -45,6 +47,7 @@ private String cognome;
 @Column(name = "Email", length = 100, nullable = false, unique=true)
 private String email;
   
+@JsonIgnore
 @Column(name = "Password", length = 255, nullable = false)
 private String passwordHash;
 

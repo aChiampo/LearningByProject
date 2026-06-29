@@ -1,6 +1,7 @@
 package com.WW.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,5 +11,5 @@ public interface UtenteRepo extends JpaRepository<Utente, Integer> {
 
     List<Utente> findByNome(String nome);
     List<Utente> findByCognome(String cognome);
-    List<Utente> findByEmail(String email);
+    Optional<Utente> findByEmail(String email);
 }

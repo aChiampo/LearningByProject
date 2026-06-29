@@ -3,7 +3,9 @@ package com.WW.services;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.entities.Utente;
@@ -16,11 +18,18 @@ import lombok.RequiredArgsConstructor;
 public class UtenteService {
 
     private final UtenteRepo utenteRepo;
+    private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public Utente aggiungiUtente(Utente utente) {
+        if (utente.getPasswordHash() != null && !utente.getPasswordHash().isBlank()) {
+            utente.setPasswordHash(passwordEncoder.encode(utente.getPasswordHash()));
+        }
+
         return utenteRepo.save(utente);
     }
 
+    @Transactional
     public Utente modificaUtente(Integer id, Utente modificato) {
         Utente originale = ottieniPerId(id);
 
@@ -34,7 +43,7 @@ public class UtenteService {
             originale.setEmail(modificato.getEmail());
         }
         if (modificato.getPasswordHash() != null && !modificato.getPasswordHash().isBlank()) {
-            originale.setPasswordHash(modificato.getPasswordHash());
+            originale.setPasswordHash(passwordEncoder.encode(modificato.getPasswordHash()));
         }
         if (modificato.getTelefono() != null && !modificato.getTelefono().isBlank()) {
             originale.setTelefono(modificato.getTelefono());
@@ -63,6 +72,7 @@ public class UtenteService {
                         "Utente non trovato."));
     }
 
+    @Transactional
     public void eliminaUtente(Integer id) {
         if (!utenteRepo.existsById(id)) {
             throw new ResponseStatusException(
