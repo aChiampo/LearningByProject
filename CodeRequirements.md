@@ -9,6 +9,17 @@ E' necessario aggingere il JavaDoc ad ogni:
 - `Interfaccia`: Descrizione
 - `Funzione`: Descrizione, @param, @return
 
+```java
+/**
+* @author: A. Chiampo
+* Modello di entità per la tabella UTENTE
+* Last update: 26/06/2026
+  */
+  public class Utente {
+  //code...
+  }
+```
+
 Le entità devono essere al singolare, ad esempio `Utente` e non `Utenti`
 ### Commenti 
 Siete incoraggiati ad aggiungere commenti al codice nei punti piu delicati, ad esempio scrivendo la query che viene implementata in quella funzione
