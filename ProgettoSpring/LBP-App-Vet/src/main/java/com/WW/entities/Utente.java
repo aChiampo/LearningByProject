@@ -1,23 +1,16 @@
 package com.WW.entities;
 
-  
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
- 
-/** 
+import java.util.List;
+
+/**
  * @author: A. Chiampo
  * Modello di entità per la tabella UTENTE
  * Last update: 26/06/2026
@@ -29,47 +22,50 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class Utente {
-  
 
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-@Column(name = "ID")
-private Integer id;
-  
-@Column(name = "Nome", length = 30, nullable = false)
-private String nome;
 
-@Column(name = "Cognome", length = 30, nullable = false)
-private String cognome;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Integer id;
 
-@Column(name = "Email", length = 100, nullable = false, unique=true)
-private String email;
-  
-@Column(name = "Password", length = 255, nullable = false)
-private String passwordHash;
+    @Column(name = "Nome", length = 30, nullable = false)
+    private String nome;
 
-@Column(name = "Telefono", length = 20, nullable = false)
-private String telefono;
+    @Column(name = "Cognome", length = 30, nullable = false)
+    private String cognome;
 
-@Column(name = "Indirizzo", length = 30, nullable = true)
-private String indirizzo;
+    @Column(name = "Email", length = 100, nullable = false, unique = true)
+    private String email;
 
-@Column(name = "Citta", length = 20, nullable = true)
-private String citta;
+    @Column(name = "Password", length = 255, nullable = false)
+    private String passwordHash;
 
-@Column(name = "Data_Registrazione", nullable = false, updatable=false)
-@Builder.Default
-private LocalDateTime dataRegistrazione = LocalDateTime.now();
+    @Column(name = "Telefono", length = 20, nullable = false)
+    private String telefono;
 
-@ManyToOne
-@JoinColumn(name = "IDAzienda", referencedColumnName = "ID", nullable=true)
-private Azienda azienda;
+    @Column(name = "Indirizzo", length = 30, nullable = true)
+    private String indirizzo;
 
-@Column(name = "Riferimento", length = 30)
-private String riferimento;
+    @Column(name = "Citta", length = 20, nullable = true)
+    private String citta;
 
-@ManyToOne
-@JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID", nullable=false)
-private Ruolo ruolo;
+    @Column(name = "Data_Registrazione", nullable = false, updatable = false)
+    @Builder.Default
+    private LocalDateTime dataRegistrazione = LocalDateTime.now();
 
+    @ManyToOne
+    @JoinColumn(name = "IDAzienda", referencedColumnName = "ID", nullable = true)
+    private Azienda azienda;
+
+    @Column(name = "Riferimento", length = 30)
+    private String riferimento;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID", nullable = false)
+    private Ruolo ruolo;
+
+    //relazione 1-n con animale - cristian.pappalardo
+    @OneToMany(mappedBy = "utente")
+    private List<Animale> animali;
 }
