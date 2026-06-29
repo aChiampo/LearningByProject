@@ -1,4 +1,4 @@
-package com.WW.repository;
+package com.WW.repositories;
 
 import com.WW.entities.Animale;
 import org.springframework.data.jpa.repository.JpaRepository;

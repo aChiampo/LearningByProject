@@ -1,9 +1,11 @@
-package com.WW.repository;
+package com.WW.repositories;
 
-import com.WW.entities.Azienda;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
+
+import com.WW.entities.Azienda;
 
 @Repository
 public interface AziendaRepository extends JpaRepository<Azienda, Integer> {

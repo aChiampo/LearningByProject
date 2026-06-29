@@ -1,17 +1,27 @@
 package com.WW.controllers;
 
-import com.WW.entities.Animale;
-import com.WW.services.AnimaleService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.WW.entities.Animale;
+import com.WW.services.AnimaleService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/animali")
-@CrossOrigin(origins = "*") // Da cambiare in produzione per limitare l'accesso solo al dominio del frontend
 @RequiredArgsConstructor
 //TODO: Aggiungere le validazioni (neccessario il DTO)
 public class AnimaleController {
@@ -20,6 +30,8 @@ public class AnimaleController {
 
     // 1. LEGGI TUTTI GLI ANIMALI -> GET
     // http://localhost:8080/api/animali/leggiTutti
+    
+    @PreAuthorize("hasAnyRole('ADMIN','VET','REC')") 
     @GetMapping("/leggiTutti")
     public ResponseEntity<List<Animale>> leggiTutti() {
         return ResponseEntity.ok(animaleService.ottieniTutti());
@@ -27,7 +39,14 @@ public class AnimaleController {
 
     // 2. LEGGI SINGOLO ANIMALE -> GET http://localhost:8080/api/animali/leggi/12
     @GetMapping("/leggi/{id}")
-    public ResponseEntity<Animale> leggi(@PathVariable Integer id) {
+    @PreAuthorize("hasAnyRole('ADMIN','VET','REC','CLIENTE')") 
+    public ResponseEntity<Animale> leggi(@PathVariable Integer id, Authentication Autenticazione) {
+        int userId = Integer.parseInt(Autenticazione.getName());
+        //DA RIVEDRE ASSOLUTAMENTE
+        if (!(animaleService.ottieniPerUtente(userId).stream().anyMatch( a -> a.getId()==id))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        
+        }
         return ResponseEntity.ok(animaleService.ottieniPerId(id));
     }
 
