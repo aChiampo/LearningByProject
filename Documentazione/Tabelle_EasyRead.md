@@ -111,13 +111,14 @@
 
 ## PAGAMENTI
 
-| Nome           | TipoDato     | Flag        | ForeignKey             | Commenti                                           |
-| -------------- | ------------ | ----------- | ---------------------- | -------------------------------------------------- |
-| ID             | int          | Primary Key |                        |                                                    |
-| Data           | Date         | Not Null    |                        |                                                    |
-| Tipo_Pagamento | varchar(30)  |             |                        | In alternativa, usare un booleano per POS/contanti |
-| Importo_Totale | decimal(8,2) | Not Null    |                        |                                                    |
-| ID_Utente      | int          |             | [`UTENTI.ID`](#utenti) |                                                    |
+| Nome            | TipoDato     | Flag        | ForeignKey                           | Commenti                                           |
+| --------------- | ------------ | ----------- | ------------------------------------ | -------------------------------------------------- |
+| ID              | int          | Primary Key |                                      |                                                    |
+| Data            | Date         | Not Null    |                                      |                                                    |
+| Tipo_Pagamento  | varchar(30)  |             |                                      | In alternativa, usare un booleano per POS/contanti |
+| Importo_Totale  | decimal(8,2) | Not Null    |                                      |                                                    |
+| ID_Utente       | int          |             | [`UTENTI.ID`](#utenti)               |                                                    |
+| RiferimentoFile | int          | Not Null    | [FILEREFERENCES.ID](#filereferences) |                                                    |
 
 ## EVENTI_APP
 
@@ -143,3 +144,16 @@
 | MattinaFine      | time     | Not Null    |                        |                 |
 | PomeriggioInizio | time     | Not Null    |                        |                 |
 | PomeriggioFine   | time     | Not Null    |                        |                 |
+
+## FILEREFERENCES
+
+| Nome             | TipoDato      | Flag        | ForeignKey | Commenti |
+| ---------------- | ------------- | ----------- | ---------- | -------- |
+| ID               | int           | Primary Key |            |          |
+| OriginalFileName | varchar(100)  | Not Null    |            |          |
+| StoredFileName   | varchar(100)  | Not Null    |            |          |
+| MimeType         | varchar(100)  | Not Null    |            |          |
+| SSize            | Bigint        | Not Null    |            |          |
+| StoragePath      | varchar(300)  | Not Null    |            |          |
+| Owner            | int           | Not Null    |            |          |
+| UploadDate       | LocalDateTime | Not Null    |            |          |
