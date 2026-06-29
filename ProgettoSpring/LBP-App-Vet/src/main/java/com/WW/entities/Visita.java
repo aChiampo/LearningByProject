@@ -2,14 +2,7 @@ package com.WW.entities;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,7 +38,7 @@ public class Visita {
     @ManyToOne
     @JoinColumn(name = "ID_VETERINARIO", nullable = false)
     private Utente veterinario;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_PAGAMENTO", nullable = true)
     private Pagamento pagamento;
     @Column(name = "Note", nullable = true)

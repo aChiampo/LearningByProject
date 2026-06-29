@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Modello di repository per la tabella OrarioSettimanale
  * Last update: 28/08/2026
  */
-public interface OrarioSettimanale extends JpaRepository<OrarioSettimanale, Integer> {
+public interface OrariosettimanaleRepository extends JpaRepository<OrariosettimanaleRepository, Integer> {
 
 }
