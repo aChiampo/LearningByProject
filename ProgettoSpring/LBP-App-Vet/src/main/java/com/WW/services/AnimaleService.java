@@ -2,7 +2,7 @@ package com.WW.services;
 
 import lombok.RequiredArgsConstructor;
 import com.WW.entities.Animale;
-import com.WW.repository.AnimaleRepository;
+import com.WW.repositories.AnimaleRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

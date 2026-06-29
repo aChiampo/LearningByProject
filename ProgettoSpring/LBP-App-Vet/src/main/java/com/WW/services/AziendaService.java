@@ -2,7 +2,7 @@ package com.WW.services;
 
 import lombok.RequiredArgsConstructor;
 import com.WW.entities.Azienda;
-import com.WW.repository.AziendaRepository;
+import com.WW.repositories.AziendaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
