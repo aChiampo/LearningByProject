@@ -54,6 +54,7 @@
 - ID_Tipo, Not Null, int;
 - ID_Dottore, not Null, int;
 - ID_Pagamento, int;
+- Stato: enum(PRENOTATA,COMPLETATA,NO_SHOW)
 - Note, text;
 
 - Foreign Key  ID_Animale --> FROM Animale ID;
@@ -67,15 +68,6 @@
 - Descrizione, text;
 - Prezzo, Not Null, double;
 - ID_Dottore, Not Null, int;
-
-
-## PRENOTAZIONI
-- ID, Primary Key, int;
-- Data_Visita, Not Null, Date;
-- Tipo_Visita, varchar(30);
-
-- Foreign Key  ID_Utente --> FROM Utente ID;
-- Foreign Key  ID_Tipi_Visita --> FROM Tipi_Visita ID;
 
 
 ## PAGAMENTI

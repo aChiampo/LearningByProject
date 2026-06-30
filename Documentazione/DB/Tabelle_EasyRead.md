@@ -71,15 +71,16 @@
 
 ## VISITE
 
-| Nome         | TipoDato  | Flag        | ForeignKey                       | Commenti |
-| ------------ | --------- | ----------- | -------------------------------- | -------- |
-| ID           | int       | Primary Key |                                  |          |
-| ID_Animale   | int       | Not Null    | [`ANIMALI.ID`](#animali)         |          |
-| Data_Visita  | timestamp | Not Null    |                                  |          |
-| ID_Tipo      | int       | Not Null    | [`TIPI_VISITE.ID`](#tipi_visite) |          |
-| ID_Dottore   | int       | Not Null    | [`UTENTI.ID`](#utenti)           |          |
-| ID_Pagamento | int       |             | [`PAGAMENTI.ID`](#pagamenti)     |          |
-| Note         | text      |             |                                  |          |
+| Nome         | TipoDato  | Flag        | ForeignKey                       | Commenti                      |
+| ------------ | --------- | ----------- | -------------------------------- | ----------------------------- |
+| ID           | int       | Primary Key |                                  |                               |
+| ID_Animale   | int       | Not Null    | [`ANIMALI.ID`](#animali)         |                               |
+| Data_Visita  | timestamp | Not Null    |                                  |                               |
+| ID_Tipo      | int       | Not Null    | [`TIPI_VISITE.ID`](#tipi_visite) |                               |
+| ID_Dottore   | int       | Not Null    | [`UTENTI.ID`](#utenti)           |                               |
+| ID_Pagamento | int       |             | [`PAGAMENTI.ID`](#pagamenti)     |                               |
+| Note         | text      |             |                                  |                               |
+| Stato        | enum      |             |                                  | (PRENOTATA,COMPLETATA,NOSHOW) |
 
 ## TIPI_VISITE
 
@@ -93,21 +94,13 @@
 | attivo       | BOOLEAN      | Not Null, defaul= True |                                          | defaul true - usato per disabilitare le visite da parte del dottore |
 | ID_Dottore   | int          | Not Null               | [UTENTI.ID](#utenti)                     | ogni dottore ha le proprie visite                                   |
 
+
 ## CATEGORIE_VISITE  
 | Nome | TipoDato | Flag | ForeignKey | Commenti |
 | --- | --- | --- | --- | --- |
 | ID | int | Primary Key | | |
 | Nome | varchar(100) | not null | | prendere dati dal file del cliente |
 
-
-## PRENOTAZIONI
-
-| Nome           | TipoDato  | Flag        | ForeignKey                       | Commenti |
-| -------------- | --------- | ----------- | -------------------------------- | -------- |
-| ID             | int       | Primary Key |                                  |          |
-| Data_Visita    | timestamp | Not Null    |                                  |          |
-| ID_Animale     | int       | not null    | [`ANIMALI.ID`](#animali)         |          |
-| ID_Tipi_Visita | int       | not null    | [`TIPI_VISITE.ID`](#tipi_visite) |          |
 
 ## PAGAMENTI
 
