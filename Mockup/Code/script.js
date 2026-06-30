@@ -5,6 +5,7 @@ const ROLE_CONFIG = {
     faq: "#faq-super-admin",
     navigation: [
       ["Dashboard", "#dashboard-super-admin"],
+      ["Profilo", "#profile-super-admin"],
       ["FAQ", "#faq-super-admin"],
     ],
   },
@@ -14,6 +15,7 @@ const ROLE_CONFIG = {
     faq: "#faq-doctor",
     navigation: [
       ["Dashboard", "#dashboard-doctor"],
+      ["Profilo", "#profile-doctor"],
       ["Gestisci animali", "#view-animal-doctor"],
       ["FAQ", "#faq-doctor"],
     ],
@@ -24,6 +26,7 @@ const ROLE_CONFIG = {
     faq: "#faq-receptionist",
     navigation: [
       ["Dashboard", "#dashboard-receptionist"],
+      ["Profilo", "#profile-receptionist"],
       ["Gestisci appuntamenti", "#view-appointment-receptionist"],
       ["Gestisci clienti", "#view-clients-receptionist"],
       ["Gestisci pagamenti", "#view-payment-receptionist"],
@@ -36,6 +39,7 @@ const ROLE_CONFIG = {
     faq: "#faq-client",
     navigation: [
       ["Dashboard", "#dashboard-client"],
+      ["Profilo", "#profile-client"],
       ["Prenota appuntamento", "#booking-client"],
       ["Gestisci pagamenti", "#view-payment-client"],
       ["FAQ", "#faq-client"],
