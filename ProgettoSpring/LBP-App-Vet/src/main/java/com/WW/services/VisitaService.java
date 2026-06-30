@@ -1,9 +1,10 @@
 package com.WW.services;
 
-import org.springframework.stereotype.Service;
-
 import com.WW.entities.Visita;
 import com.WW.repositories.VisitaRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author: cristian.pappalardo
@@ -23,12 +24,15 @@ public class VisitaService {
         return visitaRepository.save(visita);
     }
 
+    public List<Visita> getAllVisita() { return visitaRepository.findAll();}
+
     public Visita getVisitaById(Integer id) {
         return visitaRepository.findById(id).orElse(null);
     }
 
     /**
      * Aggiorna le note di una visita e salva le modifiche nel database.
+     *
      * @param visita
      * @param note
      * @return la visita aggiornata
@@ -41,7 +45,7 @@ public class VisitaService {
     /**
      * Aggiorna lo stato di pagamento di una visita e salva le modifiche nel
      * database.
-     * 
+     *
      * @param visita
      * @param pagato
      * @return la visita aggiornata

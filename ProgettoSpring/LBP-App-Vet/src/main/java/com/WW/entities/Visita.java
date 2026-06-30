@@ -1,14 +1,14 @@
 package com.WW.entities;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** 
+import java.time.LocalDateTime;
+
+/**
  * @author: cristian.pappalardo
  * Modello di entità per la tabella VISITA
  * Last update: 28/06/2026
@@ -25,7 +25,7 @@ public class Visita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Integer id;
-    @Column(name = "Data_Visita", nullable = false, updatable=false)
+    @Column(name = "Data_Visita", nullable = false, updatable = false)
     private LocalDateTime dataVisita;
     @Column(name = "Pagato", nullable = false)
     private boolean pagato;
