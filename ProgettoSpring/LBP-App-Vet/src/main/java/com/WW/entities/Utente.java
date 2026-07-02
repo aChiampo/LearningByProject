@@ -2,6 +2,8 @@ package com.WW.entities;
 
 
 import jakarta.persistence.*;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -70,7 +72,12 @@ public class Utente {
     @JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID", nullable = false)
     private Ruolo ruolo;
 
-    //relazione 1-n con animale - cristian.pappalardo
+    //relazione 1-n con VISITA - cristian.pappalardo
     @OneToMany(mappedBy = "utente")
-    private List<Animale> animali;
+    private List<Visita> visita;
+
+    //relazione 1-1 con ORARIO_SETTIMANALE - cristian.pappalardo
+    @OneToOne(mappedBy = "utente")
+    private OrarioSettimanale orarioSettimanale;
+
 }

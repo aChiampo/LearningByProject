@@ -16,10 +16,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** 
+import java.time.LocalDateTime;
+
+/**
  * @author: cristian.pappalardo
  * Modello di entità per la tabella VISITA
- * Last update: 26/06/2026
+ * Last update: 28/06/2026
  */
 @Entity
 @Table(name = "VISITA")
@@ -33,8 +35,10 @@ public class Visita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Integer id;
-    @Column(name = "Data_Visita", nullable = false, updatable=false)
+    @Column(name = "Data_Visita", nullable = false, updatable = false)
     private LocalDateTime dataVisita;
+    @Column(name = "Pagato", nullable = false)
+    private boolean pagato;
     @ManyToOne
     @JoinColumn(name = "ID_TIPO_VISITA", nullable = false)
     private TipoVisite tipoVisita;
@@ -44,9 +48,10 @@ public class Visita {
     @ManyToOne
     @JoinColumn(name = "ID_VETERINARIO", nullable = false)
     private Utente veterinario;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_PAGAMENTO", nullable = true)
     private Pagamento pagamento;
-    
+    @Column(name = "Note", nullable = true)
+    private String note;
 
 }

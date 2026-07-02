@@ -24,11 +24,24 @@ public class CategoriaVisiteService {
     private final CategoriaVisiteRepo categoriaVisiteRepo;
 
     @Transactional
+    /**
+     * Salva una nuova categoria visita.
+     *
+     * @param categoriaVisite dati della categoria da salvare
+     * @return categoria creata
+     */
     public CategoriaVisite aggiungiCategoriaVisite(CategoriaVisite categoriaVisite) {
         return categoriaVisiteRepo.save(categoriaVisite);
     }
 
     @Transactional
+    /**
+     * Aggiorna una categoria visita esistente.
+     *
+     * @param id identificativo della categoria da aggiornare
+     * @param modificato nuovi dati da applicare
+     * @return categoria aggiornata
+     */
     public CategoriaVisite modificaCategoriaVisite(Integer id, CategoriaVisite modificato) {
         CategoriaVisite originale = ottieniPerId(id);
 
@@ -39,10 +52,14 @@ public class CategoriaVisiteService {
         return categoriaVisiteRepo.save(originale);
     }
 
+    /**
+     * Restituisce tutte le categorie visita.
+     *
+     * @return elenco delle categorie
+     */
     public List<CategoriaVisite> ottieniTutte() {
         return categoriaVisiteRepo.findAll();
     }
-
 
     public CategoriaVisite ottieniPerId(Integer id) {
         return categoriaVisiteRepo.findById(id)
@@ -52,6 +69,11 @@ public class CategoriaVisiteService {
     }
 
     @Transactional
+    /**
+     * Elimina una categoria visita esistente.
+     *
+     * @param id identificativo della categoria da eliminare
+     */
     public void eliminaCategoriaVisite(Integer id) {
         if (!categoriaVisiteRepo.existsById(id)) {
             throw new ResponseStatusException(
