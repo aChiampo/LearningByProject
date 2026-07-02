@@ -1,9 +1,7 @@
 package com.WW.entities;
 
-
 import jakarta.persistence.*;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +10,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
- 
 
 import java.util.List;
 
-
- /* @author: A. Chiampo
- * Modello di entità per la tabella UTENTE
- * Last update: 26/06/2026
- */
+/* @author: A. Chiampo
+* Modello di entità per la tabella UTENTE
+* Last update: 26/06/2026
+*/
 @Entity
 @Table(name = "UTENTI")
 @Data
@@ -28,7 +24,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class Utente {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,11 +67,11 @@ public class Utente {
     @JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID", nullable = false)
     private Ruolo ruolo;
 
-    //relazione 1-n con VISITA - cristian.pappalardo
+    // relazione 1-n con VISITA - cristian.pappalardo
     @OneToMany(mappedBy = "utente")
     private List<Visita> visita;
 
-    //relazione 1-1 con ORARIO_SETTIMANALE - cristian.pappalardo
+    // relazione 1-1 con ORARIO_SETTIMANALE - cristian.pappalardo
     @OneToOne(mappedBy = "utente")
     private OrarioSettimanale orarioSettimanale;
 
