@@ -26,4 +26,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Integer> {
     public List<Visita> findByPagatoTrue();
     //Trova tutte le visite che non sono ancora state pagate
     public List<Visita> findByPagatoFalse();
+    public List<Visita> findByPagatoAndTipoVisitaId(boolean pagato, Integer idTipoVisita);
+
+
 }
