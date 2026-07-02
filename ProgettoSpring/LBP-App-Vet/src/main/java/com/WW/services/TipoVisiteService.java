@@ -11,16 +11,32 @@ import com.WW.repositories.TipoVisiteRepo;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Servizio per la gestione dei tipi visita.
+ */
 @Service
 @RequiredArgsConstructor
 public class TipoVisiteService {
 
     private final TipoVisiteRepo tipoVisiteRepo;
 
+    /**
+     * Salva un nuovo tipo visita.
+     *
+     * @param tipoVisite dati del tipo visita da salvare
+     * @return tipo visita creato
+     */
     public TipoVisite aggiungiTipoVisite(TipoVisite tipoVisite) {
         return tipoVisiteRepo.save(tipoVisite);
     }
 
+    /**
+     * Aggiorna un tipo visita esistente.
+     *
+     * @param id identificativo del tipo visita da aggiornare
+     * @param modificato nuovi dati da applicare
+     * @return tipo visita aggiornato
+     */
     public TipoVisite modificaTipoVisite(Integer id, TipoVisite modificato) {
         TipoVisite originale = ottieniPerId(id);
 
@@ -44,10 +60,21 @@ public class TipoVisiteService {
         return tipoVisiteRepo.save(originale);
     }
 
+    /**
+     * Restituisce tutti i tipi visita.
+     *
+     * @return elenco dei tipi visita
+     */
     public List<TipoVisite> ottieniTutti() {
         return tipoVisiteRepo.findAll();
     }
 
+    /**
+     * Restituisce un tipo visita dato l'id.
+     *
+     * @param id identificativo del tipo visita
+     * @return tipo visita trovato
+     */
     public TipoVisite ottieniPerId(Integer id) {
         return tipoVisiteRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -55,6 +82,11 @@ public class TipoVisiteService {
                         "Tipo visite non trovato."));
     }
 
+    /**
+     * Elimina un tipo visita esistente.
+     *
+     * @param id identificativo del tipo visita da eliminare
+     */
     public void eliminaTipoVisite(Integer id) {
         if (!tipoVisiteRepo.existsById(id)) {
             throw new ResponseStatusException(

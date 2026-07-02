@@ -11,16 +11,32 @@ import com.WW.repositories.UtenteRepo;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Servizio per la gestione degli utenti.
+ */
 @Service
 @RequiredArgsConstructor
 public class UtenteService {
 
     private final UtenteRepo utenteRepo;
 
+    /**
+     * Salva un nuovo utente.
+     *
+     * @param utente dati dell'utente da salvare
+     * @return utente creato
+     */
     public Utente aggiungiUtente(Utente utente) {
         return utenteRepo.save(utente);
     }
 
+    /**
+     * Aggiorna un utente esistente.
+     *
+     * @param id identificativo dell'utente da aggiornare
+     * @param modificato nuovi dati da applicare
+     * @return utente aggiornato
+     */
     public Utente modificaUtente(Integer id, Utente modificato) {
         Utente originale = ottieniPerId(id);
 
@@ -52,10 +68,21 @@ public class UtenteService {
         return utenteRepo.save(originale);
     }
 
+    /**
+     * Restituisce tutti gli utenti.
+     *
+     * @return elenco degli utenti
+     */
     public List<Utente> ottieniTutti() {
         return utenteRepo.findAll();
     }
 
+    /**
+     * Restituisce un utente dato l'id.
+     *
+     * @param id identificativo dell'utente
+     * @return utente trovato
+     */
     public Utente ottieniPerId(Integer id) {
         return utenteRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -63,6 +90,11 @@ public class UtenteService {
                         "Utente non trovato."));
     }
 
+    /**
+     * Elimina un utente esistente.
+     *
+     * @param id identificativo dell'utente da eliminare
+     */
     public void eliminaUtente(Integer id) {
         if (!utenteRepo.existsById(id)) {
             throw new ResponseStatusException(
