@@ -77,7 +77,7 @@
 | Data_Visita  | timestamp | Not Null    |                                  |                               |
 | ID_Tipo      | int       | Not Null    | [`TIPI_VISITE.ID`](#tipi_visite) |                               |
 | ID_Dottore   | int       | Not Null    | [`UTENTI.ID`](#utenti)           |                               |
-| ID_Pagamento | int       |             | [`PAGAMENTI.ID`](#pagamenti)     |                               |
+| ID_Pagamento | int       |             | [`PAGAMENTI.ID`](#pagamenti)     | se è vuoto-> DA PAGARE        |
 | Note         | text      |             |                                  |                               |
 | Stato        | enum      |             |                                  | (PRENOTATA,COMPLETATA,NOSHOW) |
 
@@ -139,14 +139,14 @@
 
 ## FILEREFERENCES
 
-| Nome             | TipoDato      | Flag        | ForeignKey | Commenti |
-| ---------------- | ------------- | ----------- | ---------- | -------- |
-| ID               | int           | Primary Key |            |          |
-| OriginalFileName | varchar(100)  | Not Null    |            |          |
-| StoredFileName   | varchar(100)  | Not Null    |            |          |
-| MimeType         | varchar(100)  | Not Null    |            |          |
-| SSize            | Bigint        | Not Null    |            |          |
-| StoragePath      | varchar(300)  | Not Null    |            |          |
-| Owner            | int           | Not Null    | ID_UTENTE  |          |
-| UploadDate       | LocalDateTime | Not Null    |            |          |
-| isDeleted        | boolean       | Not Null    |            |          |
+| Nome                | TipoDato      | Flag        | ForeignKey | Commenti                                |
+| ------------------- | ------------- | ----------- | ---------- | --------------------------------------- |
+| ID                  | int           | Primary Key |            |                                         |
+| OriginalFileName    | varchar(100)  | Not Null    |            |                                         |
+| TipoContenuto       | varchar(100)  | Not Null    |            | 'FaTTURE','VISITE','RICETTE','IMMAGINI' |
+| MimeType            | varchar(100)  | Not Null    |            |                                         |
+| SSize               | Bigint        | Not Null    |            |                                         |
+| CompleteStoragePath | varchar(300)  | Not Null    |            |                                         |
+| Owner               | int           | Not Null    | ID_UTENTE  |                                         |
+| UploadDate          | LocalDateTime | Not Null    |            |                                         |
+| isDeleted           | boolean       | Not Null    |            |                                         |
