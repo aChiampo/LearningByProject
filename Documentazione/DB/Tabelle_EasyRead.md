@@ -14,7 +14,6 @@
 | Citta              | varchar(20)  |                  |                        |                                                                                                                                          |
 | Data_Registrazione | DateTime     | Not Null         |                        |                                                                                                                                          |
 | IDAzienda          | int          |                  | [AZIENDE.ID](#aziende) | Se esiste questo campo, questo utente è un azienda, quindi per i pagamenti bisonga prendere i dati necessari all creazione della fattura |
-| Riferimento        | varchar(30)  |                  |                        |                                                                                                                                          |
 | ID_Ruolo           | int          | not null         | [`RUOLI.ID`](#ruoli)   |                                                                                                                                          |
 
 ### AZIENDE
@@ -148,5 +147,6 @@
 | MimeType         | varchar(100)  | Not Null    |            |          |
 | SSize            | Bigint        | Not Null    |            |          |
 | StoragePath      | varchar(300)  | Not Null    |            |          |
-| Owner            | int           | Not Null    |            |          |
+| Owner            | int           | Not Null    | ID_UTENTE  |          |
 | UploadDate       | LocalDateTime | Not Null    |            |          |
+| isDeleted        | boolean       | Not Null    |            |          |
