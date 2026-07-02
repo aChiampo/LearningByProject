@@ -1,0 +1,143 @@
+package com.WW.controllers;
+
+import com.WW.entities.TipiVaccino;
+import com.WW.services.TipiVaccinoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/tipi-vaccino")
+@CrossOrigin(origins = "*")
+public class TipiVaccinoController {
+
+    private final TipiVaccinoService tipiVaccinoService;
+
+    public TipiVaccinoController(TipiVaccinoService tipiVaccinoService) {
+        this.tipiVaccinoService = tipiVaccinoService;
+    }
+
+    /**
+     * Endpoint GET per visualizzare tutti i tipi di vaccino
+     * @return lista di tutti i tipi di vaccino
+     */
+    @GetMapping
+    public ResponseEntity<List<TipiVaccino>> getAllTipiVaccino() {
+        try {
+            List<TipiVaccino> tipiVaccino = tipiVaccinoService.visualizzaTuttiTipiVaccino();
+            return ResponseEntity.ok(tipiVaccino);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint GET per recuperare un tipo di vaccino per ID
+     * @param id l'ID del tipo di vaccino
+     * @return il tipo di vaccino se trovato
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<TipiVaccino> getTipoVaccinoById(@PathVariable Integer id) {
+        try {
+            Optional<TipiVaccino> tipoVaccino = tipiVaccinoService.getTipoVaccinoById(id);
+            return tipoVaccino.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint GET per ricercare tipi di vaccino per tipologia
+     * @param tipologia la tipologia del vaccino
+     * @return lista di tipi di vaccino corrispondenti
+     */
+    @GetMapping("/cerca/tipologia")
+    public ResponseEntity<List<TipiVaccino>> getTipiVaccinoByTipologia(@RequestParam String tipologia) {
+        try {
+            List<TipiVaccino> tipiVaccino = tipiVaccinoService.findByTipologia(tipologia);
+            return ResponseEntity.ok(tipiVaccino);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint GET per ricercare tipi di vaccino per durata
+     * @param durata la durata del vaccino in mesi
+     * @return lista di tipi di vaccino con la durata specificata
+     */
+    @GetMapping("/cerca/durata")
+    public ResponseEntity<List<TipiVaccino>> getTipiVaccinoByDurata(@RequestParam int durata) {
+        try {
+            List<TipiVaccino> tipiVaccino = tipiVaccinoService.findByDurata(durata);
+            return ResponseEntity.ok(tipiVaccino);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint POST per creare un nuovo tipo di vaccino
+     * @param tipoVaccino i dati del tipo di vaccino da creare
+     * @return il tipo di vaccino creato
+     */
+    @PostMapping
+    public ResponseEntity<TipiVaccino> createTipoVaccino(@RequestBody TipiVaccino tipoVaccino) {
+        try {
+            TipiVaccino tipoVaccinoCreato = tipiVaccinoService.salvaTipoVaccino(tipoVaccino);
+            return ResponseEntity.status(HttpStatus.CREATED).body(tipoVaccinoCreato);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint PUT per aggiornare un tipo di vaccino esistente
+     * @param id l'ID del tipo di vaccino da aggiornare
+     * @param tipoVaccino i nuovi dati del tipo di vaccino
+     * @return il tipo di vaccino aggiornato
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<TipiVaccino> updateTipoVaccino(
+            @PathVariable Integer id,
+            @RequestBody TipiVaccino tipoVaccino) {
+        try {
+            tipoVaccino.setId(id);
+            TipiVaccino tipoVaccinoAggiornato = tipiVaccinoService.aggiornaTipoVaccino(tipoVaccino);
+            return ResponseEntity.ok(tipoVaccinoAggiornato);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint DELETE per eliminare un tipo di vaccino
+     * @param id l'ID del tipo di vaccino da eliminare
+     * @return status 204 No Content se eliminato con successo
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTipoVaccino(@PathVariable Integer id) {
+        try {
+            tipiVaccinoService.eliminaTipoVaccino(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+}
