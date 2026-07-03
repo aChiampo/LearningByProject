@@ -386,7 +386,7 @@ Builds the menu from role configuration instead of hardcoding links in every pag
 
 Customizable by adding new roles, changing labels, hiding unavailable pages, or marking active links.
 
-### ThemePaletteSelector
+### ThemePaletteSelector(DO NOT INCLUDE)
 
 Lets the user choose a color palette. In React, the selected palette can be stored in state, context, or local storage.
 
@@ -625,12 +625,7 @@ Customizable with error message, retry button, support link, and technical detai
 
 Calendar choice matters because appointments are central to the app.
 
-Choose a custom calendar if:
 
-- You are still learning React.
-- You only need the exact weekly layout from the mockup.
-- You do not need drag-and-drop, recurring events, complex time zones, or month/day switching yet.
-- You want full visual control with minimal dependency complexity.
 
 Choose FullCalendar React if:
 
@@ -644,11 +639,7 @@ Choose React Big Calendar if:
 - You prefer a React-focused API.
 - You are comfortable setting up a localizer such as date-fns or Day.js.
 
-Choose MUI X Date/Time Pickers if:
-
-- You need date or time selection inside booking forms.
-- You already use Material UI.
-- You do not need a full agenda view in that specific component.
+![alt](assets/docImages/calendar-comparison.jpg)
 
 Suggested first implementation:
 
@@ -675,4 +666,3 @@ ClientBookingPage
 - React `useEffect` and data fetching notes: https://react.dev/reference/react/useEffect
 - FullCalendar React docs: https://fullcalendar.io/docs/react
 - React Big Calendar repository/docs: https://github.com/bigcalendar/react-big-calendar
-- MUI X Date Calendar docs: https://mui.com/x/react-date-pickers/date-calendar/

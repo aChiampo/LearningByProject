@@ -51,6 +51,24 @@
 | ID_Utente    | int          | NOT null    | [`UTENTI.ID`](#utenti) |                                             |
 | isDeleted    | boolean      | Not Null    |                        |                                             |
 
+## SPECIE
+
+| Nome      | TipoDato    | Flag        | ForeignKey | Commenti |
+| --------- | ----------- | ----------- | ---------- | -------- |
+| ID        | int         | Primary Key |            |          |
+| Nome      | varchar(30) | Not Null    |            |          |
+| isDeleted | boolean     | Not Null    |            |          |
+
+## RAZZE
+
+| Nome      | TipoDato    | Flag        | ForeignKey           | Commenti |
+| --------- | ----------- | ----------- | -------------------- | -------- |
+| ID        | int         | Primary Key |                      |          |
+| Nome      | varchar(30) | Not Null    |                      |          |
+| ID_Specie | int         | Not Null    | [SPECIE.ID](#specie) |          |
+| isDeleted | boolean     | Not Null    |                      |          |
+
+
 
 ## VACCINAZIONI
 
@@ -161,3 +179,6 @@
 | Owner            | int           | Not Null    | ID_UTENTE  |                                           |
 | UploadDate       | LocalDateTime | Not Null    |            |                                           |
 | isDeleted        | boolean       | Not Null    |            |                                           |
+
+
+
