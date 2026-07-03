@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: LBP-App-Vet
+  datasource:
+    url: jdbc:postgresql://pg-3c1a4084-learningbyproject-edu-0b7e.i.aivencloud.com:11216/defaultdb?ssl=require
+    username: avnadmin
+    password: AVNS_hGTjwI1mcIfGTy97iIi
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: segreteria.clinicaZampetti@gmail.com
+    password: dnlbggueohnqgrjo
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 9020
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration-seconds: 3600
+  mail:
+    from: segreteria.clinicaZampetti@gmail.com
