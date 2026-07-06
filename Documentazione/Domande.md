@@ -51,3 +51,13 @@ Interessano si/no?
 avvisi in scadenza
 
 reception>notifiche ritardi
+
+
+### Come gestiamo la possibilità di aggiungere nuovi eventi? 
+  esempio un dottore vuole segnare che per 2 ore un lunedì non può ricevere pazienti
+  Ora le Visite hanno molti campi non nullable che impedirebbero la creazione di un evento personalizzato
+	  - Creiamo dei Animali, tipoVisite "Evento Personalizzato" per simulare l'esistenza di una visita
+	  - 
+insert into Animali (Nome,Data_Nascita,Microchip,Id_Utente) values('EventoPersonale',01/01/1970,?,?)
+? = String uniqueId = UUID.randomUUID().toString().replace("-", "");
+?= Id_Dottore	    
