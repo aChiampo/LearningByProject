@@ -2,6 +2,7 @@ package com.WW.entities;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +17,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 /**
  * @author: cristian.pappalardo
@@ -35,22 +35,29 @@ public class Visita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Integer id;
+
     @Column(name = "Data_Visita", nullable = false, updatable = false)
     private LocalDateTime dataVisita;
+
     @Column(name = "Pagato", nullable = false)
     private boolean pagato;
+
     @ManyToOne
     @JoinColumn(name = "ID_TIPO_VISITA", nullable = false)
     private TipoVisite tipoVisita;
+
     @ManyToOne
     @JoinColumn(name = "ID_ANIMALE", nullable = false)
     private Animale animale;
+
     @ManyToOne
     @JoinColumn(name = "ID_VETERINARIO", nullable = false)
     private Utente veterinario;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_PAGAMENTO", nullable = true)
     private Pagamento pagamento;
+    
     @Column(name = "Note", nullable = true)
     private String note;
 

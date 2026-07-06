@@ -1,6 +1,5 @@
 package com.WW.sicurezza;
 
-import com.WW.entities.Azienda;
 import com.WW.entities.Utente;
 
 import io.jsonwebtoken.Claims;
@@ -15,6 +14,7 @@ import javax.crypto.SecretKey;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -52,6 +52,7 @@ public class ServizioJwt {
 
         return Jwts.builder()
                 .subject(utente.getId().toString())
+                .claim("email", utente.getEmail())
                 .claim("role", ruolo.tostring())
                 .issuedAt(Date.from(oraCorrente))
                 .expiration(Date.from(scadenza))
@@ -85,10 +86,12 @@ public class ServizioJwt {
     public Map<String, Object> estraiMappaClaims(String token) {
         Claims claims = leggiEValida(token);
 
-        return Map.of(
-                "userId", Integer.valueOf(claims.getSubject()),
-                "role", claims.get("role", String.class),
-                "expiresAt", claims.getExpiration()
-        );
+        Map<String, Object> mappaClaims = new HashMap<>();
+        mappaClaims.put("userId", Integer.valueOf(claims.getSubject()));
+        mappaClaims.put("email", claims.get("email", String.class));
+        mappaClaims.put("role", claims.get("role", String.class));
+        mappaClaims.put("expiresAt", claims.getExpiration());
+
+        return mappaClaims;
     }
 }

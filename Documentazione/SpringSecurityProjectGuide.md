@@ -30,6 +30,7 @@ The security logic is mainly in these files:
 - `ConfigurazioneSicurezza.java`
 - `FiltroAutenticazioneJwt.java`
 - `ServizioJwt.java`
+- `UtenteAutenticato.java`
 - `AutenticazioneController.java`
 - `UtenteService.java`
 
@@ -138,6 +139,7 @@ String token = servizioJwt.creaToken(utente);
 The token contains:
 
 - `subject`: the user id, for example `"5"`
+- `email`: the user email, for example `"mario.rossi@example.com"`
 - `role`: the user role, for example `"ADMIN"`
 - `issuedAt`: when the token was created
 - `expiration`: when the token expires
@@ -184,13 +186,16 @@ The flow is:
 5. `ServizioJwt` verifies the JWT signature and expiration.
 6. If the token is valid, the filter reads:
    - the user id from `claims.getSubject()`
+   - the email from `claims.get("email", String.class)`
    - the role from `claims.get("role", String.class)`
 7. The filter creates a Spring authentication object:
 
 ```java
+UtenteAutenticato utenteAutenticato = new UtenteAutenticato(Integer.valueOf(idUtente), email);
+
 UsernamePasswordAuthenticationToken autenticazione =
         new UsernamePasswordAuthenticationToken(
-                idUtente,
+                utenteAutenticato,
                 null,
                 List.of(new SimpleGrantedAuthority("ROLE_" + ruolo))
         );
@@ -204,7 +209,7 @@ SecurityContextHolder.getContext().setAuthentication(autenticazione);
 
 9. The request reaches the controller only if the security rules allow it.
 
-In controllers, `Authentication.getName()` returns the user id because the JWT filter stores `idUtente` as the principal.
+In controllers, `Authentication.getName()` still returns the user id because `UtenteAutenticato.getName()` returns the id as a string.
 
 Example from `AnimaleController`:
 
@@ -213,6 +218,13 @@ public ResponseEntity<Animale> leggi(@PathVariable Integer id, Authentication au
     int userId = Integer.parseInt(autenticazione.getName());
     ...
 }
+```
+
+To read the email, get the typed principal from the `Authentication` object:
+
+```java
+UtenteAutenticato utenteAutenticato = (UtenteAutenticato) authentication.getPrincipal();
+String email = utenteAutenticato.email();
 ```
 
 ## Roles and Authorities
@@ -305,7 +317,7 @@ public ResponseEntity<Void> elimina(@PathVariable Integer id) {
 
 The project already has a global rule that protects all `DELETE /api/**` endpoints with `ADMIN`, but adding `@PreAuthorize("hasRole('ADMIN')")` can still make the controller method easier to understand.
 
-### 3. Read the Current User Id
+### 3. Read the Current User Id and Email
 
 When a controller needs to know who is calling the endpoint, add an `Authentication` parameter:
 
@@ -318,6 +330,16 @@ public ResponseEntity<Utente> profilo(Authentication authentication) {
 ```
 
 This works because `FiltroAutenticazioneJwt` uses the JWT subject as the authentication name.
+
+If the controller also needs the email, cast the principal:
+
+```java
+@GetMapping("/profilo/email")
+public ResponseEntity<String> emailProfilo(Authentication authentication) {
+    UtenteAutenticato utenteAutenticato = (UtenteAutenticato) authentication.getPrincipal();
+    return ResponseEntity.ok(utenteAutenticato.email());
+}
+```
 
 ### 4. Check Ownership When Needed
 
@@ -461,6 +483,8 @@ When creating or changing a service:
 These are important details to remember while developing this specific project:
 
 - `Authentication.getName()` is the user id, not the email.
+- `((UtenteAutenticato) authentication.getPrincipal()).email()` returns the authenticated user's email.
+- New JWTs contain an `email` claim.
 - The JWT role claim should be a simple role name such as `ADMIN`, not `ROLE_ADMIN`.
 - The JWT filter adds the `ROLE_` prefix for Spring Security.
 - `DELETE /api/**` is globally limited to `ADMIN`.
@@ -485,6 +509,7 @@ POST /api/auth/login
 ```json
 {
   "sub": "7",
+  "email": "reception@example.com",
   "role": "REC"
 }
 ```
@@ -501,6 +526,7 @@ Authorization: Bearer <jwt-token>
 
 ```text
 name = "7"
+email = "reception@example.com"
 authority = "ROLE_REC"
 ```
 

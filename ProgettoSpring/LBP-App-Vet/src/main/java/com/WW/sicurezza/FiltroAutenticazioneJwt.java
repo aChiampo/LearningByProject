@@ -55,11 +55,13 @@ public class FiltroAutenticazioneJwt extends OncePerRequestFilter {
         try {
             Claims claims = servizioJwt.leggiEValida(token);
             String idUtente = claims.getSubject();
+            String email = claims.get("email", String.class);
             String ruolo = claims.get("role", String.class);
+            UtenteAutenticato utenteAutenticato = new UtenteAutenticato(Integer.valueOf(idUtente), email);
 
             UsernamePasswordAuthenticationToken autenticazione =
                     new UsernamePasswordAuthenticationToken(
-                            idUtente,
+                            utenteAutenticato,
                             null,
                             List.of(new SimpleGrantedAuthority("ROLE_" + ruolo))
                     );

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+      font-size: 13px;
+    }
+
+    .page {
+      padding: 32px;
+    }
+
+    .header {
+      border-bottom: 2px solid #1f2937;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      width: 32%;
+      background-color: #f3f4f6;
+    }
+
+    .note {
+      min-height: 120px;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      white-space: pre-line;
+    }
+
+    .signature {
+      margin-top: 48px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>Ricetta medica veterinaria</h1>
+      <p>
+        Numero visita:
+        <strong th:text="${visita.id}"></strong>
+      </p>
+      <p>
+        Data visita:
+        <strong th:text="${visita.dataVisita}"></strong>
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Animale</h2>
+      <table>
+        <tbody>
+          <tr>
+            <th>Nome</th>
+            <td th:text="${visita.animale.nome}"></td>
+          </tr>
+          <tr th:if="${visita.animale.specie != null}">
+            <th>Specie</th>
+            <td th:text="${visita.animale.specie}"></td>
+          </tr>
+          <tr th:if="${visita.animale.razza != null}">
+            <th>Razza</th>
+            <td th:text="${visita.animale.razza}"></td>
+          </tr>
+          <tr th:if="${visita.animale.sesso != null}">
+            <th>Sesso</th>
+            <td th:text="${visita.animale.sesso}"></td>
+          </tr>
+          <tr>
+            <th>Data nascita</th>
+            <td th:text="${visita.animale.dataNascita}"></td>
+          </tr>
+          <tr th:if="${visita.animale.peso != null}">
+            <th>Peso</th>
+            <td th:text="${visita.animale.peso}"></td>
+          </tr>
+          <tr th:if="${visita.animale.microchip != null}">
+            <th>Microchip</th>
+            <td th:text="${visita.animale.microchip}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Proprietario</h2>
+      <table>
+        <tbody>
+          <tr>
+            <th>Nome</th>
+            <td>
+              <span th:text="${visita.animale.utente.nome}"></span>
+              <span th:text="${visita.animale.utente.cognome}"></span>
+            </td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td th:text="${visita.animale.utente.email}"></td>
+          </tr>
+          <tr>
+            <th>Telefono</th>
+            <td th:text="${visita.animale.utente.telefono}"></td>
+          </tr>
+          <tr th:if="${visita.animale.utente.indirizzo != null || visita.animale.utente.citta != null}">
+            <th>Indirizzo</th>
+            <td>
+              <span th:text="${visita.animale.utente.indirizzo}"></span>
+              <span th:text="${visita.animale.utente.citta}"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Veterinario</h2>
+      <table>
+        <tbody>
+          <tr>
+            <th>Nome</th>
+            <td>
+              <span th:text="${visita.veterinario.nome}"></span>
+              <span th:text="${visita.veterinario.cognome}"></span>
+            </td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td th:text="${visita.veterinario.email}"></td>
+          </tr>
+          <tr>
+            <th>Telefono</th>
+            <td th:text="${visita.veterinario.telefono}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Prescrizione e indicazioni</h2>
+      <div class="note" th:text="${visita.note}"></div>
+    </div>
+
+    <div class="signature">
+      <p>Firma veterinario</p>
+      <p>
+        <strong>
+          <span th:text="${visita.veterinario.nome}"></span>
+          <span th:text="${visita.veterinario.cognome}"></span>
+        </strong>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

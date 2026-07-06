@@ -67,9 +67,11 @@ public class Utente {
     @JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID", nullable = false)
     private Ruolo ruolo;
 
+   // relazioni bi_dimensionali
+
     // relazione 1-n con VISITA - cristian.pappalardo
     @OneToMany(mappedBy = "utente")
-    private List<Visita> visita;
+    private List<Visita> visiteList;
 
     // relazione 1-1 con ORARIO_SETTIMANALE - cristian.pappalardo
     @OneToOne(mappedBy = "utente")
