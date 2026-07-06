@@ -23,6 +23,7 @@ Desktop.ini
 *.log
 *.tmp
 *.temp
+~$*.xlsx
 
 # Java build outputs
 target/

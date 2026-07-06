@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -53,7 +54,8 @@ public class ServizioJwt {
 
         return Jwts.builder()
                 .subject(utente.getId().toString())
-                .claim("role", ruolo != null ? ruolo.getRuolo() : null)
+                .claim("email", utente.getEmail())
+                .claim("role", ruolo.tostring())
                 .issuedAt(Date.from(oraCorrente))
                 .expiration(Date.from(scadenza))
                 .signWith(chiaveSegreta)
@@ -86,9 +88,12 @@ public class ServizioJwt {
     public Map<String, Object> estraiMappaClaims(String token) {
         Claims claims = leggiEValida(token);
 
-        return Map.of(
-                "userId", Integer.valueOf(claims.getSubject()),
-                "role", claims.get("role", String.class),
-                "expiresAt", claims.getExpiration());
+        Map<String, Object> mappaClaims = new HashMap<>();
+        mappaClaims.put("userId", Integer.valueOf(claims.getSubject()));
+        mappaClaims.put("email", claims.get("email", String.class));
+        mappaClaims.put("role", claims.get("role", String.class));
+        mappaClaims.put("expiresAt", claims.getExpiration());
+
+        return mappaClaims;
     }
 }

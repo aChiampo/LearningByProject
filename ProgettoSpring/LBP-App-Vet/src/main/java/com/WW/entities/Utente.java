@@ -67,6 +67,8 @@ public class Utente {
     @JoinColumn(name = "id_ruolo", referencedColumnName = "ID", nullable = false)
     private Ruolo ruolo;
 
+   // relazioni bi_dimensionali
+
     // relazione 1-n con VISITA - cristian.pappalardo
     @OneToMany(mappedBy = "dottore", cascade = CascadeType.ALL)
     private List<Visita> visita;
