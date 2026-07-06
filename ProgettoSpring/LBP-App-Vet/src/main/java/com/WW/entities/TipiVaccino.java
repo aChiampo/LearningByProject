@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "TIPI_VACCINO")
 @Data
@@ -22,7 +20,7 @@ public class TipiVaccino {
     private Integer id;
     @Column(name = "Tipologia", nullable = false)
     private String tipologia;
-    @Column(name = "Durata", nullable = false)//
+    @Column(name = "Durata", nullable = false) //
     private int durata;
     @Column(name = "Note", nullable = true)
     private String note;
