@@ -1,6 +1,7 @@
 package com.WW.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -21,11 +22,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Integer> {
     //Trova tutte le visite associate a un animale specifico
     public List<Visita> findByAnimaleId(Integer idAnimale);
     //Trova la visita associata a un pagamento specifico
-    public Visita findByPagamentoId(Integer idPagamento);  
-    //Trova tutte le visite che devono essere pagate
-    public List<Visita> findByPagatoTrue();
-    //Trova tutte le visite che non sono ancora state pagate
-    public List<Visita> findByPagatoFalse();
+    public Optional<Visita> findByPagamentoId(Integer idPagamento);  
     public List<Visita> findByPagatoAndTipoVisitaId(boolean pagato, Integer idTipoVisita);
 
 

@@ -2,6 +2,7 @@ package com.WW.entities;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,8 +38,6 @@ public class Visita {
     private Integer id;
     @Column(name = "Data_Visita", nullable = false, updatable = false)
     private LocalDateTime dataVisita;
-    @Column(name = "Pagato", nullable = false)
-    private boolean pagato;
     @ManyToOne
     @JoinColumn(name = "ID_TIPO_VISITA", nullable = false)
     private TipoVisite tipoVisita;
