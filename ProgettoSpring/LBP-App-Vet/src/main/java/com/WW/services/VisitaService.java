@@ -118,26 +118,6 @@ public class VisitaService {
     }
 
     /**
-     * Restituisce le visite che risultano pagate, cioè collegate a un pagamento.
-     *
-     * @return visite pagate
-     */
-    @Transactional(readOnly = true)
-    public List<Visita> getVisitePagate() {
-        return visitaRepository.findByPagamentoIsNotNull();
-    }
-
-    /**
-     * Restituisce le visite che non hanno ancora un pagamento associato.
-     *
-     * @return visite non pagate
-     */
-    @Transactional(readOnly = true)
-    public List<Visita> getVisiteNonPagate() {
-        return visitaRepository.findByPagamentoIsNull();
-    }
-
-    /**
      * Aggiorna lo stato di pagamento di una visita.
      *
      * @param id identificativo della visita
@@ -163,19 +143,6 @@ public class VisitaService {
     }
 
     /**
-     * Aggiorna le note di una visita e salva le modifiche nel database.
-     *
-     * @param visita visita da aggiornare
-     * @param note   nuove note
-     * @return la visita aggiornata
-     */
-    @Transactional
-    public Visita updateVisitaNote(Visita visita, String note) {
-        visita.setNote(note);
-        return visitaRepository.save(visita);
-    }
-
-    /**
      * Aggiorna le note di una visita a partire dall'id.
      *
      * @param id   identificativo della visita
@@ -184,7 +151,9 @@ public class VisitaService {
      */
     @Transactional
     public Visita updateVisitaNote(Integer id, String note) {
-        return updateVisitaNote(getVisitaById(id), note);
+        Visita visita = getVisitaById(id);
+        visita.setNote(note);
+        return visitaRepository.save(visita);
     }
 
     /**
