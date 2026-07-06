@@ -1,41 +1,32 @@
 package com.WW.entities;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Modello di entità per la tabella RUOLI.
+ */
 @Entity
-@Table(name = "prenotazioni")
+@Table(name = "ruoli")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Prenotazione {
+public class Ruolo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "data_visita", nullable = false)
-    private LocalDateTime dataVisita;
-
-    @ManyToOne
-    @JoinColumn(name = "id_animale", nullable = false)
-    private Animale animale;
-
-    @ManyToOne
-    @JoinColumn(name = "id_tipi_visita", nullable = false)
-    private TipoVisite tipoVisita;
+    @Column(name = "ruolo", length = 15, nullable = false, unique = true)
+    private String ruolo;
 }

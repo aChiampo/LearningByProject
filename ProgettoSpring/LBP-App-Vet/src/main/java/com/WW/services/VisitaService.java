@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.entities.Visita;
@@ -11,8 +12,8 @@ import com.WW.repositories.VisitaRepository;
 
 /**
  * @author: cristian.pappalardo
- * Servizio per la tabella VISITA
- * Last update: 28/06/2026
+ *          Servizio per la tabella VISITA
+ *          Last update: 28/06/2026
  */
 @Service
 public class VisitaService {
@@ -34,6 +35,7 @@ public class VisitaService {
      * @param visita dati della visita da salvare
      * @return visita creata
      */
+    @Transactional
     public Visita createVisita(Visita visita) {
         return visitaRepository.save(visita);
     }
@@ -43,6 +45,7 @@ public class VisitaService {
      *
      * @return elenco delle visite
      */
+    @Transactional(readOnly = true)
     public List<Visita> getAllVisita() {
         return visitaRepository.findAll();
     }
@@ -53,6 +56,7 @@ public class VisitaService {
      * @param id identificativo della visita
      * @return visita trovata
      */
+    @Transactional(readOnly = true)
     public Visita getVisitaById(Integer id) {
         return visitaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -66,6 +70,7 @@ public class VisitaService {
      * @param idTipoVisita identificativo del tipo visita
      * @return visite filtrate
      */
+    @Transactional(readOnly = true)
     public List<Visita> getVisiteByTipoVisita(Integer idTipoVisita) {
         return visitaRepository.findByTipoVisitaId(idTipoVisita);
     }
@@ -76,6 +81,7 @@ public class VisitaService {
      * @param idVeterinario identificativo del veterinario
      * @return visite filtrate
      */
+    @Transactional(readOnly = true)
     public List<Visita> getVisiteByVeterinario(Integer idVeterinario) {
         return visitaRepository.findByVeterinarioId(idVeterinario);
     }
@@ -86,6 +92,7 @@ public class VisitaService {
      * @param idAnimale identificativo dell'animale
      * @return visite filtrate
      */
+    @Transactional(readOnly = true)
     public List<Visita> getVisiteByAnimale(Integer idAnimale) {
         return visitaRepository.findByAnimaleId(idAnimale);
     }
@@ -96,49 +103,56 @@ public class VisitaService {
      * @param idPagamento identificativo del pagamento
      * @return visita trovata
      */
+    @Transactional(readOnly = true)
     public Visita getVisitaByPagamento(Integer idPagamento) {
-        return visitaRepository.findByPagamentoId(idPagamento);
+        if (idPagamento == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "L'identificativo del pagamento non può essere nullo.");
+        }
+        return visitaRepository.findByPagamentoId(idPagamento)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Visita collegata al pagamento non trovata."));
     }
 
     /**
-     * Restituisce tutte le visite pagate.
+     * Aggiorna lo stato di pagamento di una visita.
      *
-     * @return visite pagate
+     * @param id identificativo della visita
+     * @param pagato nuovo stato di pagamento
+     * @return visita aggiornata
      */
-    public List<Visita> getVisitePagate() {
-        return visitaRepository.findByPagatoTrue();
-    }
+    @Transactional
+    public Visita updateVisitaPagato(Integer id, boolean pagato) {
+        Visita visita = getVisitaById(id);
 
-    /**
-     * Restituisce tutte le visite non pagate.
-     *
-     * @return visite non pagate
-     */
-    public List<Visita> getVisiteNonPagate() {
-        return visitaRepository.findByPagatoFalse();
-    }
+        if (!pagato) {
+            visita.setPagamento(null);
+            return visitaRepository.save(visita);
+        }
 
-    /**
-     * Aggiorna le note di una visita e salva le modifiche nel database.
-     *
-     * @param visita visita da aggiornare
-     * @param note nuove note
-     * @return la visita aggiornata
-     */
-    public Visita updateVisitaNote(Visita visita, String note) {
-        visita.setNote(note);
+        if (visita.getPagamento() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Per marcare la visita come pagata è necessario associare prima un pagamento.");
+        }
+
         return visitaRepository.save(visita);
     }
 
     /**
      * Aggiorna le note di una visita a partire dall'id.
      *
-     * @param id identificativo della visita
+     * @param id   identificativo della visita
      * @param note nuove note
      * @return visita aggiornata
      */
+    @Transactional
     public Visita updateVisitaNote(Integer id, String note) {
-        return updateVisitaNote(getVisitaById(id), note);
+        Visita visita = getVisitaById(id);
+        visita.setNote(note);
+        return visitaRepository.save(visita);
     }
 
     /**
@@ -149,27 +163,13 @@ public class VisitaService {
      * @param pagato nuovo stato di pagamento
      * @return la visita aggiornata
      */
-    public Visita updateVisitaPagato(Visita visita, boolean pagato) {
-        visita.setPagato(pagato);
-        return visitaRepository.save(visita);
-    }
-
-    /**
-     * Aggiorna lo stato di pagamento di una visita a partire dall'id.
-     *
-     * @param id identificativo della visita
-     * @param pagato nuovo stato di pagamento
-     * @return visita aggiornata
-     */
-    public Visita updateVisitaPagato(Integer id, boolean pagato) {
-        return updateVisitaPagato(getVisitaById(id), pagato);
-    }
 
     /**
      * Elimina una visita esistente.
      *
      * @param id identificativo della visita da eliminare
      */
+    @Transactional
     public void deleteVisita(Integer id) {
         if (!visitaRepository.existsById(id)) {
             throw new ResponseStatusException(

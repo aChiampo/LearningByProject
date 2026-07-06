@@ -1,5 +1,7 @@
 package com.WW.sicurezza;
 
+import com.WW.entities.Azienda;
+import com.WW.entities.Ruolo;
 import com.WW.entities.Utente;
 
 import io.jsonwebtoken.Claims;
@@ -29,7 +31,7 @@ public class ServizioJwt {
     /**
      * Inizializza il servizio JWT usando le proprieta dell'applicazione.
      *
-     * @param segretoBase64 chiave HMAC codificata in Base64
+     * @param segretoBase64   chiave HMAC codificata in Base64
      * @param scadenzaSecondi durata del token in secondi
      */
     public ServizioJwt(

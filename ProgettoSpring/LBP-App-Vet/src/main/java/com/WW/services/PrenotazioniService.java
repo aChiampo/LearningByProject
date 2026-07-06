@@ -11,7 +11,7 @@ import com.WW.entities.Visita;
 import com.WW.repositories.AnimaleRepository;
 import com.WW.repositories.TipoVisiteRepo;
 import com.WW.repositories.UtenteRepo;
-import com.WW.repositories.VisiteRepo;
+import com.WW.repositories.VisitaRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PrenotazioniService {
 
-    private final VisiteRepo visitaRepository;
+    private final VisitaRepository visitaRepository;
     private final TipoVisiteRepo tipoVisiteRepo;
     private final AnimaleRepository animaleRepository;
     private final UtenteRepo utenteRepo;

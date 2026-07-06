@@ -57,24 +57,24 @@ public class Utente {
     private LocalDateTime dataRegistrazione = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "IDAzienda", referencedColumnName = "ID", nullable = true)
+    @JoinColumn(name = "id_azienda", referencedColumnName = "ID", nullable = true)
     private Azienda azienda;
 
     @Column(name = "Riferimento", length = 30)
     private String riferimento;
 
     @ManyToOne
-    @JoinColumn(name = "ID_Ruolo", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "id_ruolo", referencedColumnName = "ID", nullable = false)
     private Ruolo ruolo;
 
    // relazioni bi_dimensionali
 
     // relazione 1-n con VISITA - cristian.pappalardo
-    @OneToMany(mappedBy = "utente")
-    private List<Visita> visiteList;
+    @OneToMany(mappedBy = "dottore", cascade = CascadeType.ALL)
+    private List<Visita> visita;
 
-    // relazione 1-1 con ORARIO_SETTIMANALE - cristian.pappalardo
-    @OneToOne(mappedBy = "utente")
-    private OrarioSettimanale orarioSettimanale;
+    // relazione 1-n con ORARIO_SETTIMANALE - cristian.pappalardo
+    @OneToMany(mappedBy = "utente")
+    private List<OrarioSettimanale> orariSettimanali;
 
 }

@@ -34,14 +34,14 @@ public class TipoVisite {
     private int durata;
 
     @ManyToOne
-    @JoinColumn(name = "ID_Categoria", referencedColumnName= "ID", nullable= true)
+    @JoinColumn(name = "id_categoria", referencedColumnName= "ID", nullable= true)
     private CategoriaVisite categoria;
     
     @Column(name = "Prezzo",precision = 8, scale = 2, nullable = false)
     private BigDecimal prezzo;
     
     @ManyToOne
-    @JoinColumn(name = "ID_Dottore", referencedColumnName= "ID", nullable=false)
+    @JoinColumn(name = "id_dottore", referencedColumnName= "ID", nullable=false)
     private Utente dottore;
 
     //relazione 1-n con VISITA - cristian.pappalardo
