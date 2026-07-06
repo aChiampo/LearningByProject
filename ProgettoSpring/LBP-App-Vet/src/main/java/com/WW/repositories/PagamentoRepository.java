@@ -9,5 +9,5 @@ import com.WW.entities.Pagamento;
 
 public interface PagamentoRepository extends JpaRepository<Pagamento, Integer> {
 
-    List<Pagamento> findByStato(String stato);
+    List<Pagamento> findByTipoPagamento(String tipoPagamento);
 }

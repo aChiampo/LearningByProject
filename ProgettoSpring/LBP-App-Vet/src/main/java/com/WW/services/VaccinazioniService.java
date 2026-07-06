@@ -36,7 +36,7 @@ public class VaccinazioniService {
         if (idTipoVaccino == null) {
             throw new IllegalArgumentException("Il tipo di vaccino non può essere null");
         }
-        return vaccinazioniRepo.findByIdTipoVaccinoTrue(idTipoVaccino);
+        return vaccinazioniRepo.findByIdTipoVaccino(idTipoVaccino);
     }
 
     /**

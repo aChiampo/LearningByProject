@@ -1,32 +1,45 @@
 package com.WW.entities;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "VACCINAZIONI")
+@Table(name = "vaccinazioni")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Vaccinazioni {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Integer id;
-    @OneToOne
-    @JoinColumn(name = "ID_TIPO_VACCINO", nullable = false)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo", nullable = false)
     private TipiVaccino idTipoVaccino;
-    @Column(name = "Data_Vaccinazione", nullable = true)
+
+    @Column(name = "data_vaccinazione", nullable = true)
     private LocalDateTime dataVaccinazione;
-    @Column(name = "Lotto", nullable = true)
+
+    @Column(name = "lotto", nullable = true)
     private String lotto;
-    @OneToOne
-    @JoinColumn(name = "ID_ANIMALE", nullable = false)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_animale", nullable = false)
     private Animale idAnimale;
 }

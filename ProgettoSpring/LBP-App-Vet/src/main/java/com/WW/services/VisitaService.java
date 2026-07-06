@@ -105,13 +105,61 @@ public class VisitaService {
      * @return visita trovata
      */
     @Transactional(readOnly = true)
-    public Optional<Visita> getVisitaByPagamento(Integer idPagamento) {
+    public Visita getVisitaByPagamento(Integer idPagamento) {
         if (idPagamento == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "L'identificativo del pagamento non può essere nullo.");
         }
-        return visitaRepository.findByPagamentoId(idPagamento);
+        return visitaRepository.findByPagamentoId(idPagamento)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Visita collegata al pagamento non trovata."));
+    }
+
+    /**
+     * Restituisce le visite che risultano pagate, cioè collegate a un pagamento.
+     *
+     * @return visite pagate
+     */
+    @Transactional(readOnly = true)
+    public List<Visita> getVisitePagate() {
+        return visitaRepository.findByPagamentoIsNotNull();
+    }
+
+    /**
+     * Restituisce le visite che non hanno ancora un pagamento associato.
+     *
+     * @return visite non pagate
+     */
+    @Transactional(readOnly = true)
+    public List<Visita> getVisiteNonPagate() {
+        return visitaRepository.findByPagamentoIsNull();
+    }
+
+    /**
+     * Aggiorna lo stato di pagamento di una visita.
+     *
+     * @param id identificativo della visita
+     * @param pagato nuovo stato di pagamento
+     * @return visita aggiornata
+     */
+    @Transactional
+    public Visita updateVisitaPagato(Integer id, boolean pagato) {
+        Visita visita = getVisitaById(id);
+
+        if (!pagato) {
+            visita.setPagamento(null);
+            return visitaRepository.save(visita);
+        }
+
+        if (visita.getPagamento() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Per marcare la visita come pagata è necessario associare prima un pagamento.");
+        }
+
+        return visitaRepository.save(visita);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.WW.sicurezza;
 
 import com.WW.entities.Azienda;
+import com.WW.entities.Ruolo;
 import com.WW.entities.Utente;
 
 import io.jsonwebtoken.Claims;
@@ -29,7 +30,7 @@ public class ServizioJwt {
     /**
      * Inizializza il servizio JWT usando le proprieta dell'applicazione.
      *
-     * @param segretoBase64 chiave HMAC codificata in Base64
+     * @param segretoBase64   chiave HMAC codificata in Base64
      * @param scadenzaSecondi durata del token in secondi
      */
     public ServizioJwt(
@@ -52,7 +53,7 @@ public class ServizioJwt {
 
         return Jwts.builder()
                 .subject(utente.getId().toString())
-                .claim("role", ruolo.tostring())
+                .claim("role", ruolo != null ? ruolo.getRuolo() : null)
                 .issuedAt(Date.from(oraCorrente))
                 .expiration(Date.from(scadenza))
                 .signWith(chiaveSegreta)
@@ -88,7 +89,6 @@ public class ServizioJwt {
         return Map.of(
                 "userId", Integer.valueOf(claims.getSubject()),
                 "role", claims.get("role", String.class),
-                "expiresAt", claims.getExpiration()
-        );
+                "expiresAt", claims.getExpiration());
     }
 }

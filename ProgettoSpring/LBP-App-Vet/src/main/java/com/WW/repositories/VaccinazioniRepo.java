@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface VaccinazioniRepo extends JpaRepository<Vaccinazioni, Integer> {
 
-    List<Vaccinazioni> findByIdTipoVaccinoTrue(TipiVaccino idTipoVaccino);
+    List<Vaccinazioni> findByIdTipoVaccino(TipiVaccino idTipoVaccino);
 
     List<Vaccinazioni> findByDataVaccinazione(LocalDateTime dataVaccinazione);
 

@@ -1,5 +1,6 @@
 package com.WW.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -27,17 +28,14 @@ public class PagamentiService {
     public Pagamento aggiornaPagamento(Integer id, Pagamento datiAggiornati) {
         Pagamento esistente = ottieniPerId(id);
 
-        if (datiAggiornati.getImporto() != null) {
-            esistente.setImporto(datiAggiornati.getImporto());
+        if (datiAggiornati.getImportoTotale() != null) {
+            esistente.setImportoTotale(datiAggiornati.getImportoTotale());
         }
-        if (datiAggiornati.getMetodoPagamento() != null && !datiAggiornati.getMetodoPagamento().isBlank()) {
-            esistente.setMetodoPagamento(datiAggiornati.getMetodoPagamento());
+        if (datiAggiornati.getTipoPagamento() != null && !datiAggiornati.getTipoPagamento().isBlank()) {
+            esistente.setTipoPagamento(datiAggiornati.getTipoPagamento());
         }
-        if (datiAggiornati.getStato() != null && !datiAggiornati.getStato().isBlank()) {
-            esistente.setStato(datiAggiornati.getStato());
-        }
-        if (datiAggiornati.getDataPagamento() != null) {
-            esistente.setDataPagamento(datiAggiornati.getDataPagamento());
+        if (datiAggiornati.getData() != null) {
+            esistente.setData(datiAggiornati.getData());
         }
 
         return pagamentoRepository.save(esistente);
@@ -50,7 +48,7 @@ public class PagamentiService {
 
     @Transactional(readOnly = true)
     public List<Pagamento> ottieniPerStato(String stato) {
-        return pagamentoRepository.findByStato(stato);
+        return pagamentoRepository.findByTipoPagamento(stato);
     }
 
     @Transactional(readOnly = true)

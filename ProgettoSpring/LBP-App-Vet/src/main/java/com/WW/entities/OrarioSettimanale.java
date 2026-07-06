@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
  * Last update 28/08/2026
  */
 @Entity
-@Table(name = "OrarioSettimanale")
+@Table(name = "orario_settimanale")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,17 +21,17 @@ public class OrarioSettimanale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "GiornoSettimana", nullable = false, updatable = false)
-    private int GiornoSettimana;
-    @Column(name = "MattinaInizio", nullable = false)
-    private int MattinaInizio;
-    @Column(name = "MattinaFine", nullable = false)
-    private int MattinaFine;
-    @Column(name = "PomeriggioInizio", nullable = false)
-    private int PomeriggioInizio;
-    @Column(name = "PomeriggioFine", nullable = false)
-    private int PomeriggioFine;
-    @OneToOne
-    @JoinColumn(name = "ID_UTENTE", nullable = false)
-    private Utente Utente;
+    @Column(name = "giorno_settimana", nullable = false, updatable = false)
+    private int giornoSettimana;
+    @Column(name = "mattina_inizio", nullable = false)
+    private int mattinaInizio;
+    @Column(name = "mattina_fine", nullable = false)
+    private int mattinaFine;
+    @Column(name = "pomeriggio_inizio", nullable = false)
+    private int pomeriggioInizio;
+    @Column(name = "pomeriggio_fine", nullable = false)
+    private int pomeriggioFine;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_utente", nullable = false)
+    private Utente utente;
 }
