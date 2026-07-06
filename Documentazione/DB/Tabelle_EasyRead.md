@@ -42,7 +42,7 @@
 | ID           | int          | Primary Key |                        |                                             |
 | Nome         | varchar(30)  | Not Null    |                        |                                             |
 | Specie       | varchar(15)  |             |                        |                                             |
-| Razza        | varchar(20)  |             |                        |                                             |
+| Razza        | varchar(20)  |             | [RAZZA.ID](#razze)     |                                             |
 | Sesso        | varchar(10)  |             |                        |                                             |
 | Data_Nascita | Date         | Not Null    |                        |                                             |
 | Peso         | decimal(5,2) |             |                        |                                             |
