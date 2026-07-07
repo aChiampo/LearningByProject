@@ -1,6 +1,15 @@
 package com.WW.sicurezza;
 
-import com.WW.entities.Azienda;
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.WW.entities.Ruolo;
 import com.WW.entities.Utente;
 
@@ -8,16 +17,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
-
-import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Servizio che crea e valida i token JWT usati come Bearer token.
@@ -55,7 +54,7 @@ public class ServizioJwt {
         return Jwts.builder()
                 .subject(utente.getId().toString())
                 .claim("email", utente.getEmail())
-                .claim("role", ruolo.tostring())
+                .claim("role", utente.getRuolo().getRuolo())
                 .issuedAt(Date.from(oraCorrente))
                 .expiration(Date.from(scadenza))
                 .signWith(chiaveSegreta)
