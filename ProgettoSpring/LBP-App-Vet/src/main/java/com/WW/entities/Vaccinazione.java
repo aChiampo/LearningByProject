@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Vaccinazioni {
+public class Vaccinazione {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class Vaccinazioni {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo", nullable = false)
-    private TipiVaccino idTipoVaccino;
+    private TipoVaccino idTipoVaccino;
 
     @Column(name = "data_vaccinazione", nullable = true)
     private LocalDateTime dataVaccinazione;

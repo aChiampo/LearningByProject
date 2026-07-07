@@ -1,7 +1,7 @@
 package com.WW.controllers;
 
-import com.WW.entities.TipiVaccino;
-import com.WW.services.TipiVaccinoService;
+import com.WW.entities.TipoVaccino;
+import com.WW.services.TipoVaccinoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +12,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/tipi-vaccino")
 @CrossOrigin(origins = "*")
-public class TipiVaccinoController {
+public class TipoVaccinoController {
 
-    private final TipiVaccinoService tipiVaccinoService;
+    private final TipoVaccinoService tipoVaccinoService;
 
-    public TipiVaccinoController(TipiVaccinoService tipiVaccinoService) {
-        this.tipiVaccinoService = tipiVaccinoService;
+    public TipoVaccinoController(TipoVaccinoService tipoVaccinoService) {
+        this.tipoVaccinoService = tipoVaccinoService;
     }
 
     /**
@@ -25,9 +25,9 @@ public class TipiVaccinoController {
      * @return lista di tutti i tipi di vaccino
      */
     @GetMapping
-    public ResponseEntity<List<TipiVaccino>> getAllTipiVaccino() {
+    public ResponseEntity<List<TipoVaccino>> getAllTipiVaccino() {
         try {
-            List<TipiVaccino> tipiVaccino = tipiVaccinoService.visualizzaTuttiTipiVaccino();
+            List<TipoVaccino> tipiVaccino = tipoVaccinoService.visualizzaTuttiTipiVaccino();
             return ResponseEntity.ok(tipiVaccino);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -40,9 +40,9 @@ public class TipiVaccinoController {
      * @return il tipo di vaccino se trovato
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TipiVaccino> getTipoVaccinoById(@PathVariable Integer id) {
+    public ResponseEntity<TipoVaccino> getTipoVaccinoById(@PathVariable Integer id) {
         try {
-            Optional<TipiVaccino> tipoVaccino = tipiVaccinoService.getTipoVaccinoById(id);
+            Optional<TipoVaccino> tipoVaccino = tipoVaccinoService.getTipoVaccinoById(id);
             return tipoVaccino.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
@@ -58,9 +58,9 @@ public class TipiVaccinoController {
      * @return lista di tipi di vaccino corrispondenti
      */
     @GetMapping("/cerca/tipologia")
-    public ResponseEntity<List<TipiVaccino>> getTipiVaccinoByTipologia(@RequestParam String tipologia) {
+    public ResponseEntity<List<TipoVaccino>> getTipiVaccinoByTipologia(@RequestParam String tipologia) {
         try {
-            List<TipiVaccino> tipiVaccino = tipiVaccinoService.findByTipologia(tipologia);
+            List<TipoVaccino> tipiVaccino = tipoVaccinoService.findByTipologia(tipologia);
             return ResponseEntity.ok(tipiVaccino);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -75,9 +75,9 @@ public class TipiVaccinoController {
      * @return lista di tipi di vaccino con la durata specificata
      */
     @GetMapping("/cerca/durata")
-    public ResponseEntity<List<TipiVaccino>> getTipiVaccinoByDurata(@RequestParam int durata) {
+    public ResponseEntity<List<TipoVaccino>> getTipiVaccinoByDurata(@RequestParam int durata) {
         try {
-            List<TipiVaccino> tipiVaccino = tipiVaccinoService.findByDurata(durata);
+            List<TipoVaccino> tipiVaccino = tipoVaccinoService.findByDurata(durata);
             return ResponseEntity.ok(tipiVaccino);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -92,9 +92,9 @@ public class TipiVaccinoController {
      * @return il tipo di vaccino creato
      */
     @PostMapping
-    public ResponseEntity<TipiVaccino> createTipoVaccino(@RequestBody TipiVaccino tipoVaccino) {
+    public ResponseEntity<TipoVaccino> createTipoVaccino(@RequestBody TipoVaccino tipoVaccino) {
         try {
-            TipiVaccino tipoVaccinoCreato = tipiVaccinoService.salvaTipoVaccino(tipoVaccino);
+            TipoVaccino tipoVaccinoCreato = tipoVaccinoService.salvaTipoVaccino(tipoVaccino);
             return ResponseEntity.status(HttpStatus.CREATED).body(tipoVaccinoCreato);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -110,12 +110,12 @@ public class TipiVaccinoController {
      * @return il tipo di vaccino aggiornato
      */
     @PutMapping("/{id}")
-    public ResponseEntity<TipiVaccino> updateTipoVaccino(
+    public ResponseEntity<TipoVaccino> updateTipoVaccino(
             @PathVariable Integer id,
-            @RequestBody TipiVaccino tipoVaccino) {
+            @RequestBody TipoVaccino tipoVaccino) {
         try {
             tipoVaccino.setId(id);
-            TipiVaccino tipoVaccinoAggiornato = tipiVaccinoService.aggiornaTipoVaccino(tipoVaccino);
+            TipoVaccino tipoVaccinoAggiornato = tipoVaccinoService.aggiornaTipoVaccino(tipoVaccino);
             return ResponseEntity.ok(tipoVaccinoAggiornato);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -132,7 +132,7 @@ public class TipiVaccinoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTipoVaccino(@PathVariable Integer id) {
         try {
-            tipiVaccinoService.eliminaTipoVaccino(id);
+            tipoVaccinoService.eliminaTipoVaccino(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

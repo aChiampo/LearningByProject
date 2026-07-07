@@ -1,27 +1,27 @@
 package com.WW.services;
 
-import com.WW.entities.Ruoli;
-import com.WW.repositories.RuoliRepo;
+import com.WW.entities.Ruolo;
+import com.WW.repositories.RuoloRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RuoliService {
+public class RuoloService {
 
-    private final RuoliRepo ruoliRepo;
+    private final RuoloRepo ruoloRepo;
 
-    public RuoliService(RuoliRepo ruoliRepo) {
-        this.ruoliRepo = ruoliRepo;
+    public RuoloService(RuoloRepo ruoloRepo) {
+        this.ruoloRepo = ruoloRepo;
     }
 
     /**
      * Visualizza tutti i ruoli
      * @return lista di tutti i ruoli
      */
-    public List<Ruoli> visualizzaTuttiRuoli() {
-        return ruoliRepo.findAll();
+    public List<Ruolo> visualizzaTuttiRuoli() {
+        return ruoloRepo.findAll();
     }
 
     /**
@@ -30,11 +30,11 @@ public class RuoliService {
      * @return lista di ruoli corrispondenti
      * @throws IllegalArgumentException se l'ID è null o negativo
      */
-    public List<Ruoli> findRuoliById(Integer id) {
+    public List<Ruolo> findRuoliById(Integer id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID del ruolo non può essere null o negativo");
         }
-        return ruoliRepo.findRuoliById(id);
+        return ruoloRepo.findRuoliById(id);
     }
 
     /**
@@ -43,11 +43,11 @@ public class RuoliService {
      * @return lista di ruoli corrispondenti
      * @throws IllegalArgumentException se il nome del ruolo è null o vuoto
      */
-    public List<Ruoli> findByRuolo(String ruolo) {
+    public List<Ruolo> findByRuolo(String ruolo) {
         if (ruolo == null || ruolo.trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome del ruolo non può essere null o vuoto");
         }
-        return ruoliRepo.findByRuolo(ruolo);
+        return ruoloRepo.findByRuolo(ruolo);
     }
 
     /**
@@ -56,11 +56,11 @@ public class RuoliService {
      * @return il ruolo se presente
      * @throws IllegalArgumentException se l'ID è null o negativo
      */
-    public Optional<Ruoli> getRuoloById(Integer id) {
+    public Optional<Ruolo> getRuoloById(Integer id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID del ruolo non può essere null o negativo");
         }
-        return ruoliRepo.findById(id);
+        return ruoloRepo.findById(id);
     }
 
     /**
@@ -69,7 +69,7 @@ public class RuoliService {
      * @return il ruolo salvato
      * @throws IllegalArgumentException se i dati obbligatori sono mancanti
      */
-    public Ruoli salvaRuolo(Ruoli ruolo) {
+    public Ruolo salvaRuolo(Ruolo ruolo) {
         if (ruolo == null) {
             throw new IllegalArgumentException("Il ruolo non può essere null");
         }
@@ -78,12 +78,12 @@ public class RuoliService {
         }
 
         // Verifica unicità del ruolo
-        List<Ruoli> ruoliEsistenti = ruoliRepo.findByRuolo(ruolo.getRuolo().trim());
+        List<Ruolo> ruoliEsistenti = ruoloRepo.findByRuolo(ruolo.getRuolo().trim());
         if (!ruoliEsistenti.isEmpty()) {
             throw new IllegalArgumentException("Un ruolo con nome '" + ruolo.getRuolo() + "' esiste già");
         }
 
-        return ruoliRepo.save(ruolo);
+        return ruoloRepo.save(ruolo);
     }
 
     /**
@@ -92,14 +92,14 @@ public class RuoliService {
      * @return il ruolo aggiornato
      * @throws IllegalArgumentException se i dati sono non validi o il ruolo non esiste
      */
-    public Ruoli aggiornaRuolo(Ruoli ruolo) {
+    public Ruolo aggiornaRuolo(Ruolo ruolo) {
         if (ruolo == null) {
             throw new IllegalArgumentException("Il ruolo non può essere null");
         }
         if (ruolo.getId() == null || ruolo.getId() <= 0) {
             throw new IllegalArgumentException("L'ID del ruolo è obbligatorio per l'aggiornamento");
         }
-        if (!ruoliRepo.existsById(ruolo.getId())) {
+        if (!ruoloRepo.existsById(ruolo.getId())) {
             throw new IllegalArgumentException("Ruolo con ID " + ruolo.getId() + " non trovato");
         }
         if (ruolo.getRuolo() == null || ruolo.getRuolo().trim().isEmpty()) {
@@ -107,12 +107,12 @@ public class RuoliService {
         }
 
         // Verifica unicità del ruolo (escludendo l'ID corrente)
-        List<Ruoli> ruoliEsistenti = ruoliRepo.findByRuolo(ruolo.getRuolo().trim());
+        List<Ruolo> ruoliEsistenti = ruoloRepo.findByRuolo(ruolo.getRuolo().trim());
         if (!ruoliEsistenti.isEmpty() && !ruoliEsistenti.get(0).getId().equals(ruolo.getId())) {
             throw new IllegalArgumentException("Un ruolo con nome '" + ruolo.getRuolo() + "' esiste già");
         }
 
-        return ruoliRepo.save(ruolo);
+        return ruoloRepo.save(ruolo);
     }
 
     /**
@@ -124,9 +124,9 @@ public class RuoliService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID del ruolo non può essere null o negativo");
         }
-        if (!ruoliRepo.existsById(id)) {
+        if (!ruoloRepo.existsById(id)) {
             throw new IllegalArgumentException("Ruolo con ID " + id + " non trovato");
         }
-        ruoliRepo.deleteById(id);
+        ruoloRepo.deleteById(id);
     }
 }

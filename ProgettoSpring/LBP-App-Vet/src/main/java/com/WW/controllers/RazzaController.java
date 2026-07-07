@@ -1,7 +1,7 @@
 package com.WW.controllers;
 
-import com.WW.entities.Razze;
-import com.WW.services.RazzeService;
+import com.WW.entities.Razza;
+import com.WW.services.RazzaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +12,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/razze")
 @CrossOrigin(origins = "*")
-public class RazzeController {
+public class RazzaController {
 
-    private final RazzeService razzeService;
+    private final RazzaService razzaService;
 
-    public RazzeController(RazzeService razzeService) {
-        this.razzeService = razzeService;
+    public RazzaController(RazzaService razzaService) {
+        this.razzaService = razzaService;
     }
 
     /**
@@ -25,9 +25,9 @@ public class RazzeController {
      * @return lista di tutte le razze
      */
     @GetMapping
-    public ResponseEntity<List<Razze>> getAllRazze() {
+    public ResponseEntity<List<Razza>> getAllRazze() {
         try {
-            List<Razze> razze = razzeService.visualizzaTutteRazze();
+            List<Razza> razze = razzaService.visualizzaTutteRazze();
             return ResponseEntity.ok(razze);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -40,9 +40,9 @@ public class RazzeController {
      * @return la razza se trovata
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Razze> getRazzaById(@PathVariable Integer id) {
+    public ResponseEntity<Razza> getRazzaById(@PathVariable Integer id) {
         try {
-            Optional<Razze> razza = razzeService.getRazzaById(id);
+            Optional<Razza> razza = razzaService.getRazzaById(id);
             return razza.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
@@ -58,9 +58,9 @@ public class RazzeController {
      * @return lista di razze corrispondenti
      */
     @GetMapping("/cerca/id")
-    public ResponseEntity<List<Razze>> findRazzeById(@RequestParam Integer id) {
+    public ResponseEntity<List<Razza>> findRazzeById(@RequestParam Integer id) {
         try {
-            List<Razze> razze = razzeService.findRazzeById(id);
+            List<Razza> razze = razzaService.findRazzeById(id);
             return ResponseEntity.ok(razze);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -75,9 +75,9 @@ public class RazzeController {
      * @return lista di razze corrispondenti
      */
     @GetMapping("/cerca/nome")
-    public ResponseEntity<List<Razze>> findByNome(@RequestParam String nome) {
+    public ResponseEntity<List<Razza>> findByNome(@RequestParam String nome) {
         try {
-            List<Razze> razze = razzeService.findByNome(nome);
+            List<Razza> razze = razzaService.findByNome(nome);
             return ResponseEntity.ok(razze);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -92,9 +92,9 @@ public class RazzeController {
      * @return la razza creata
      */
     @PostMapping
-    public ResponseEntity<Razze> createRazza(@RequestBody Razze razza) {
+    public ResponseEntity<Razza> createRazza(@RequestBody Razza razza) {
         try {
-            Razze razzaCreata = razzeService.salvaRazza(razza);
+            Razza razzaCreata = razzaService.salvaRazza(razza);
             return ResponseEntity.status(HttpStatus.CREATED).body(razzaCreata);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -110,12 +110,12 @@ public class RazzeController {
      * @return la razza aggiornata
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Razze> updateRazza(
+    public ResponseEntity<Razza> updateRazza(
             @PathVariable Integer id,
-            @RequestBody Razze razza) {
+            @RequestBody Razza razza) {
         try {
             razza.setId(id);
-            Razze razzaAggiornata = razzeService.aggiornaRazza(razza);
+            Razza razzaAggiornata = razzaService.aggiornaRazza(razza);
             return ResponseEntity.ok(razzaAggiornata);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -132,7 +132,7 @@ public class RazzeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRazza(@PathVariable Integer id) {
         try {
-            razzeService.eliminaRazza(id);
+            razzaService.eliminaRazza(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -149,7 +149,7 @@ public class RazzeController {
     @DeleteMapping("/{id}/fisico")
     public ResponseEntity<Void> deleteRazzaFisica(@PathVariable Integer id) {
         try {
-            razzeService.eliminaRazzaFisica(id);
+            razzaService.eliminaRazzaFisica(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

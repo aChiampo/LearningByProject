@@ -20,6 +20,6 @@ E' necessario aggingere il JavaDoc ad ogni:
   }
 ```
 
-Le entità devono essere al singolare, ad esempio `Utente` e non `Utenti`
+Le entità devono essere al singolare, ad esempio `Utente` e non `Utenti`, lo stesso per i derivati repository o service.
 ### Commenti 
 Siete incoraggiati ad aggiungere commenti al codice nei punti piu delicati, ad esempio scrivendo la query che viene implementata in quella funzione

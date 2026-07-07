@@ -1,27 +1,27 @@
 package com.WW.services;
 
-import com.WW.entities.TipiVaccino;
-import com.WW.repositories.TipiVaccinoRepo;
+import com.WW.entities.TipoVaccino;
+import com.WW.repositories.TipoVaccinoRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TipiVaccinoService {
+public class TipoVaccinoService {
 
-    private final TipiVaccinoRepo tipiVaccinoRepo;
+    private final TipoVaccinoRepo tipoVaccinoRepo;
 
-    public TipiVaccinoService(TipiVaccinoRepo tipiVaccinoRepo) {
-        this.tipiVaccinoRepo = tipiVaccinoRepo;
+    public TipoVaccinoService(TipoVaccinoRepo tipoVaccinoRepo) {
+        this.tipoVaccinoRepo = tipoVaccinoRepo;
     }
 
     /**
      * Visualizza tutti i tipi di vaccino
      * @return lista di tutti i tipi di vaccino
      */
-    public List<TipiVaccino> visualizzaTuttiTipiVaccino() {
-        return tipiVaccinoRepo.findAll();
+    public List<TipoVaccino> visualizzaTuttiTipiVaccino() {
+        return tipoVaccinoRepo.findAll();
     }
 
     /**
@@ -30,11 +30,11 @@ public class TipiVaccinoService {
      * @return lista di tipi di vaccino corrispondenti
      * @throws IllegalArgumentException se la tipologia è null o vuota
      */
-    public List<TipiVaccino> findByTipologia(String tipologia) {
+    public List<TipoVaccino> findByTipologia(String tipologia) {
         if (tipologia == null || tipologia.trim().isEmpty()) {
             throw new IllegalArgumentException("La tipologia del vaccino non può essere null o vuota");
         }
-        return tipiVaccinoRepo.findByTipologia(tipologia);
+        return tipoVaccinoRepo.findByTipologia(tipologia);
     }
 
     /**
@@ -43,11 +43,11 @@ public class TipiVaccinoService {
      * @return lista di tipi di vaccino con la durata specificata
      * @throws IllegalArgumentException se la durata è negativa o zero
      */
-    public List<TipiVaccino> findByDurata(int durata) {
+    public List<TipoVaccino> findByDurata(int durata) {
         if (durata <= 0) {
             throw new IllegalArgumentException("La durata del vaccino deve essere maggiore di zero");
         }
-        return tipiVaccinoRepo.findByDurata(durata);
+        return tipoVaccinoRepo.findByDurata(durata);
     }
 
     /**
@@ -56,11 +56,11 @@ public class TipiVaccinoService {
      * @return il tipo di vaccino se presente
      * @throws IllegalArgumentException se l'ID è null o negativo
      */
-    public Optional<TipiVaccino> getTipoVaccinoById(Integer id) {
+    public Optional<TipoVaccino> getTipoVaccinoById(Integer id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID del tipo di vaccino non può essere null o negativo");
         }
-        return tipiVaccinoRepo.findById(id);
+        return tipoVaccinoRepo.findById(id);
     }
 
     /**
@@ -69,7 +69,7 @@ public class TipiVaccinoService {
      * @return il tipo di vaccino salvato
      * @throws IllegalArgumentException se i dati obbligatori sono mancanti
      */
-    public TipiVaccino salvaTipoVaccino(TipiVaccino tipoVaccino) {
+    public TipoVaccino salvaTipoVaccino(TipoVaccino tipoVaccino) {
         if (tipoVaccino == null) {
             throw new IllegalArgumentException("Il tipo di vaccino non può essere null");
         }
@@ -79,7 +79,7 @@ public class TipiVaccinoService {
         if (tipoVaccino.getDurata() <= 0) {
             throw new IllegalArgumentException("La durata del vaccino deve essere maggiore di zero");
         }
-        return tipiVaccinoRepo.save(tipoVaccino);
+        return tipoVaccinoRepo.save(tipoVaccino);
     }
 
     /**
@@ -88,14 +88,14 @@ public class TipiVaccinoService {
      * @return il tipo di vaccino aggiornato
      * @throws IllegalArgumentException se i dati sono non validi o il tipo di vaccino non esiste
      */
-    public TipiVaccino aggiornaTipoVaccino(TipiVaccino tipoVaccino) {
+    public TipoVaccino aggiornaTipoVaccino(TipoVaccino tipoVaccino) {
         if (tipoVaccino == null) {
             throw new IllegalArgumentException("Il tipo di vaccino non può essere null");
         }
         if (tipoVaccino.getId() == null || tipoVaccino.getId() <= 0) {
             throw new IllegalArgumentException("L'ID del tipo di vaccino è obbligatorio per l'aggiornamento");
         }
-        if (!tipiVaccinoRepo.existsById(tipoVaccino.getId())) {
+        if (!tipoVaccinoRepo.existsById(tipoVaccino.getId())) {
             throw new IllegalArgumentException("Tipo di vaccino con ID " + tipoVaccino.getId() + " non trovato");
         }
         if (tipoVaccino.getTipologia() == null || tipoVaccino.getTipologia().trim().isEmpty()) {
@@ -104,7 +104,7 @@ public class TipiVaccinoService {
         if (tipoVaccino.getDurata() <= 0) {
             throw new IllegalArgumentException("La durata del vaccino deve essere maggiore di zero");
         }
-        return tipiVaccinoRepo.save(tipoVaccino);
+        return tipoVaccinoRepo.save(tipoVaccino);
     }
 
     /**
@@ -116,9 +116,9 @@ public class TipiVaccinoService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID del tipo di vaccino non può essere null o negativo");
         }
-        if (!tipiVaccinoRepo.existsById(id)) {
+        if (!tipoVaccinoRepo.existsById(id)) {
             throw new IllegalArgumentException("Tipo di vaccino con ID " + id + " non trovato");
         }
-        tipiVaccinoRepo.deleteById(id);
+        tipoVaccinoRepo.deleteById(id);
     }
 }

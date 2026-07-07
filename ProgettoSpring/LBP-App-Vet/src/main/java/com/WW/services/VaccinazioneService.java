@@ -1,8 +1,8 @@
 package com.WW.services;
 
-import com.WW.entities.Vaccinazioni;
-import com.WW.entities.TipiVaccino;
-import com.WW.repositories.VaccinazioniRepo;
+import com.WW.entities.Vaccinazione;
+import com.WW.entities.TipoVaccino;
+import com.WW.repositories.VaccinazioneRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,20 +10,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class VaccinazioniService {
+public class VaccinazioneService {
 
-    private final VaccinazioniRepo vaccinazioniRepo;
+    private final VaccinazioneRepo vaccinazioneRepo;
 
-    public VaccinazioniService(VaccinazioniRepo vaccinazioniRepo) {
-        this.vaccinazioniRepo = vaccinazioniRepo;
+    public VaccinazioneService(VaccinazioneRepo vaccinazioneRepo) {
+        this.vaccinazioneRepo = vaccinazioneRepo;
     }
 
     /**
      * Visualizza tutte le vaccinazioni effettuate
      * @return lista di tutte le vaccinazioni
      */
-    public List<Vaccinazioni> visualizzaTutteVaccinazioni() {
-        return vaccinazioniRepo.findAll();
+    public List<Vaccinazione> visualizzaTutteVaccinazioni() {
+        return vaccinazioneRepo.findAll();
     }
 
     /**
@@ -32,11 +32,11 @@ public class VaccinazioniService {
      * @return lista di vaccinazioni corrispondenti
      * @throws IllegalArgumentException se il tipo di vaccino è null
      */
-    public List<Vaccinazioni> findByIdTipoVaccino(TipiVaccino idTipoVaccino) {
+    public List<Vaccinazione> findByIdTipoVaccino(TipoVaccino idTipoVaccino) {
         if (idTipoVaccino == null) {
             throw new IllegalArgumentException("Il tipo di vaccino non può essere null");
         }
-        return vaccinazioniRepo.findByIdTipoVaccino(idTipoVaccino);
+        return vaccinazioneRepo.findByIdTipoVaccino(idTipoVaccino);
     }
 
     /**
@@ -45,11 +45,11 @@ public class VaccinazioniService {
      * @return lista di vaccinazioni corrispondenti
      * @throws IllegalArgumentException se la data è null
      */
-    public List<Vaccinazioni> findByDataVaccinazione(LocalDateTime dataVaccinazione) {
+    public List<Vaccinazione> findByDataVaccinazione(LocalDateTime dataVaccinazione) {
         if (dataVaccinazione == null) {
             throw new IllegalArgumentException("La data di vaccinazione non può essere null");
         }
-        return vaccinazioniRepo.findByDataVaccinazione(dataVaccinazione);
+        return vaccinazioneRepo.findByDataVaccinazione(dataVaccinazione);
     }
 
     /**
@@ -58,11 +58,11 @@ public class VaccinazioniService {
      * @return lista di vaccinazioni corrispondenti
      * @throws IllegalArgumentException se il lotto è null o vuoto
      */
-    public List<Vaccinazioni> findByLotto(String lotto) {
+    public List<Vaccinazione> findByLotto(String lotto) {
         if (lotto == null || lotto.trim().isEmpty()) {
             throw new IllegalArgumentException("Il numero di lotto non può essere null o vuoto");
         }
-        return vaccinazioniRepo.findByLotto(lotto);
+        return vaccinazioneRepo.findByLotto(lotto);
     }
 
     /**
@@ -71,11 +71,11 @@ public class VaccinazioniService {
      * @return la vaccinazione se presente
      * @throws IllegalArgumentException se l'ID è null o negativo
      */
-    public Optional<Vaccinazioni> getVaccinazioneById(Integer id) {
+    public Optional<Vaccinazione> getVaccinazioneById(Integer id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della vaccinazione non può essere null o negativo");
         }
-        return vaccinazioniRepo.findById(id);
+        return vaccinazioneRepo.findById(id);
     }
 
     /**
@@ -84,7 +84,7 @@ public class VaccinazioniService {
      * @return la vaccinazione salvata
      * @throws IllegalArgumentException se la vaccinazione è null, il tipo di vaccino è null o l'animale è null
      */
-    public Vaccinazioni salvaVaccinazione(Vaccinazioni vaccinazione) {
+    public Vaccinazione salvaVaccinazione(Vaccinazione vaccinazione) {
         if (vaccinazione == null) {
             throw new IllegalArgumentException("La vaccinazione non può essere null");
         }
@@ -97,7 +97,7 @@ public class VaccinazioniService {
         if (vaccinazione.getDataVaccinazione() == null) {
             throw new IllegalArgumentException("La data di vaccinazione non può essere null");
         }
-        return vaccinazioniRepo.save(vaccinazione);
+        return vaccinazioneRepo.save(vaccinazione);
     }
 
     /**
@@ -106,14 +106,14 @@ public class VaccinazioniService {
      * @return la vaccinazione aggiornata
      * @throws IllegalArgumentException se la vaccinazione è null, l'ID non esiste o i dati obbligatori sono mancanti
      */
-    public Vaccinazioni aggiornaVaccinazione(Vaccinazioni vaccinazione) {
+    public Vaccinazione aggiornaVaccinazione(Vaccinazione vaccinazione) {
         if (vaccinazione == null) {
             throw new IllegalArgumentException("La vaccinazione non può essere null");
         }
         if (vaccinazione.getId() == null || vaccinazione.getId() <= 0) {
             throw new IllegalArgumentException("L'ID della vaccinazione è obbligatorio per l'aggiornamento");
         }
-        if (!vaccinazioniRepo.existsById(vaccinazione.getId())) {
+        if (!vaccinazioneRepo.existsById(vaccinazione.getId())) {
             throw new IllegalArgumentException("Vaccinazione con ID " + vaccinazione.getId() + " non trovata");
         }
         if (vaccinazione.getIdTipoVaccino() == null) {
@@ -125,7 +125,7 @@ public class VaccinazioniService {
         if (vaccinazione.getDataVaccinazione() == null) {
             throw new IllegalArgumentException("La data di vaccinazione non può essere null");
         }
-        return vaccinazioniRepo.save(vaccinazione);
+        return vaccinazioneRepo.save(vaccinazione);
     }
 
     /**
@@ -137,9 +137,9 @@ public class VaccinazioniService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della vaccinazione non può essere null o negativo");
         }
-        if (!vaccinazioniRepo.existsById(id)) {
+        if (!vaccinazioneRepo.existsById(id)) {
             throw new IllegalArgumentException("Vaccinazione con ID " + id + " non trovata");
         }
-        vaccinazioniRepo.deleteById(id);
+        vaccinazioneRepo.deleteById(id);
     }
 }

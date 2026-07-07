@@ -1,7 +1,7 @@
 package com.WW.controllers;
 
-import com.WW.entities.Ruoli;
-import com.WW.services.RuoliService;
+import com.WW.entities.Ruolo;
+import com.WW.services.RuoloService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +12,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/ruoli")
 @CrossOrigin(origins = "*")
-public class RuoliController {
+public class RuoloController {
 
-    private final RuoliService ruoliService;
+    private final RuoloService ruoloService;
 
-    public RuoliController(RuoliService ruoliService) {
-        this.ruoliService = ruoliService;
+    public RuoloController(RuoloService ruoloService) {
+        this.ruoloService = ruoloService;
     }
 
     /**
@@ -25,9 +25,9 @@ public class RuoliController {
      * @return lista di tutti i ruoli
      */
     @GetMapping
-    public ResponseEntity<List<Ruoli>> getAllRuoli() {
+    public ResponseEntity<List<Ruolo>> getAllRuoli() {
         try {
-            List<Ruoli> ruoli = ruoliService.visualizzaTuttiRuoli();
+            List<Ruolo> ruoli = ruoloService.visualizzaTuttiRuoli();
             return ResponseEntity.ok(ruoli);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -40,9 +40,9 @@ public class RuoliController {
      * @return il ruolo se trovato
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Ruoli> getRuoloById(@PathVariable Integer id) {
+    public ResponseEntity<Ruolo> getRuoloById(@PathVariable Integer id) {
         try {
-            Optional<Ruoli> ruolo = ruoliService.getRuoloById(id);
+            Optional<Ruolo> ruolo = ruoloService.getRuoloById(id);
             return ruolo.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
@@ -58,9 +58,9 @@ public class RuoliController {
      * @return lista di ruoli corrispondenti
      */
     @GetMapping("/cerca/id")
-    public ResponseEntity<List<Ruoli>> findRuoliById(@RequestParam Integer id) {
+    public ResponseEntity<List<Ruolo>> findRuoliById(@RequestParam Integer id) {
         try {
-            List<Ruoli> ruoli = ruoliService.findRuoliById(id);
+            List<Ruolo> ruoli = ruoloService.findRuoliById(id);
             return ResponseEntity.ok(ruoli);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -75,9 +75,9 @@ public class RuoliController {
      * @return lista di ruoli corrispondenti
      */
     @GetMapping("/cerca/nome")
-    public ResponseEntity<List<Ruoli>> findByRuolo(@RequestParam String ruolo) {
+    public ResponseEntity<List<Ruolo>> findByRuolo(@RequestParam String ruolo) {
         try {
-            List<Ruoli> ruoli = ruoliService.findByRuolo(ruolo);
+            List<Ruolo> ruoli = ruoloService.findByRuolo(ruolo);
             return ResponseEntity.ok(ruoli);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -92,9 +92,9 @@ public class RuoliController {
      * @return il ruolo creato
      */
     @PostMapping
-    public ResponseEntity<Ruoli> createRuolo(@RequestBody Ruoli ruolo) {
+    public ResponseEntity<Ruolo> createRuolo(@RequestBody Ruolo ruolo) {
         try {
-            Ruoli ruoloCreato = ruoliService.salvaRuolo(ruolo);
+            Ruolo ruoloCreato = ruoloService.salvaRuolo(ruolo);
             return ResponseEntity.status(HttpStatus.CREATED).body(ruoloCreato);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -110,12 +110,12 @@ public class RuoliController {
      * @return il ruolo aggiornato
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Ruoli> updateRuolo(
+    public ResponseEntity<Ruolo> updateRuolo(
             @PathVariable Integer id,
-            @RequestBody Ruoli ruolo) {
+            @RequestBody Ruolo ruolo) {
         try {
             ruolo.setId(id);
-            Ruoli ruoloAggiornato = ruoliService.aggiornaRuolo(ruolo);
+            Ruolo ruoloAggiornato = ruoloService.aggiornaRuolo(ruolo);
             return ResponseEntity.ok(ruoloAggiornato);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -132,7 +132,7 @@ public class RuoliController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRuolo(@PathVariable Integer id) {
         try {
-            ruoliService.eliminaRuolo(id);
+            ruoloService.eliminaRuolo(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

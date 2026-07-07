@@ -1,8 +1,8 @@
 package com.WW.controllers;
 
-import com.WW.entities.Vaccinazioni;
-import com.WW.entities.TipiVaccino;
-import com.WW.services.VaccinazioniService;
+import com.WW.entities.Vaccinazione;
+import com.WW.entities.TipoVaccino;
+import com.WW.services.VaccinazioneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +14,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/vaccinazioni")
 @CrossOrigin(origins = "*")
-public class VaccinazioniController {
+public class VaccinazioneController {
 
-    private final VaccinazioniService vaccinazioniService;
+    private final VaccinazioneService vaccinazioniService;
 
-    public VaccinazioniController(VaccinazioniService vaccinazioniService) {
+    public VaccinazioneController(VaccinazioneService vaccinazioniService) {
         this.vaccinazioniService = vaccinazioniService;
     }
 
@@ -27,9 +27,9 @@ public class VaccinazioniController {
      * @return lista di tutte le vaccinazioni
      */
     @GetMapping
-    public ResponseEntity<List<Vaccinazioni>> getAllVaccinazioni() {
+    public ResponseEntity<List<Vaccinazione>> getAllVaccinazioni() {
         try {
-            List<Vaccinazioni> vaccinazioni = vaccinazioniService.visualizzaTutteVaccinazioni();
+            List<Vaccinazione> vaccinazioni = vaccinazioniService.visualizzaTutteVaccinazioni();
             return ResponseEntity.ok(vaccinazioni);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -42,9 +42,9 @@ public class VaccinazioniController {
      * @return la vaccinazione se trovata
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Vaccinazioni> getVaccinazioneById(@PathVariable Integer id) {
+    public ResponseEntity<Vaccinazione> getVaccinazioneById(@PathVariable Integer id) {
         try {
-            Optional<Vaccinazioni> vaccinazione = vaccinazioniService.getVaccinazioneById(id);
+            Optional<Vaccinazione> vaccinazione = vaccinazioniService.getVaccinazioneById(id);
             return vaccinazione.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
@@ -60,11 +60,11 @@ public class VaccinazioniController {
      * @return lista di vaccinazioni del tipo specificato
      */
     @GetMapping("/cerca/tipo/{idTipoVaccino}")
-    public ResponseEntity<List<Vaccinazioni>> getVaccinazioniByTipo(@PathVariable Integer idTipoVaccino) {
+    public ResponseEntity<List<Vaccinazione>> getVaccinazioniByTipo(@PathVariable Integer idTipoVaccino) {
         try {
-            TipiVaccino tipoVaccino = new TipiVaccino();
+            TipoVaccino tipoVaccino = new TipoVaccino();
             tipoVaccino.setId(idTipoVaccino);
-            List<Vaccinazioni> vaccinazioni = vaccinazioniService.findByIdTipoVaccino(tipoVaccino);
+            List<Vaccinazione> vaccinazioni = vaccinazioniService.findByIdTipoVaccino(tipoVaccino);
             return ResponseEntity.ok(vaccinazioni);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -79,9 +79,9 @@ public class VaccinazioniController {
      * @return lista di vaccinazioni della data specificata
      */
     @GetMapping("/cerca/data")
-    public ResponseEntity<List<Vaccinazioni>> getVaccinazioniByData(@RequestParam LocalDateTime data) {
+    public ResponseEntity<List<Vaccinazione>> getVaccinazioniByData(@RequestParam LocalDateTime data) {
         try {
-            List<Vaccinazioni> vaccinazioni = vaccinazioniService.findByDataVaccinazione(data);
+            List<Vaccinazione> vaccinazioni = vaccinazioniService.findByDataVaccinazione(data);
             return ResponseEntity.ok(vaccinazioni);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -96,9 +96,9 @@ public class VaccinazioniController {
      * @return lista di vaccinazioni del lotto specificato
      */
     @GetMapping("/cerca/lotto")
-    public ResponseEntity<List<Vaccinazioni>> getVaccinazioniByLotto(@RequestParam String lotto) {
+    public ResponseEntity<List<Vaccinazione>> getVaccinazioniByLotto(@RequestParam String lotto) {
         try {
-            List<Vaccinazioni> vaccinazioni = vaccinazioniService.findByLotto(lotto);
+            List<Vaccinazione> vaccinazioni = vaccinazioniService.findByLotto(lotto);
             return ResponseEntity.ok(vaccinazioni);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -113,9 +113,9 @@ public class VaccinazioniController {
      * @return la vaccinazione creata
      */
     @PostMapping
-    public ResponseEntity<Vaccinazioni> createVaccinazione(@RequestBody Vaccinazioni vaccinazione) {
+    public ResponseEntity<Vaccinazione> createVaccinazione(@RequestBody Vaccinazione vaccinazione) {
         try {
-            Vaccinazioni vaccinazioneCreata = vaccinazioniService.salvaVaccinazione(vaccinazione);
+            Vaccinazione vaccinazioneCreata = vaccinazioniService.salvaVaccinazione(vaccinazione);
             return ResponseEntity.status(HttpStatus.CREATED).body(vaccinazioneCreata);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -131,12 +131,12 @@ public class VaccinazioniController {
      * @return la vaccinazione aggiornata
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Vaccinazioni> updateVaccinazione(
+    public ResponseEntity<Vaccinazione> updateVaccinazione(
             @PathVariable Integer id,
-            @RequestBody Vaccinazioni vaccinazione) {
+            @RequestBody Vaccinazione vaccinazione) {
         try {
             vaccinazione.setId(id);
-            Vaccinazioni vaccinazioneAggiornata = vaccinazioniService.aggiornaVaccinazione(vaccinazione);
+            Vaccinazione vaccinazioneAggiornata = vaccinazioniService.aggiornaVaccinazione(vaccinazione);
             return ResponseEntity.ok(vaccinazioneAggiornata);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
