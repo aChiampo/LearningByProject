@@ -10,7 +10,6 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.WW.entities.Ruolo;
 import com.WW.entities.Utente;
 
 import io.jsonwebtoken.Claims;
@@ -49,8 +48,6 @@ public class ServizioJwt {
     public String creaToken(Utente utente) {
         Instant oraCorrente = Instant.now();
         Instant scadenza = oraCorrente.plusSeconds(scadenzaSecondi);
-        Ruolo ruolo = utente.getRuolo();
-
         return Jwts.builder()
                 .subject(utente.getId().toString())
                 .claim("email", utente.getEmail())

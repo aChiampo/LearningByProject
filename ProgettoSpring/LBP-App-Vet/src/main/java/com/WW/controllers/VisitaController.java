@@ -100,7 +100,7 @@ public class VisitaController {
      */
     @GetMapping("/ottieniPagate")
     public ResponseEntity<List<Visita>> ottieniPagate() {
-        return ResponseEntity.ok(visitaService.getVisitePagate());
+        return ResponseEntity.ok(visitaService.OttieniVisitePagate());
     }
 
     /**
@@ -110,7 +110,29 @@ public class VisitaController {
      */
     @GetMapping("/ottieniNonPagate")
     public ResponseEntity<List<Visita>> ottieniNonPagate() {
-        return ResponseEntity.ok(visitaService.getVisiteNonPagate());
+        return ResponseEntity.ok(visitaService.OttieniVisiteNonPagate());
+    }
+
+    /**
+     * Restituisce tutte le visite pagate di un animale.
+     *
+     * @param idAnimale identificativo dell'animale
+     * @return visite pagate dell'animale
+     */
+    @GetMapping("/ottieniPagatePerAnimale/{idAnimale}")
+    public ResponseEntity<List<Visita>> ottieniPagatePerAnimale(@PathVariable int idAnimale) {
+        return ResponseEntity.ok(visitaService.OttieniVisitePagatebyAnimale(idAnimale));
+    }
+
+    /**
+     * Restituisce tutte le visite non pagate di un animale.
+     *
+     * @param idAnimale identificativo dell'animale
+     * @return visite non pagate dell'animale
+     */
+    @GetMapping("/ottieniNonPagatePerAnimale/{idAnimale}")
+    public ResponseEntity<List<Visita>> ottieniNonPagatePerAnimale(@PathVariable int idAnimale) {
+        return ResponseEntity.ok(visitaService.OttieniVisiteNonPagateByAnimale(idAnimale));
     }
 
     /**

@@ -155,14 +155,6 @@ public class VisitaService {
         return visitaRepository.save(visita);
     }
 
-    /**
-     * Aggiorna lo stato di pagamento di una visita e salva le modifiche nel
-     * database.
-     *
-     * @param visita visita da aggiornare
-     * @param pagato nuovo stato di pagamento
-     * @return la visita aggiornata
-     */
 
     /**
      * Elimina una visita esistente.
@@ -178,5 +170,66 @@ public class VisitaService {
         }
         visitaRepository.deleteById(id);
     }
+
+    /**
+     * Restituisce tutte le visite che risultano pagate.
+     *
+     * @return elenco delle visite pagate
+     */
+    public List<Visita> OttieniVisitePagate() {
+        
+        List<Visita> pagate = visitaRepository.findAll().stream()
+                .filter(visita -> visita.getPagamento() != null)
+                .toList(); 
+
+
+        return pagate;
+    }
+
+    /**
+     * Restituisce tutte le visite che risultano non pagate.
+     *
+     * @return elenco delle visite non pagate
+     */
+    public List<Visita> OttieniVisiteNonPagate() {
+        List<Visita> nonPagate = visitaRepository.findAll().stream()
+                .filter(visita -> visita.getPagamento() == null)
+                .toList(); 
+
+        return nonPagate;
+    }
+
+    /**
+     * Restituisce tutte le visite che risultano pagate.
+     * @param idAnimale identificativo dell'Animale 
+     * 
+     * @return elenco delle visite pagate
+     */
+    public List<Visita> OttieniVisitePagatebyAnimale(int idAnimale) {
+        
+        List<Visita> pagate = visitaRepository.findAll().stream()
+                .filter(visita -> visita.getPagamento() != null)
+                .filter(visita -> visita.getAnimale().getId() == idAnimale)
+                .toList(); 
+
+
+        return pagate;
+    }
+
+    /**
+     * Restituisce tutte le visite che risultano non pagate.
+     * @param idAnimale identificativo dell'Animale
+     * 
+     * @return elenco delle visite non pagate
+     */
+    public List<Visita> OttieniVisiteNonPagateByAnimale(int idAnimale) {
+        List<Visita> nonPagate = visitaRepository.findAll().stream()
+                .filter(visita -> visita.getPagamento() == null)
+                .filter(visita -> visita.getAnimale().getId() == idAnimale)
+                .toList(); 
+
+        return nonPagate;
+    }
+
 
 }
