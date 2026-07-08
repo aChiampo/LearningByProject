@@ -9,7 +9,8 @@ export default function Header() {
   const { currentRole, isLogged, setIsLogged, palette, setPalette } = useContext(AppContext);
 
   const userConfig = ROLE_CONFIG[currentRole];
-  const isPublicRoute = location.pathname === '/' || location.pathname === '/login';
+  const publicRoutes = ['/', '/login', '/registrati', '/first-appointment'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
 
   useEffect(() => {
     document.body.classList.remove(

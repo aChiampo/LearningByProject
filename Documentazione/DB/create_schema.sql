@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS utenti (
     citta VARCHAR(20),
     data_registrazione TIMESTAMP NOT NULL,
     id_azienda INTEGER,
-    riferimento VARCHAR(30),
+    codice_fiscale VARCHAR(16) NOT NULL UNIQUE,
     id_ruolo INTEGER NOT NULL,
     CONSTRAINT fk_utenti_aziende
         FOREIGN KEY (id_azienda) REFERENCES aziende(id),

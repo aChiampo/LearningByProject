@@ -530,6 +530,13 @@ body:has(#homepage:target) #homepage {
   text-decoration: underline;
 }
 
+.login-back-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
 .login-form {
   padding: 32px;
   border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--line));
@@ -1492,6 +1499,54 @@ label {
 
 .page-actions {
   margin-top: 16px;
+}
+
+.home-route-section,
+.home-public-section {
+  padding: clamp(22px, 4vw, 54px);
+}
+
+.home-route-section .route-option {
+  border-top: 4px solid var(--secondary) !important;
+  color: inherit !important;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.home-route-section button.route-option {
+  appearance: none;
+}
+
+.login-note button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary-dark);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.login-note button:hover {
+  text-decoration: underline;
+}
+
+.form-status {
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.form-status--success {
+  background: #dff3e6;
+  color: #17643a;
+}
+
+.form-status--error {
+  background: #f9e2e4;
+  color: var(--danger);
 }
 
 .auth-shell {
