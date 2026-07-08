@@ -6,6 +6,8 @@ import RoleRoute from './RoleRoute';
 import PlaceholderPage from '../components/common/PlaceholderPage';
 import HomePage from '../pages/public/HomePage';
 import LoginPage from '../pages/public/LoginPage';
+import RegisterPage from '../pages/public/RegisterPage';
+import FirstAppointmentPage from '../pages/public/FirstAppointmentPage';
 import ClientDashboard from '../pages/client/ClientDashboard';
 import ClientProfile from '../pages/client/ClientProfile';
 import ClientBooking from '../pages/client/ClientBooking';
@@ -31,6 +33,8 @@ export default function AppRouter() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/registrati" element={<RegisterPage />} />
+        <Route path="/first-appointment" element={<FirstAppointmentPage />} />
       </Route>
 
       <Route element={<ProtectedRoute />}>
