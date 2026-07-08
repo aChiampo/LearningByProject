@@ -34,6 +34,9 @@ public class PagamentiService {
         if (datiAggiornati.getTipoPagamento() != null && !datiAggiornati.getTipoPagamento().isBlank()) {
             esistente.setTipoPagamento(datiAggiornati.getTipoPagamento());
         }
+        if (datiAggiornati.getStato() != null && !datiAggiornati.getStato().isBlank()) {
+            esistente.setStato(datiAggiornati.getStato());
+        }
         if (datiAggiornati.getData() != null) {
             esistente.setData(datiAggiornati.getData());
         }

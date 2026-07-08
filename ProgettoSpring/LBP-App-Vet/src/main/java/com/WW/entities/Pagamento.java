@@ -35,10 +35,20 @@ public class Pagamento {
     @Column(name = "tipo_pagamento", length = 30)
     private String tipoPagamento;
 
+    @Column(name = "stato", length = 30)
+    private String stato;
+
     @Column(name = "importo_totale", precision = 8, scale = 2, nullable = false)
     private BigDecimal importoTotale;
 
     @ManyToOne
     @JoinColumn(name = "id_utente", referencedColumnName = "id")
     private Utente utente;
+
+    @ManyToOne
+    @JoinColumn(name = "riferimento_file", referencedColumnName = "id", nullable = false)
+    private FileReferences riferimentoFile;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 }
