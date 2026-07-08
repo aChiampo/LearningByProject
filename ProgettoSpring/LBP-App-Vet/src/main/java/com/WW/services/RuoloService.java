@@ -1,11 +1,12 @@
 package com.WW.services;
 
-import com.WW.entities.Ruolo;
-import com.WW.repositories.RuoloRepo;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.WW.entities.Ruolo;
+import com.WW.repositories.RuoloRepo;
 
 @Service
 public class RuoloService {
@@ -24,43 +25,11 @@ public class RuoloService {
         return ruoloRepo.findAll();
     }
 
-    /**
-     * Ricerca ruoli per ID
-     * @param id l'ID del ruolo
-     * @return lista di ruoli corrispondenti
-     * @throws IllegalArgumentException se l'ID è null o negativo
-     */
-    public List<Ruolo> findRuoliById(Integer id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("L'ID del ruolo non può essere null o negativo");
-        }
-        return ruoloRepo.findRuoliById(id);
-    }
-
-    /**
-     * Ricerca ruoli per nome
-     * @param ruolo il nome del ruolo
-     * @return lista di ruoli corrispondenti
-     * @throws IllegalArgumentException se il nome del ruolo è null o vuoto
-     */
-    public List<Ruolo> findByRuolo(String ruolo) {
+    public Optional<Ruolo> ottieniPerRuolo(String ruolo) {
         if (ruolo == null || ruolo.trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome del ruolo non può essere null o vuoto");
         }
-        return ruoloRepo.findByRuolo(ruolo);
-    }
-
-    /**
-     * Recupera un ruolo per ID
-     * @param id l'ID del ruolo
-     * @return il ruolo se presente
-     * @throws IllegalArgumentException se l'ID è null o negativo
-     */
-    public Optional<Ruolo> getRuoloById(Integer id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("L'ID del ruolo non può essere null o negativo");
-        }
-        return ruoloRepo.findById(id);
+        return ruoloRepo.findByRuolo(ruolo.trim().toUpperCase());
     }
 
     /**
@@ -76,10 +45,11 @@ public class RuoloService {
         if (ruolo.getRuolo() == null || ruolo.getRuolo().trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome del ruolo è obbligatorio");
         }
-
+        
         // Verifica unicità del ruolo
-        List<Ruolo> ruoliEsistenti = ruoloRepo.findByRuolo(ruolo.getRuolo().trim());
-        if (!ruoliEsistenti.isEmpty()) {
+        ruolo.setRuolo(ruolo.getRuolo().trim().toUpperCase());
+        
+        if (ruoloRepo.findByRuolo(ruolo.getRuolo()).isPresent()) {
             throw new IllegalArgumentException("Un ruolo con nome '" + ruolo.getRuolo() + "' esiste già");
         }
 
@@ -105,10 +75,10 @@ public class RuoloService {
         if (ruolo.getRuolo() == null || ruolo.getRuolo().trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome del ruolo è obbligatorio");
         }
-
+        ruolo.setRuolo(ruolo.getRuolo().trim().toUpperCase());
         // Verifica unicità del ruolo (escludendo l'ID corrente)
-        List<Ruolo> ruoliEsistenti = ruoloRepo.findByRuolo(ruolo.getRuolo().trim());
-        if (!ruoliEsistenti.isEmpty() && !ruoliEsistenti.get(0).getId().equals(ruolo.getId())) {
+        Optional<Ruolo> optionalRuolo = ruoloRepo.findByRuolo(ruolo.getRuolo());
+        if (optionalRuolo.isPresent() && !optionalRuolo.get().getId().equals(ruolo.getId())) {
             throw new IllegalArgumentException("Un ruolo con nome '" + ruolo.getRuolo() + "' esiste già");
         }
 
@@ -128,5 +98,12 @@ public class RuoloService {
             throw new IllegalArgumentException("Ruolo con ID " + id + " non trovato");
         }
         ruoloRepo.deleteById(id);
+    }
+
+    public Ruolo ottieniPerId(Integer id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("L'ID del ruolo non può essere null o negativo");
+        }
+        return ruoloRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Ruolo con ID " + id + " non trovato"));
     }
 }

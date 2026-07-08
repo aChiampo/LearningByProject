@@ -1,17 +1,13 @@
 package com.WW.autenticazione;
 
-import com.WW.entities.Utente;
-import com.WW.repositories.UtenteRepo;
-import com.WW.sicurezza.ServizioJwt;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Controller REST che gestisce le operazioni di autenticazione.
@@ -21,9 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class AutenticazioneController {
 
-    private final UtenteRepo utenteRepo;
-    private final PasswordEncoder codificatorePassword;
-    private final ServizioJwt servizioJwt;
+    private final AutenticazioneService autenticazioneService;
 
     /**
      * Autentica un utente tramite email e password e restituisce un token Bearer.
@@ -33,16 +27,11 @@ public class AutenticazioneController {
      */
     @PostMapping("/login")
     public ResponseEntity<RispostaLogin> accedi(@RequestBody RichiestaLogin richiesta) {
-        Utente utente = utenteRepo.findByEmail(richiesta.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide."));
+        return ResponseEntity.ok(autenticazioneService.accedi(richiesta));
+    }
 
-        if (!codificatorePassword.matches(richiesta.password(), utente.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
-        }
-
-        String token = servizioJwt.creaToken(utente);
-        RispostaLogin risposta = new RispostaLogin(token, "Bearer", servizioJwt.ottieniScadenzaSecondi());
-
-        return ResponseEntity.ok(risposta);
+    @PostMapping("/signin")
+    public ResponseEntity<RispostaLogin> registrazione(@RequestBody RichiestaRegistrazione richiesta) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(autenticazioneService.registra(richiesta));
     }
 }

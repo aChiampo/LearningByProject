@@ -1,6 +1,7 @@
 package com.WW.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +32,9 @@ public class UtenteService {
      */
     @Transactional
     public Utente aggiungiUtente(Utente utente) {
+        if (!utenteRepo.findByEmail(utente.getEmail()).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già in uso.");
+        }
         if (utente.getPasswordHash() != null && !utente.getPasswordHash().isBlank()) {
             utente.setPasswordHash(passwordEncoder.encode(utente.getPasswordHash()));
         }
@@ -111,5 +115,9 @@ public class UtenteService {
                     "Impossibile eliminare: Utente non trovato.");
         }
         utenteRepo.deleteById(id);
+    }
+
+    public Optional<Utente> ottieniPerEmail(String email) {
+        return utenteRepo.findByEmail(email);
     }
 }

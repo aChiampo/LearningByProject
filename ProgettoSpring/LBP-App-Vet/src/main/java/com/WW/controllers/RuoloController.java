@@ -1,13 +1,23 @@
 package com.WW.controllers;
 
-import com.WW.entities.Ruolo;
-import com.WW.services.RuoloService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.WW.entities.Ruolo;
+import com.WW.services.RuoloService;
 
 @RestController
 @RequestMapping("/api/ruoli")
@@ -42,9 +52,8 @@ public class RuoloController {
     @GetMapping("/{id}")
     public ResponseEntity<Ruolo> getRuoloById(@PathVariable Integer id) {
         try {
-            Optional<Ruolo> ruolo = ruoloService.getRuoloById(id);
-            return ruolo.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+            Ruolo ruolo = ruoloService.ottieniPerId(id);
+            return ResponseEntity.ok(ruolo);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
@@ -52,22 +61,7 @@ public class RuoloController {
         }
     }
 
-    /**
-     * Endpoint GET per ricercare ruoli per ID
-     * @param id l'ID del ruolo
-     * @return lista di ruoli corrispondenti
-     */
-    @GetMapping("/cerca/id")
-    public ResponseEntity<List<Ruolo>> findRuoliById(@RequestParam Integer id) {
-        try {
-            List<Ruolo> ruoli = ruoloService.findRuoliById(id);
-            return ResponseEntity.ok(ruoli);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+    
 
     /**
      * Endpoint GET per ricercare ruoli per nome
@@ -75,10 +69,11 @@ public class RuoloController {
      * @return lista di ruoli corrispondenti
      */
     @GetMapping("/cerca/nome")
-    public ResponseEntity<List<Ruolo>> findByRuolo(@RequestParam String ruolo) {
+    public ResponseEntity<Ruolo> findByRuolo(@RequestParam String ruolo) {
         try {
-            List<Ruolo> ruoli = ruoloService.findByRuolo(ruolo);
-            return ResponseEntity.ok(ruoli);
+            Optional<Ruolo> ruoloOptional = ruoloService.ottieniPerRuolo(ruolo);
+            return ruoloOptional.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {

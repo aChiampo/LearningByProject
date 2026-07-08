@@ -1,13 +1,14 @@
 package com.WW.repositories;
 
-import com.WW.entities.Ruolo;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
+
+import com.WW.entities.Ruolo;
 
 public interface RuoloRepo extends JpaRepository<Ruolo, Integer> {
 
-    List<Ruolo> findRuoliById(Integer id);
 
-    List<Ruolo> findByRuolo(String Ruolo);
+    Optional<Ruolo> findByRuolo(String ruolo);
 
 }
