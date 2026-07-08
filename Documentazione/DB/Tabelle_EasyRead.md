@@ -12,7 +12,7 @@
 | Telefono           | varchar(20)  | Not Null         |                        |                                                                                                                                          |
 | Indirizzo          | varchar(30)  |                  |                        |                                                                                                                                          |
 | Citta              | varchar(20)  |                  |                        |                                                                                                                                          |
-| COdiceFiscale      | varchar(16)  | unique           |                        |                                                                                                                                          |
+| CodiceFiscale      | varchar(16)  | unique           |                        |                                                                                                                                          |
 | Data_Registrazione | DateTime     | Not Null         |                        |                                                                                                                                          |
 | IDAzienda          | int          |                  | [AZIENDE.ID](#aziende) | Se esiste questo campo, questo utente è un azienda, quindi per i pagamenti bisonga prendere i dati necessari all creazione della fattura |
 | ID_Ruolo           | int          | not null         | [`RUOLI.ID`](#ruoli)   |                                                                                                                                          |

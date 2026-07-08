@@ -1,17 +1,24 @@
 package com.WW.entities;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.List;
 
 /* @author: A. Chiampo
 * Modello di entità per la tabella UTENTE
@@ -43,6 +50,9 @@ public class Utente {
     @Column(name = "Password", length = 255, nullable = false)
     private String passwordHash;
 
+    @Column(name = "codice_fiscale", length = 16, nullable = true, unique = true)
+    private String codiceFiscale;
+
     @Column(name = "Telefono", length = 20, nullable = false)
     private String telefono;
 
@@ -59,9 +69,6 @@ public class Utente {
     @ManyToOne
     @JoinColumn(name = "id_azienda", referencedColumnName = "ID", nullable = true)
     private Azienda azienda;
-
-    @Column(name = "Riferimento", length = 30)
-    private String riferimento;
 
     @ManyToOne
     @JoinColumn(name = "id_ruolo", referencedColumnName = "ID", nullable = false)

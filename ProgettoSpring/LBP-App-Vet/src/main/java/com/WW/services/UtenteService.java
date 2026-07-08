@@ -70,10 +70,9 @@ public class UtenteService {
         if (modificato.getCitta() != null) {
             originale.setCitta(modificato.getCitta());
         }
-        if (modificato.getRiferimento() != null) {
-            originale.setRiferimento(modificato.getRiferimento());
+        if (modificato.getCodiceFiscale() != null && !modificato.getCodiceFiscale().isBlank()) {
+            originale.setCodiceFiscale(modificato.getCodiceFiscale());
         }
-
         return utenteRepo.save(originale);
     }
 
