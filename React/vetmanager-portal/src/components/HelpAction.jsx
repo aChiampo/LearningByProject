@@ -1,19 +1,16 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { ROLE_CONFIG } from '../data/roleConfig.js';
 
 export default function HelpAction() {
-  const { currentRole, currentScreen, setCurrentScreen } = useContext(AppContext);
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { currentRole } = useContext(AppContext);
   const config = ROLE_CONFIG[currentRole];
+  const isPublicRoute = location.pathname === '/' || location.pathname === '/login';
 
-  // Se il ruolo non esiste o siamo in una schermata pubblica (es. homepage), non mostrare il punto di domanda
-  if (!config || currentScreen === 'homepage' || currentScreen === 'router') {
-    return null;
-  }
-
-  // Se l'utente si trova già sulla pagina FAQ del suo ruolo, nascondi il pulsante
-  if (currentScreen === config.faq) {
+  if (!config || isPublicRoute || location.pathname === config.faq) {
     return null;
   }
 
@@ -22,7 +19,7 @@ export default function HelpAction() {
       className="help-action is-visible"
       title="Aiuto contestuale"
       aria-label="Apri FAQ del ruolo"
-      onClick={() => setCurrentScreen(config.faq)}
+      onClick={() => navigate(config.faq)}
     >
       ?
     </button>
