@@ -23,7 +23,8 @@ server:
 app:
   security:
     jwt:
-      secret: ${JWT_SECRET}
+      # Local development fallback; override with JWT_SECRET outside dev.
+      secret: ${JWT_SECRET:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
       expiration-seconds: 3600
   mail:
     from: segreteria.clinicaZampetti@gmail.com

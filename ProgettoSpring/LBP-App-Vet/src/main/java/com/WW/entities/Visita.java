@@ -2,9 +2,13 @@ package com.WW.entities;
 
 import java.time.LocalDateTime;
 
+import com.WW.enums.VisitaStato;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -56,5 +60,14 @@ public class Visita {
     
     @Column(name = "Note", nullable = true)
     private String note;
+    
+    @Column(name = "Nota_Privata", nullable = true)
+    private String notaPrivata;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Stato", nullable = false)
+    private VisitaStato stato;
+
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted;
 }

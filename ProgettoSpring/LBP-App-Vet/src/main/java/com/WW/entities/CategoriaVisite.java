@@ -32,6 +32,9 @@ public class CategoriaVisite {
 
     @Column(name = "Nome", length = 100, nullable = false)
     private String nome;
+    
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted;
 
 
 

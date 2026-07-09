@@ -23,7 +23,4 @@ public interface VisitaRepository extends JpaRepository<Visita, Integer> {
     public List<Visita> findByAnimaleId(Integer idAnimale);
     //Trova la visita associata a un pagamento specifico
     public Optional<Visita> findByPagamentoId(Integer idPagamento);  
-    public List<Visita> findByPagatoAndTipoVisitaId(boolean pagato, Integer idTipoVisita);
-
-
 }
