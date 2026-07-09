@@ -42,4 +42,7 @@ public class Vaccinazione {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_animale", nullable = false)
     private Animale idAnimale;
+    
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted;
 }

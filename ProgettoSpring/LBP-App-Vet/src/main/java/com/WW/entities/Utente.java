@@ -74,10 +74,13 @@ public class Utente {
     @JoinColumn(name = "id_ruolo", referencedColumnName = "ID", nullable = false)
     private Ruolo ruolo;
 
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted;
+
    // relazioni bi_dimensionali
 
     // relazione 1-n con VISITA - cristian.pappalardo
-    @OneToMany(mappedBy = "dottore", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "veterinario", cascade = CascadeType.ALL)
     private List<Visita> visita;
 
     // relazione 1-n con ORARIO_SETTIMANALE - cristian.pappalardo

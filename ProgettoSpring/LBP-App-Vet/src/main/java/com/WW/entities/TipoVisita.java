@@ -3,7 +3,16 @@ package com.WW.entities;
 import java.math.BigDecimal;
 import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,6 +52,9 @@ public class TipoVisita {
     @ManyToOne
     @JoinColumn(name = "id_dottore", referencedColumnName= "ID", nullable=false)
     private Utente dottore;
+    
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted;
 
     //relazione 1-n con VISITA - cristian.pappalardo
     @OneToMany(mappedBy = "tipoVisita", cascade = CascadeType.ALL)
