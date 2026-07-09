@@ -20,7 +20,7 @@ public class ExcelToSql {
 
     public static void main(String[] args) throws IOException {
 
-        String inputFile = "VetPortal_DatiImportazione.xlsx";
+        String inputFile = "tipi_visita_vetportal.xlsx";
         String outputFile = inputFile.replace(".xlsx", ".sql");
 
         String excelFilePath = new File("").getAbsolutePath() + "/DatiExcel/" + inputFile;
