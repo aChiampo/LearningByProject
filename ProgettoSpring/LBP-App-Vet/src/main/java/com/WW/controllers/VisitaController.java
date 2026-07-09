@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.WW.dto.VisitaDto;
+import com.WW.entities.Pagamento;
 import com.WW.entities.Visita;
 import com.WW.services.VisitaService;
 
@@ -167,14 +168,14 @@ public class VisitaController {
      * Aggiorna lo stato di pagamento di una visita.
      *
      * @param id     identificativo della visita
-     * @param pagato nuovo stato di pagamento
+     * @param pagamento nuovo stato di pagamento
      * @return visita aggiornata
      */
     @PatchMapping("/aggiornaPagato/{id}")
     public ResponseEntity<Visita> aggiornaPagato(
             @PathVariable Integer id,
-            @RequestParam boolean pagato) {
-        return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagato));
+            @RequestParam Pagamento pagamento) {
+        return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamento));
     }
 
     /**
