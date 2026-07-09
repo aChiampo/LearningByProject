@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import PageTitle from '../../../components/common/PageTitle';
 import ManagmentSpecies from './ManagmentSpecies';
-
-// Per ora lasciamo i sotto-componenti commentati, li creeremo subito dopo
-// import GestioneRazze from './GestioneRazze';
+import ManagmentRaces from './ManagmentRaces';
 
 export default function ManagmentConfiguration() {
     // Questo stato memorizza la tabella che il dottore vuole configurare
@@ -64,10 +62,7 @@ export default function ManagmentConfiguration() {
                     <div className="panel">
                         <h2>Gestione Razze</h2>
                         <p className="muted-text">Configura le razze accoppiandole alla loro specie di riferimento.</p>
-                        {/* <GestioneRazze /> <-- Qui inseriremo il componente Razze */}
-                        <div style={{ marginTop: '20px', padding: '15px', border: '1px dashed #ccc', borderRadius: '4px' }}>
-                            Tabella e Form delle Razze (In arrivo...)
-                        </div>
+                        <ManagmentRaces />
                     </div>
                 )}
 
