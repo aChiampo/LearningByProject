@@ -1,5 +1,6 @@
 package com.WW.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.dto.VisitaDto;
+import com.WW.entities.Pagamento;
+import com.WW.entities.TipoVisita;
 import com.WW.entities.Visita;
 import com.WW.repositories.VisitaRepository;
 
@@ -55,6 +58,12 @@ public class VisitaService {
         return visitaRepository.save(toEntity(visita));
     }
 
+    /**
+     * Valida i dati della visita prima della creazione.
+     * 
+     * @param visita
+     * @throws ResponseStatusException se i dati della visita non sono validi
+     */
     private void validaVisitaPerCreazione(VisitaDto visita) {
         if (visita == null) {
             throw new ResponseStatusException(
@@ -62,11 +71,8 @@ public class VisitaService {
                     "Il corpo della visita non può essere nullo.");
         }
 
-        if (visita.dataVisita() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "La data della visita è obbligatoria.");
-        }
+        validaSovrapposizioneOrario(visita.dataVisita(), tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
+                visita.veterinario().id());
 
         if (visita.tipoVisita() == null || visita.tipoVisita().id() == null) {
             throw new ResponseStatusException(
@@ -104,6 +110,43 @@ public class VisitaService {
         }
         entity.setNote(visita.note());
         return entity;
+    }
+
+    /**
+     * Verifica che l'orario richiesto per la nuova visita non si sovrapponga
+     * a un'altra visita già prenotata per lo stesso veterinario.
+     *
+     * @param dataVisita    data/ora di inizio della nuova visita
+     * @param tipoVisita    tipo di visita richiesto (fornisce la durata)
+     * @param veterinarioId id del veterinario
+     * @throws ResponseStatusException se l'orario richiesto si sovrappone a una
+     *                                 visita esistente
+     */
+    private void validaSovrapposizioneOrario(LocalDateTime dataVisita, TipoVisita tipoVisita, int veterinarioId) {
+        LocalDateTime nuovaInizio = dataVisita;
+        LocalDateTime nuovaFine = dataVisita.plusMinutes(tipoVisita.getDurata());
+
+        // Finestra di ricerca abbondante: nessuna visita esistente più lunga
+        // di qualche ora dovrebbe sfuggire a questo intervallo.
+        LocalDateTime windowStart = dataVisita.minusHours(6);
+        LocalDateTime windowEnd = nuovaFine.plusHours(6);
+
+        List<Visita> candidate = visitaRepository.findVisiteVeterinarioNelPeriodo(
+                veterinarioId, windowStart, windowEnd);
+
+        for (Visita esistente : candidate) {
+            LocalDateTime esistenteInizio = esistente.getDataVisita();
+            LocalDateTime esistenteFine = esistenteInizio.plusMinutes(esistente.getTipoVisita().getDurata());
+
+            // due intervalli si sovrappongono se: inizioA < fineB AND inizioB < fineA
+            boolean sovrapposte = nuovaInizio.isBefore(esistenteFine) && esistenteInizio.isBefore(nuovaFine);
+
+            if (sovrapposte) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Il veterinario ha già una visita prenotata in questo intervallo orario.");
+            }
+        }
     }
 
     /**
@@ -171,11 +214,7 @@ public class VisitaService {
      */
     @Transactional(readOnly = true)
     public Visita getVisitaByPagamento(Integer idPagamento) {
-        if (idPagamento == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "L'identificativo del pagamento non può essere nullo.");
-        }
+
         return visitaRepository.findByPagamentoId(idPagamento)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -190,20 +229,9 @@ public class VisitaService {
      * @return visita aggiornata
      */
     @Transactional
-    public Visita updateVisitaPagato(Integer id, boolean pagato) {
+    public Visita updateVisitaPagato(Integer id, Pagamento pagato) {
         Visita visita = getVisitaById(id);
-
-        if (!pagato) {
-            visita.setPagamento(null);
-            return visitaRepository.save(visita);
-        }
-
-        if (visita.getPagamento() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Per marcare la visita come pagata è necessario associare prima un pagamento.");
-        }
-
+        visita.setPagamento(pagato);
         return visitaRepository.save(visita);
     }
 
@@ -294,6 +322,13 @@ public class VisitaService {
                 .toList();
 
         return nonPagate;
+    }
+
+    public Visita ottieniVisitaByData(LocalDateTime dataVisita) {
+        return visitaRepository.findByDataVisita(dataVisita)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Visita non trovata per la data specificata."));
     }
 
 }
