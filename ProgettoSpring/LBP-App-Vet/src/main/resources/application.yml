@@ -2,9 +2,9 @@ spring:
   application:
     name: LBP-App-Vet
   datasource:
-    url: jdbc:postgresql://localhost:5432/vetmanager
-    username: postgres
-    password: root
+    url: jdbc:postgresql://psql-database-01-edu-0b7e.j.aivencloud.com:11216/defaultdb?sslmode=require
+    username: avnadmin
+    password: AVNS_bbjXNdSDpMo1dF4DBAg
   mail:
     host: smtp.gmail.com
     port: 587
