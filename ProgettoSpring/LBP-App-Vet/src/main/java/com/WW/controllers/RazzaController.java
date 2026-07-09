@@ -53,14 +53,14 @@ public class RazzaController {
     }
 
     /**
-     * Endpoint GET per ricercare razze per ID
-     * @param id l'ID della razza
-     * @return lista di razze corrispondenti
+     * Endpoint GET per ricercare razze per ID della specie
+     * @param specieId l'ID della specie
+     * @return lista di razze corrispondenti alla specie
      */
-    @GetMapping("/cerca/id")
-    public ResponseEntity<List<Razza>> findRazzeById(@RequestParam Integer id) {
+    @GetMapping("/specie/{specieId}")
+    public ResponseEntity<List<Razza>> findByIdSpecie(@PathVariable Integer specieId) {
         try {
-            List<Razza> razze = razzaService.findRazzeById(id);
+            List<Razza> razze = razzaService.findByIdSpecie_Id(specieId);
             return ResponseEntity.ok(razze);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

@@ -26,16 +26,16 @@ public class RazzaService {
     }
 
     /**
-     * Ricerca razze per ID
-     * @param id l'ID della razza
-     * @return lista di razze corrispondenti
-     * @throws IllegalArgumentException se l'ID è null o negativo
+     * Ricerca razze per ID della specie
+     * @param specieId l'ID della specie
+     * @return lista di razze corrispondenti alla specie
+     * @throws IllegalArgumentException se l'ID della specie è null o negativo
      */
-    public List<Razza> findRazzeById(Integer id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("L'ID della razza non può essere null o negativo");
+    public List<Razza> findByIdSpecie_Id(Integer specieId) {
+        if (specieId == null || specieId <= 0) {
+            throw new IllegalArgumentException("L'ID della specie non può essere null o negativo");
         }
-        return razzaRepo.findRazzeById(id);
+        return razzaRepo.findByIdSpecie_Id(specieId);
     }
 
     /**

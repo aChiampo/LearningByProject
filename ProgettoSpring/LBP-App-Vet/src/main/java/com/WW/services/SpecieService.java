@@ -25,19 +25,6 @@ public class SpecieService {
     }
 
     /**
-     * Ricerca specie per ID
-     * @param id l'ID della specie
-     * @return lista di specie corrispondenti
-     * @throws IllegalArgumentException se l'ID è null o negativo
-     */
-    public List<Specie> findRazzeById(Integer id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("L'ID della specie non può essere null o negativo");
-        }
-        return specieRepo.findRazzeById(id);
-    }
-
-    /**
      * Ricerca specie per nome
      * @param nome il nome della specie
      * @return lista di specie corrispondenti
