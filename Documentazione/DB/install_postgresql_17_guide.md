@@ -115,99 +115,22 @@ You should see a PostgreSQL 17 version, for example:
 psql (PostgreSQL) 17.x
 ```
 
-If PowerShell says that `psql` is not recognized, add PostgreSQL 17 to the Windows `PATH`.
-
-The folder to add is usually:
-
-```text
-C:\Program Files\PostgreSQL\17\bin
-```
-
-After changing the `PATH`, close and reopen PowerShell, then run again:
-
-```powershell
-psql --version
-```
-
-## 10. Create the Project Database
-
-From PowerShell, create a local database for the project:
-
-```powershell
-createdb -U postgres -h localhost -p 5432 vetmanager
-```
-
-When asked for the password, type:
-
-```text
-root
-```
-
-## 11. Run the Project Schema
-
-Move to the project folder:
-
-```powershell
-cd "C:\Users\andrea.chiampo\Desktop\LearningByProject"
-```
-
-Run the schema file:
-
-```powershell
-psql -U postgres -h localhost -p 5432 -d vetmanager -f ".\Documentazione\DB\create_schema.sql"
-```
-
-When asked for the password, type:
-
-```text
-root
-```
-
-## 12. Check the Created Tables
-
-Connect to the database:
-
-```powershell
-psql -U postgres -h localhost -p 5432 -d vetmanager
-```
-
-When asked for the password, type:
-
-```text
-root
-```
-
-Inside `psql`, list the tables:
-
-```sql
-\dt
-```
-
-To exit `psql`, run:
-
-```sql
-\q
-```
-
-## Summary
-
-Use these values for the local PostgreSQL installation:
-
-```text
-PostgreSQL version: 17
-Host: localhost
-Port: 5432
-Database: vetmanager
-Username: postgres
-Password: root
-```
-
-Install only:
-
-- **PostgreSQL Server**
-- **Command Line Tools**
-- **pgAdmin**
-
-Do not install:
-
-- `Stack Builder`
+## 10. Setting BD connection
+ 
+1. Open pgAdmin
+2. Open `Add New Server`
+    
+   ![alt](./../assets/point1.jpg)
+     
+1. Put any name in `General` Page
+     
+   ![alt](./../assets/point3.jpg)
+     
+1. Paste this settings in connection:
+   - **Host** : `psql-database-01-edu-0b7e.j.aivencloud.com`
+   - **Port** : `11216`
+   - **Maintenance database** : `defaultdb`
+   - **Username** : `avnadmin`
+   - **Password** : `AVNS_bbjXNdSDpMo1dF4DBAg`
+ 
+![alt](./../assets/point4.jpg)
