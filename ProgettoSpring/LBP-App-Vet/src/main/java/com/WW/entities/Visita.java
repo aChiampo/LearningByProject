@@ -42,9 +42,10 @@ public class Visita {
 
     @Column(name = "Data_Visita", nullable = false, updatable = false)
     private LocalDateTime dataVisita;
+    
     @ManyToOne
     @JoinColumn(name = "ID_TIPO_VISITA", nullable = false)
-    private TipoVisite tipoVisita;
+    private TipoVisita tipoVisita;
 
     @ManyToOne
     @JoinColumn(name = "ID_ANIMALE", nullable = false)

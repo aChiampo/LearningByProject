@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.WW.entities.TipoVisite;
-import com.WW.services.TipoVisiteService;
+import com.WW.entities.TipoVisita;
+import com.WW.services.TipoVisitaService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,9 +26,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/tipiVisite")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-public class TipoVisiteController {
+public class TipoVisitaController {
 
-    private final TipoVisiteService tipoVisiteService;
+    private final TipoVisitaService tipoVisitaService;
 
     /**
      * Restituisce tutti i tipi visita.
@@ -36,8 +36,8 @@ public class TipoVisiteController {
      * @return elenco dei tipi visita
      */
     @GetMapping("/ottieniTutti")
-    public ResponseEntity<List<TipoVisite>> ottieniTutti() {
-        return ResponseEntity.ok(tipoVisiteService.ottieniTutti());
+    public ResponseEntity<List<TipoVisita>> ottieniTutti() {
+        return ResponseEntity.ok(tipoVisitaService.ottieniTutti());
     }
 
     /**
@@ -47,8 +47,8 @@ public class TipoVisiteController {
      * @return tipo visita trovato
      */
     @GetMapping("/ottieni/{id}")
-    public ResponseEntity<TipoVisite> ottieni(@PathVariable Integer id) {
-        return ResponseEntity.ok(tipoVisiteService.ottieniPerId(id));
+    public ResponseEntity<TipoVisita> ottieni(@PathVariable Integer id) {
+        return ResponseEntity.ok(tipoVisitaService.ottieniPerId(id));
     }
 
     /**
@@ -58,8 +58,8 @@ public class TipoVisiteController {
      * @return tipo visita creato
      */
     @PostMapping("/aggiungi")
-    public ResponseEntity<TipoVisite> crea(@RequestBody TipoVisite tipoVisite) {
-        TipoVisite nuovoTipoVisite = tipoVisiteService.aggiungiTipoVisite(tipoVisite);
+    public ResponseEntity<TipoVisita> crea(@RequestBody TipoVisita tipoVisite) {
+        TipoVisita nuovoTipoVisite = tipoVisitaService.aggiungiTipoVisite(tipoVisite);
         return new ResponseEntity<>(nuovoTipoVisite, HttpStatus.CREATED);
     }
 
@@ -71,8 +71,8 @@ public class TipoVisiteController {
      * @return tipo visita aggiornato
      */
     @PatchMapping("/modifica/{id}")
-    public ResponseEntity<TipoVisite> modifica(@PathVariable Integer id, @RequestBody TipoVisite tipoVisite) {
-        TipoVisite tipoVisiteAggiornato = tipoVisiteService.modificaTipoVisite(id, tipoVisite);
+    public ResponseEntity<TipoVisita> modifica(@PathVariable Integer id, @RequestBody TipoVisita tipoVisite) {
+        TipoVisita tipoVisiteAggiornato = tipoVisitaService.modificaTipoVisite(id, tipoVisite);
         return ResponseEntity.ok(tipoVisiteAggiornato);
     }
 
@@ -84,7 +84,7 @@ public class TipoVisiteController {
      */
     @DeleteMapping("/elimina/{id}")
     public ResponseEntity<Void> elimina(@PathVariable Integer id) {
-        tipoVisiteService.eliminaTipoVisite(id);
+        tipoVisitaService.eliminaTipoVisite(id);
         return ResponseEntity.noContent().build();
     }
 }

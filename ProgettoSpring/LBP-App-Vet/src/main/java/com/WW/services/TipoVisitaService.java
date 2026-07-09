@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.WW.entities.TipoVisite;
-import com.WW.repositories.TipoVisiteRepo;
+import com.WW.entities.TipoVisita;
+import com.WW.repositories.TipoVisitaRepo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +17,9 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public class TipoVisiteService {
+public class TipoVisitaService {
 
-    private final TipoVisiteRepo tipoVisiteRepo;
+    private final TipoVisitaRepo tipoVisitaRepo;
 
     @Transactional
     /**
@@ -28,8 +28,8 @@ public class TipoVisiteService {
      * @param tipoVisite dati del tipo visita da salvare
      * @return tipo visita creato
      */
-    public TipoVisite aggiungiTipoVisite(TipoVisite tipoVisite) {
-        return tipoVisiteRepo.save(tipoVisite);
+    public TipoVisita aggiungiTipoVisite(TipoVisita tipoVisite) {
+        return tipoVisitaRepo.save(tipoVisite);
     }
     
     @Transactional
@@ -41,8 +41,8 @@ public class TipoVisiteService {
      * @param modificato nuovi dati da applicare
      * @return tipo visita aggiornato
      */
-    public TipoVisite modificaTipoVisite(Integer id, TipoVisite modificato) {
-        TipoVisite originale = ottieniPerId(id);
+    public TipoVisita modificaTipoVisite(Integer id, TipoVisita modificato) {
+        TipoVisita originale = ottieniPerId(id);
 
         if (modificato.getNome() != null && !modificato.getNome().isBlank()) {
             originale.setNome(modificato.getNome());
@@ -61,7 +61,7 @@ public class TipoVisiteService {
         }
         originale.setAttivo(modificato.isAttivo());
 
-        return tipoVisiteRepo.save(originale);
+        return tipoVisitaRepo.save(originale);
     }
 
     /**
@@ -69,8 +69,8 @@ public class TipoVisiteService {
      *
      * @return elenco dei tipi visita
      */
-    public List<TipoVisite> ottieniTutti() {
-        return tipoVisiteRepo.findAll();
+    public List<TipoVisita> ottieniTutti() {
+        return tipoVisitaRepo.findAll();
     }
 
     /**
@@ -79,8 +79,8 @@ public class TipoVisiteService {
      * @param id identificativo del tipo visita
      * @return tipo visita trovato
      */
-    public TipoVisite ottieniPerId(Integer id) {
-        return tipoVisiteRepo.findById(id)
+    public TipoVisita ottieniPerId(Integer id) {
+        return tipoVisitaRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Tipo visite non trovato."));
@@ -93,11 +93,11 @@ public class TipoVisiteService {
      * @param id identificativo del tipo visita da eliminare
      */
     public void eliminaTipoVisite(Integer id) {
-        if (!tipoVisiteRepo.existsById(id)) {
+        if (!tipoVisitaRepo.existsById(id)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Impossibile eliminare: Tipo visite non trovato.");
         }
-        tipoVisiteRepo.deleteById(id);
+        tipoVisitaRepo.deleteById(id);
     }
 }
