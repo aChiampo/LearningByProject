@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Converte un file Excel in istruzioni SQL INSERT.
@@ -20,7 +21,7 @@ public class ExcelToSql {
 
     public static void main(String[] args) throws IOException {
 
-        String inputFile = "tipi_visita_vetportal.xlsx";
+        String inputFile = "VetPortal_DatiImportazione(Formattato).xlsx"; // VetPortal_DatiImportazione.xlsx
         String outputFile = inputFile.replace(".xlsx", ".sql");
 
         String excelFilePath = new File("").getAbsolutePath() + "/DatiExcel/" + inputFile;
@@ -43,7 +44,7 @@ public class ExcelToSql {
     private static final Map<String, List<String>> TABLE_SCHEMAS = Map.of(
             // Aggiungere qui la struttura delle tabelle excel.
 
-            "PROPRIETARI", List.of(
+            "UTENTI", List.of(
                     "ID", "Nome", "Cognome", "Email",
                     "Telefono", "Indirizzo", "Città",
                     "Data_Registrazione", "Riferimento"),
@@ -67,31 +68,43 @@ public class ExcelToSql {
                     "#", "Tipo_di_Visita", "Categoria", "Durata_(min)",
                     "Costo_(€)", "Note"));
 
-    /** Indica da dove prendere il valore di una colonna DB: da Excel o da un default fisso. */
+    /**
+     * Indica da dove prendere il valore di una colonna DB: da Excel o da un default
+     * fisso.
+     */
     private static class ColumnMapping {
         final String dbColumn;
-        final String sourceExcelColumn; // null => usa defaultValue
+        final String sourceExcelColumn;
         final Object defaultValue;
+        final Function<Object, Object> transformer;
 
-        ColumnMapping(String dbColumn, String sourceExcelColumn, Object defaultValue) {
+        ColumnMapping(String dbColumn,
+                String sourceExcelColumn,
+                Object defaultValue,
+                Function<Object, Object> transformer) {
             this.dbColumn = dbColumn;
             this.sourceExcelColumn = sourceExcelColumn;
             this.defaultValue = defaultValue;
+            this.transformer = transformer;
         }
 
         static ColumnMapping from(String dbColumn, String excelColumn) {
-            return new ColumnMapping(dbColumn, excelColumn, null);
+            return new ColumnMapping(dbColumn, excelColumn, null, Function.identity());
+        }
+
+        static ColumnMapping from(String dbColumn, String excelColumn, Function<Object, Object> transformer) {
+            return new ColumnMapping(dbColumn, excelColumn, null, transformer);
         }
 
         static ColumnMapping fixed(String dbColumn, Object defaultValue) {
-            return new ColumnMapping(dbColumn, null, defaultValue);
+            return new ColumnMapping(dbColumn, null, defaultValue, Function.identity());
         }
     }
 
     /** Mapping colonne Excel -> colonne reali del DB, per ogni tabella. */
     private static final Map<String, List<ColumnMapping>> TARGET_MAPPINGS = Map.of(
 
-            "PROPRIETARI", List.of(
+            "UTENTI", List.of(
                     ColumnMapping.from("ID", "ID"),
                     ColumnMapping.from("Nome", "Nome"),
                     ColumnMapping.from("Cognome", "Cognome"),
@@ -99,13 +112,14 @@ public class ExcelToSql {
                     ColumnMapping.fixed("Password", null), // da cifrare prima dell'inserimento
                     ColumnMapping.from("Telefono", "Telefono"),
                     ColumnMapping.from("Indirizzo", "Indirizzo"),
-                    ColumnMapping.from("Citta", "Città"), // la a accentata in "Città" potrebbe dare problemi, ma il mapping la gestisce 
+                    ColumnMapping.from("Citta", "Città"), // la a accentata in "Città" potrebbe dare problemi, ma il
+                                                          // mapping la gestisce
                     ColumnMapping.fixed("CodiceFiscale", null), // non presente in Excel, da aggiungere
                     ColumnMapping.from("Data_Registrazione", "Data_Registrazione"),
                     ColumnMapping.fixed("IDAzienda", null), // non presente in Excel, da aggiungere
                     ColumnMapping.fixed("ID_Ruolo", null), // non presente in Excel, da aggiungere
                     ColumnMapping.fixed("isDeleted", false)), // valore default = false
-                    // "Riferimento" scartata, nessuna colonna DB corrispondente
+            // "Riferimento" scartata, nessuna colonna DB corrispondente
 
             "ANIMALI", List.of(
                     ColumnMapping.from("ID", "ID"),
@@ -117,7 +131,11 @@ public class ExcelToSql {
                     ColumnMapping.from("Peso", "Peso_(kg)"),
                     ColumnMapping.from("Microchip", "Microchip"),
                     ColumnMapping.from("Note", "Note_Generali"),
-                    ColumnMapping.fixed("ID_Utente", null), // non presente in Excel, da aggiungere
+                    ColumnMapping.from("ID_Utente", "Proprietario",
+                            value -> value == null ? null : Integer.parseInt(value.toString().replaceAll("\\D", ""))), // Estraggo
+                                                                                                                       // l'ID
+                                                                                                                       // dal
+                                                                                                                       // proprietario
                     ColumnMapping.fixed("isDeleted", false)),
 
             "VACCINAZIONI", List.of(
@@ -127,20 +145,20 @@ public class ExcelToSql {
                     ColumnMapping.from("Lotto", "Lotto"),
                     ColumnMapping.from("ID_Animale", "ID_Animale"),
                     ColumnMapping.fixed("isDeleted", false)),
-                    // "Data_Scadenza" e "Stato" scartate
+            // "Data_Scadenza" e "Stato" scartate
 
             "VISITE", List.of(
                     ColumnMapping.from("ID", "ID"),
                     ColumnMapping.from("ID_Animale", "ID_Animale"),
                     ColumnMapping.from("Data_Visita", "Data_Visita"),
-                    ColumnMapping.fixed("ID_Tipo", null), // non presente in Excel, da aggiungere
-                    ColumnMapping.fixed("ID_Dottore", null), // non presente in Excel, da aggiungere
+                    ColumnMapping.from("ID_Tipo", "Tipo_Visita"),
+                    ColumnMapping.fixed("ID_Dottore", 1), // non presente in Excel, da aggiungere
                     ColumnMapping.fixed("ID_Pagamento", null), // non presente in Excel, da aggiungere
                     ColumnMapping.from("Note", "Note"),
                     ColumnMapping.fixed("Nota_Privata", null), // non presente in Excel, da aggiungere
                     ColumnMapping.fixed("Stato", "PRENOTATA"), // default fisso
                     ColumnMapping.fixed("isDeleted", false)),
-                    // "Tipo_Visita", "Motivo_/_Diagnosi", "Trattamento", "Importo_(€)" scartate
+            // "Tipo_Visita", "Motivo_/_Diagnosi", "Trattamento", "Importo_(€)" scartate
 
             "TIPI_VISITE", List.of(
                     ColumnMapping.from("ID", "#"),
@@ -149,7 +167,7 @@ public class ExcelToSql {
                     ColumnMapping.fixed("ID_Categoria", null), // non presente in Excel, da aggiungere
                     ColumnMapping.from("Prezzo", "Costo_(€)"),
                     ColumnMapping.fixed("attivo", true),
-                    ColumnMapping.fixed("ID_Dottore", null), // non presente in Excel, da aggiungere
+                    ColumnMapping.fixed("ID_Dottore", 1), // non presente in Excel, da aggiungere
                     ColumnMapping.fixed("isDeleted", false)));
 
     // ------------------------------------------------------------------
@@ -172,7 +190,10 @@ public class ExcelToSql {
         return sql.toString();
     }
 
-    /** Elabora un singolo foglio: intestazione -> match tabella -> mapping -> INSERT. */
+    /**
+     * Elabora un singolo foglio: intestazione -> match tabella -> mapping ->
+     * INSERT.
+     */
     private static void processSheet(Sheet sheet, StringBuilder sql) {
 
         DataFormatter formatter = new DataFormatter();
@@ -215,7 +236,10 @@ public class ExcelToSql {
         sql.append("\n");
     }
 
-    /** Trova la tabella il cui schema combacia con le colonne date, o null se nessuna combacia. */
+    /**
+     * Trova la tabella il cui schema combacia con le colonne date, o null se
+     * nessuna combacia.
+     */
     private static String findMatchingTable(List<String> columnNames) {
 
         for (Map.Entry<String, List<String>> entry : TABLE_SCHEMAS.entrySet()) {
@@ -227,7 +251,10 @@ public class ExcelToSql {
         return null;
     }
 
-    /** Confronta le colonne Excel con quelle attese (stesso numero, stessi nomi, case-insensitive). */
+    /**
+     * Confronta le colonne Excel con quelle attese (stesso numero, stessi nomi,
+     * case-insensitive).
+     */
     private static boolean headerMatches(List<String> excelColumns,
             List<String> expectedColumns) {
 
@@ -273,7 +300,8 @@ public class ExcelToSql {
                 String quotedKey = "\"" + cm.sourceExcelColumn + "\"";
                 int idx = excelColumns.indexOf(quotedKey);
 
-                targetRow.add(idx >= 0 ? excelRow.get(idx) : null);
+                Object value = idx >= 0 ? excelRow.get(idx) : null;
+                targetRow.add(cm.transformer.apply(value));
             }
 
             result.add(targetRow);
@@ -282,7 +310,10 @@ public class ExcelToSql {
         return result;
     }
 
-    /** Racchiude i nomi tra virgolette doppie per un uso sicuro come identificatori SQL. */
+    /**
+     * Racchiude i nomi tra virgolette doppie per un uso sicuro come identificatori
+     * SQL.
+     */
     private static List<String> wrapQuoted(List<String> names) {
         return names.stream().map(n -> "\"" + n + "\"").toList();
     }
@@ -291,7 +322,9 @@ public class ExcelToSql {
     // Lettura Excel
     // ------------------------------------------------------------------
 
-    /** Trova la riga di intestazione (prima cella "#" o "id") e ne legge le colonne. */
+    /**
+     * Trova la riga di intestazione (prima cella "#" o "id") e ne legge le colonne.
+     */
     private static List<String> readHeader(Iterator<Row> rows, DataFormatter formatter) {
 
         List<String> columns = new ArrayList<>();
@@ -331,15 +364,25 @@ public class ExcelToSql {
 
             Row row = rows.next();
 
-            if (row.getPhysicalNumberOfCells() == 0) {
-                break;
-            }
-
             List<Object> values = new ArrayList<>();
+            boolean emptyRow = true;
 
             for (int c = 0; c < columnCount; c++) {
-                Cell cell = row.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                values.add(getCellValue(cell));
+                Cell cell = row.getCell(c, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+
+                Object value = (cell == null) ? null : getCellValue(cell);
+                values.add(value);
+
+                if (value != null) {
+                    if (!(value instanceof String) || !((String) value).trim().isEmpty()) {
+                        emptyRow = false;
+                    }
+                }
+            }
+
+            // Stop at the first completely empty row
+            if (emptyRow) {
+                break;
             }
 
             data.add(values);
