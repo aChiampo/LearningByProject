@@ -141,8 +141,8 @@ public class VisitaController {
      * @param visita dati della visita da salvare
      * @return visita creata
      */
-    @PostMapping("/aggiungi")
-    public ResponseEntity<Visita> aggiungi(@RequestBody Visita visita) {
+    @PostMapping("/prenota")
+    public ResponseEntity<Visita> prenota(@RequestBody Visita visita) {
         Visita nuovaVisita = visitaService.createVisita(visita);
         return new ResponseEntity<>(nuovaVisita, HttpStatus.CREATED);
     }
