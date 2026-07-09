@@ -1,0 +1,8 @@
+package com.WW.dto;
+
+import jakarta.validation.constraints.NotNull;
+
+public record TipoVisitaDto(
+    @NotNull Integer id
+) {
+}

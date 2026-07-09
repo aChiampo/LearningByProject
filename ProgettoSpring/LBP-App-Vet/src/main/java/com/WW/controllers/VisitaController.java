@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.VisitaDto;
 import com.WW.entities.Visita;
 import com.WW.services.VisitaService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -141,8 +143,8 @@ public class VisitaController {
      * @param visita dati della visita da salvare
      * @return visita creata
      */
-    @PostMapping("/prenota")
-    public ResponseEntity<Visita> prenota(@RequestBody Visita visita) {
+    @PostMapping("/prenotazione")
+    public ResponseEntity<Visita> prenota(@Valid @RequestBody VisitaDto visita) {
         Visita nuovaVisita = visitaService.createVisita(visita);
         return new ResponseEntity<>(nuovaVisita, HttpStatus.CREATED);
     }
@@ -150,7 +152,7 @@ public class VisitaController {
     /**
      * Aggiorna le note di una visita.
      *
-     * @param id identificativo della visita
+     * @param id   identificativo della visita
      * @param note nuove note da salvare
      * @return visita aggiornata
      */
@@ -164,7 +166,7 @@ public class VisitaController {
     /**
      * Aggiorna lo stato di pagamento di una visita.
      *
-     * @param id identificativo della visita
+     * @param id     identificativo della visita
      * @param pagato nuovo stato di pagamento
      * @return visita aggiornata
      */

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.WW.dto.VisitaDto;
 import com.WW.entities.Visita;
 import com.WW.repositories.VisitaRepository;
 
@@ -19,14 +20,27 @@ import com.WW.repositories.VisitaRepository;
 public class VisitaService {
 
     private final VisitaRepository visitaRepository;
+    private final TipoVisitaService tipoVisitaService;
+    private final UtenteService utenteService;
+    private final AnimaleService animaleService;
+    private final PagamentiService pagamentiService;
 
     /**
      * Costruisce il servizio con il repository delle visite.
      *
      * @param visitaRepository repository delle visite
      */
-    public VisitaService(VisitaRepository visitaRepository) {
+    public VisitaService(
+            VisitaRepository visitaRepository,
+            TipoVisitaService tipoVisitaService,
+            UtenteService utenteService,
+            AnimaleService animaleService,
+            PagamentiService pagamentiService) {
         this.visitaRepository = visitaRepository;
+        this.tipoVisitaService = tipoVisitaService;
+        this.utenteService = utenteService;
+        this.animaleService = animaleService;
+        this.pagamentiService = pagamentiService;
     }
 
     /**
@@ -36,8 +50,60 @@ public class VisitaService {
      * @return visita creata
      */
     @Transactional
-    public Visita createVisita(Visita visita) {
-        return visitaRepository.save(visita);
+    public Visita createVisita(VisitaDto visita) {
+        validaVisitaPerCreazione(visita);
+        return visitaRepository.save(toEntity(visita));
+    }
+
+    private void validaVisitaPerCreazione(VisitaDto visita) {
+        if (visita == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Il corpo della visita non può essere nullo.");
+        }
+
+        if (visita.dataVisita() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La data della visita è obbligatoria.");
+        }
+
+        if (visita.tipoVisita() == null || visita.tipoVisita().id() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Il tipo visita è obbligatorio e deve contenere un id valido.");
+        }
+
+        if (visita.animale() == null || visita.animale().id() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "L'animale è obbligatorio e deve contenere un id valido.");
+        }
+
+        if (visita.veterinario() == null || visita.veterinario().id() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Il veterinario è obbligatorio e deve contenere un id valido.");
+        }
+
+        if (visita.pagamento() != null && visita.pagamento().id() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Se presente, il pagamento deve contenere un id valido.");
+        }
+    }
+
+    private Visita toEntity(VisitaDto visita) {
+        Visita entity = new Visita();
+        entity.setDataVisita(visita.dataVisita());
+        entity.setTipoVisita(tipoVisitaService.ottieniPerId(visita.tipoVisita().id()));
+        entity.setAnimale(animaleService.ottieniPerId(visita.animale().id()));
+        entity.setVeterinario(utenteService.ottieniPerId(visita.veterinario().id()));
+        if (visita.pagamento() != null) {
+            entity.setPagamento(pagamentiService.ottieniPerId(visita.pagamento().id()));
+        }
+        entity.setNote(visita.note());
+        return entity;
     }
 
     /**
@@ -119,7 +185,7 @@ public class VisitaService {
     /**
      * Aggiorna lo stato di pagamento di una visita.
      *
-     * @param id identificativo della visita
+     * @param id     identificativo della visita
      * @param pagato nuovo stato di pagamento
      * @return visita aggiornata
      */
@@ -155,7 +221,6 @@ public class VisitaService {
         return visitaRepository.save(visita);
     }
 
-
     /**
      * Elimina una visita esistente.
      *
@@ -177,11 +242,10 @@ public class VisitaService {
      * @return elenco delle visite pagate
      */
     public List<Visita> OttieniVisitePagate() {
-        
+
         List<Visita> pagate = visitaRepository.findAll().stream()
                 .filter(visita -> visita.getPagamento() != null)
-                .toList(); 
-
+                .toList();
 
         return pagate;
     }
@@ -194,30 +258,31 @@ public class VisitaService {
     public List<Visita> OttieniVisiteNonPagate() {
         List<Visita> nonPagate = visitaRepository.findAll().stream()
                 .filter(visita -> visita.getPagamento() == null)
-                .toList(); 
+                .toList();
 
         return nonPagate;
     }
 
     /**
      * Restituisce tutte le visite che risultano pagate.
-     * @param idAnimale identificativo dell'Animale 
+     * 
+     * @param idAnimale identificativo dell'Animale
      * 
      * @return elenco delle visite pagate
      */
     public List<Visita> OttieniVisitePagatebyAnimale(int idAnimale) {
-        
+
         List<Visita> pagate = visitaRepository.findAll().stream()
                 .filter(visita -> visita.getPagamento() != null)
                 .filter(visita -> visita.getAnimale().getId() == idAnimale)
-                .toList(); 
-
+                .toList();
 
         return pagate;
     }
 
     /**
      * Restituisce tutte le visite che risultano non pagate.
+     * 
      * @param idAnimale identificativo dell'Animale
      * 
      * @return elenco delle visite non pagate
@@ -226,10 +291,9 @@ public class VisitaService {
         List<Visita> nonPagate = visitaRepository.findAll().stream()
                 .filter(visita -> visita.getPagamento() == null)
                 .filter(visita -> visita.getAnimale().getId() == idAnimale)
-                .toList(); 
+                .toList();
 
         return nonPagate;
     }
-
 
 }
