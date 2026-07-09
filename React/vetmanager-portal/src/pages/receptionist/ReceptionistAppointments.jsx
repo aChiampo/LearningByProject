@@ -3,10 +3,24 @@ import { AppContext } from '../../context/AppContext';
 import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
+import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
 
 export default function ReceptionistAppointments() {
   const { currentRole } = useContext(AppContext);
   const config = ROLE_CONFIG[currentRole];
+  const appointments = config?.allAppointments ?? [];
+
+  function handleEditAppointment() {
+    window.alert('Modifica appuntamento');
+  }
+
+  function handleDeleteAppointment() {
+    window.alert('Appuntamento eliminato');
+  }
+
+  function handleDelayNotification() {
+    window.alert('Invio notifica di ritardo');
+  }
 
   return (
     <div>
@@ -20,36 +34,13 @@ export default function ReceptionistAppointments() {
           </button>
         </div>
 
-        {config?.allAppointments?.length > 0 ? (
-          <div className="table-responsive">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Data/Ora</th>
-                  <th>Paziente (Proprietario)</th>
-                  <th>Medico</th>
-                  <th>Stato</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {config.allAppointments.map((appointment, index) => (
-                  <tr key={index}>
-                    <td>{appointment.dataOra}</td>
-                    <td>{appointment.pazienteNome} ({appointment.proprietarioNome})</td>
-                    <td>{appointment.medicoNome}</td>
-                    <td><span className="badge">{appointment.stato}</span></td>
-                    <td>
-                      <div className="actions-row">
-                        <button className="btn btn-outline btn-sm" onClick={() => window.alert('Modifica orario/medico')}>Modifica</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => window.alert('Appuntamento eliminato')}>Cancella</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {appointments.length > 0 ? (
+          <AppointmentCardList
+            appointments={appointments}
+            onEdit={handleEditAppointment}
+            onDelete={handleDeleteAppointment}
+            onDelayNotification={handleDelayNotification}
+          />
         ) : (
           <EmptyMessage>Nessun appuntamento registrato a sistema.</EmptyMessage>
         )}
