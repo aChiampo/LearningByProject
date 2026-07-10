@@ -40,7 +40,7 @@ export default function ClientBooking() {
     setSuccess(false);
 
     try {
-      const response = await fetch('http://localhost:9020/api/prenotazione', {
+      const response = await fetch('http://localhost:9020/api/visite/prenotazione', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
