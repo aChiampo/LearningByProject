@@ -2,6 +2,9 @@ import { useState } from 'react';
 import PageTitle from '../../../components/common/PageTitle';
 import ManagmentSpecies from './ManagmentSpecies';
 import ManagmentRaces from './ManagmentRaces';
+import ManagmentVaccineType from './ManagmentVaccineType';
+import ManagmentVisitType from './ManagmentVisitType';
+import ManagmentVisitCategory from './ManagmentVisitCategory';
 
 export default function ManagmentConfiguration() {
     // Questo stato memorizza la tabella che il dottore vuole configurare
@@ -66,12 +69,30 @@ export default function ManagmentConfiguration() {
                     </div>
                 )}
 
-                {/* Placeholder per le prossime sezioni di backend */}
-                {(sezioneAttiva === 'tipiVisita' || sezioneAttiva === 'categorieVisita' || sezioneAttiva === 'vaccini') && (
-                    <div className="panel text-center">
-                        <p className="muted-text" style={{ padding: '20px 0' }}>
-                            Sezione in sviluppo. Configureremo i relativi endpoint di backend nei prossimi passaggi.
-                        </p>
+                {/* Render del Blocco Tipi Vaccino */}
+                {sezioneAttiva === 'vaccini' && (
+                    <div className="panel">
+                        <h2>Gestione Tipi Vaccino</h2>
+                        <p className="muted-text">Configura i tipi di vaccino disponibili nella clinica.</p>
+                        <ManagmentVaccineType />
+                    </div>
+                )}
+
+                {/* Render del Blocco Tipi Visita */}
+                {sezioneAttiva === 'tipiVisita' && (
+                    <div className="panel">
+                        <h2>Gestione Tipi Visita</h2>
+                        <p className="muted-text">Configura i tipi di visita offerti dalla clinica.</p>
+                        <ManagmentVisitType />
+                    </div>
+                )}
+
+                {/* Render del Blocco Categorie Visita */}
+                {sezioneAttiva === 'categorieVisita' && (
+                    <div className="panel">
+                        <h2>Gestione Categorie Visita</h2>
+                        <p className="muted-text">Organizza le visite per categorie (es: Chirurgia, Controllo, Diagnostica).</p>
+                        <ManagmentVisitCategory />
                     </div>
                 )}
 

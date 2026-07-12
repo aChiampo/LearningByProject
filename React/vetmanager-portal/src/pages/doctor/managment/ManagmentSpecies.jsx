@@ -11,7 +11,7 @@ export default function ManagmentSpecies() {
   const caricaSpecie = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/specie');
+      const response = await fetch('http://localhost:9020/api/specie');
       if (!response.ok) throw new Error('Errore nel caricamento delle specie');
       const data = await response.json();
       // Filtra solo le specie non eliminate (soft-delete)
