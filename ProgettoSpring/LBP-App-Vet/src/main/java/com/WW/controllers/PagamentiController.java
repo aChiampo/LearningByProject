@@ -35,9 +35,9 @@ public class PagamentiController {
         return ResponseEntity.ok(pagamentiService.ottieniPerId(id));
     }
 
-    @GetMapping("/leggiPerStato/{stato}")
-    public ResponseEntity<List<Pagamento>> leggiPerStato(@PathVariable String stato) {
-        return ResponseEntity.ok(pagamentiService.ottieniPerStato(stato));
+    @GetMapping("/leggiPerTipoPagamento/{tipoPagamento}")
+    public ResponseEntity<List<Pagamento>> leggiPerTipoPagamento(@PathVariable String tipoPagamento) {
+        return ResponseEntity.ok(pagamentiService.ottieniPerTipoPagamento(tipoPagamento));
     }
 
     @PostMapping("/crea")

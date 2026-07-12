@@ -47,8 +47,8 @@ public class PagamentiService {
     }
 
     @Transactional(readOnly = true)
-    public List<Pagamento> ottieniPerStato(String stato) {
-        return pagamentoRepository.findByTipoPagamento(stato);
+    public List<Pagamento> ottieniPerTipoPagamento(String tipoPagamento) {
+        return pagamentoRepository.findByTipoPagamento(tipoPagamento);
     }
 
     @Transactional(readOnly = true)

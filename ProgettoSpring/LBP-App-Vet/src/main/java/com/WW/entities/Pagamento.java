@@ -17,7 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "pagamenti")
+@Table(name = "PAGAMENTI")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,19 +26,26 @@ public class Pagamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID")
     private Integer id;
 
-    @Column(name = "data", nullable = false)
+    @Column(name = "Data", nullable = false)
     private LocalDate data;
 
-    @Column(name = "tipo_pagamento", length = 30)
+    @Column(name = "Tipo_Pagamento", length = 30)
     private String tipoPagamento;
 
-    @Column(name = "importo_totale", precision = 8, scale = 2, nullable = false)
+    @Column(name = "Importo_Totale", precision = 8, scale = 2, nullable = false)
     private BigDecimal importoTotale;
 
     @ManyToOne
-    @JoinColumn(name = "id_utente", referencedColumnName = "id")
+    @JoinColumn(name = "ID_Utente", referencedColumnName = "ID")
     private Utente utente;
+
+    @Column(name = "RiferimentoFile", nullable = false)
+    private Integer riferimentoFile;
+
+    @Builder.Default
+    @Column(name = "isDeleted", nullable = false)
+    private boolean isDeleted = false;
 }
