@@ -53,6 +53,7 @@ export const ROLE_CONFIG = {
         { label: "Agenda di Oggi", target: "/doctor/dashboard" },
         { label: "Profilo", target: "/doctor/profile" },
         { label: "Registro Animali", target: "/doctor/animals" },
+        { label: "Gestione", target: "/doctor/management" },
         { label: "Supporto FAQ", target: "/doctor/faq" }
       ],
       // I dati dinamici che arriveranno da Spring Boot

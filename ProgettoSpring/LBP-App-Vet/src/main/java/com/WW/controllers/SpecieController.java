@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/specie")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class SpecieController {
 
     private final SpecieService specieService;
@@ -45,23 +45,6 @@ public class SpecieController {
             Optional<Specie> specie = specieService.getSpecieById(id);
             return specie.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    /**
-     * Endpoint GET per ricercare specie per ID
-     * @param id l'ID della specie
-     * @return lista di specie corrispondenti
-     */
-    @GetMapping("/cerca/id")
-    public ResponseEntity<List<Specie>> findRazzeById(@RequestParam Integer id) {
-        try {
-            List<Specie> specie = specieService.findRazzeById(id);
-            return ResponseEntity.ok(specie);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
