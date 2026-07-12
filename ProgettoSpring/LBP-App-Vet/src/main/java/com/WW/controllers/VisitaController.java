@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Pagamento;
 import com.WW.entities.Visita;
@@ -136,6 +137,17 @@ public class VisitaController {
     @GetMapping("/ottieniNonPagatePerAnimale/{idAnimale}")
     public ResponseEntity<List<Visita>> ottieniNonPagatePerAnimale(@PathVariable int idAnimale) {
         return ResponseEntity.ok(visitaService.OttieniVisiteNonPagateByAnimale(idAnimale));
+    }
+
+    /**
+     * Restituisce le visite filtrate dai parametri specificati.
+     *
+     * @param params parametri opzionali di filtro
+     * @return visite filtrate
+     */
+    @PostMapping("/params")
+    public ResponseEntity<List<VisitaDto>> ottieniPerParametri(@RequestBody(required = false) VisitParamDTO params) {
+        return ResponseEntity.ok(visitaService.getVisiteByParams(params));
     }
 
     /**

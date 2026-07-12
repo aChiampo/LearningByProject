@@ -2,12 +2,18 @@ package com.WW.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.WW.dto.AnimaleDto;
+import com.WW.dto.PagamentoDto;
+import com.WW.dto.TipoVisitaDto;
+import com.WW.dto.UtenteDto;
+import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Pagamento;
 import com.WW.entities.TipoVisita;
@@ -157,6 +163,46 @@ public class VisitaService {
     @Transactional(readOnly = true)
     public List<Visita> getAllVisita() {
         return visitaRepository.findAll();
+    }
+
+    /**
+     * Restituisce le visite filtrate dai parametri specificati.
+     *
+     * @param params parametri opzionali di filtro
+     * @return visite filtrate convertite in DTO
+     */
+    @Transactional(readOnly = true)
+    public List<VisitaDto> getVisiteByParams(VisitParamDTO params) {
+        return getAllVisita().stream()
+                .filter(visita -> params == null || params.date() == null
+                        || !visita.getDataVisita().isBefore(params.date()))
+                .filter(visita -> params == null || params.doctorID() == null
+                        || Objects.equals(visita.getVeterinario().getId(), params.doctorID()))
+                .filter(visita -> params == null || params.clientID() == null
+                        || Objects.equals(visita.getAnimale().getUtente().getId(), params.clientID()))
+                .filter(visita -> params == null || params.animalID() == null
+                        || Objects.equals(visita.getAnimale().getId(), params.animalID()))
+                .filter(visita -> params == null || params.tipoVisitaID() == null
+                        || Objects.equals(visita.getTipoVisita().getId(), params.tipoVisitaID()))
+                .filter(visita -> params == null || params.pagamentoID() == null
+                        || visita.getPagamento() != null
+                                && Objects.equals(visita.getPagamento().getId(), params.pagamentoID()))
+                .filter(visita -> params == null || params.stato() == null
+                        || visita.getStato() == params.stato())
+                .filter(visita -> params == null || params.pagata() == null
+                        || Objects.equals(visita.getPagamento() != null, params.pagata()))
+                .map(this::toDto)
+                .toList();
+    }
+
+    private VisitaDto toDto(Visita visita) {
+        return new VisitaDto(
+                visita.getDataVisita(),
+                visita.getTipoVisita() == null ? null : new TipoVisitaDto(visita.getTipoVisita().getId()),
+                visita.getAnimale() == null ? null : new AnimaleDto(visita.getAnimale().getId()),
+                visita.getVeterinario() == null ? null : new UtenteDto(visita.getVeterinario().getId()),
+                visita.getPagamento() == null ? null : new PagamentoDto(visita.getPagamento().getId()),
+                visita.getNote());
     }
 
     /**
