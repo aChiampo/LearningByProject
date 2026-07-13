@@ -22,12 +22,15 @@ public class AziendaService {
     @Transactional
     public Azienda creaAzienda(Azienda azienda) {
         if (azienda.getPartitaIva() != null && !azienda.getPartitaIva().isBlank()) {
-            aziendaRepository.findByPartitaIva(azienda.getPartitaIva())
+            aziendaRepository.findByPartitaIvaAndIsDeletedFalse(azienda.getPartitaIva())
                     .ifPresent(a -> {
                         throw new ResponseStatusException(
                                 HttpStatus.CONFLICT,
                                 "La Partita IVA " + a.getPartitaIva() + " è già associata a un'altra azienda.");
                     });
+        }
+        if (azienda.getIsDeleted() == null) {
+            azienda.setIsDeleted(false);
         }
         return aziendaRepository.save(azienda);
     }
@@ -38,7 +41,7 @@ public class AziendaService {
         Azienda esistente = ottieniPerId(id); 
 
         if (datiAggiornati.getPartitaIva() != null && !datiAggiornati.getPartitaIva().isBlank()) {
-            aziendaRepository.findByPartitaIva(datiAggiornati.getPartitaIva())
+            aziendaRepository.findByPartitaIvaAndIsDeletedFalse(datiAggiornati.getPartitaIva())
                     .filter(a -> !a.getId().equals(id))
                     .ifPresent(a -> {
                         throw new ResponseStatusException(
@@ -62,13 +65,13 @@ public class AziendaService {
     // 3. RECUPERA TUTTE LE AZIENDE
     @Transactional(readOnly = true)
     public List<Azienda> ottieniTutte() {
-        return aziendaRepository.findAll();
+        return aziendaRepository.findByIsDeletedFalse();
     }
 
     // 4. RECUPERA UNA SINGOLA AZIENDA TRAMITE ID
     @Transactional(readOnly = true)
     public Azienda ottieniPerId(Integer id) {
-        return aziendaRepository.findById(id)
+        return aziendaRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Azienda con ID " + id + " non trovata."));
@@ -77,9 +80,11 @@ public class AziendaService {
     // 5. ELIMINA UN'AZIENDA
     @Transactional
     public void eliminaAzienda(Integer id) {
-        if (!aziendaRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Impossibile eliminare: Azienda non trovata.");
-        }
-        aziendaRepository.deleteById(id);
+        Azienda azienda = aziendaRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Impossibile eliminare: Azienda non trovata."));
+        azienda.setIsDeleted(true);
+        aziendaRepository.save(azienda);
     }
 }

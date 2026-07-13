@@ -21,6 +21,7 @@ public class PagamentiService {
 
     @Transactional
     public Pagamento creaPagamento(Pagamento pagamento) {
+        pagamento.setDeleted(false);
         return pagamentoRepository.save(pagamento);
     }
 
@@ -46,17 +47,17 @@ public class PagamentiService {
 
     @Transactional(readOnly = true)
     public List<Pagamento> ottieniTutti() {
-        return pagamentoRepository.findAll();
+        return pagamentoRepository.findByIsDeletedFalse();
     }
 
     @Transactional(readOnly = true)
     public List<Pagamento> ottieniPerStato(String stato) {
-        return pagamentoRepository.findByTipoPagamento(stato);
+        return pagamentoRepository.findByTipoPagamentoAndIsDeletedFalse(stato);
     }
 
     @Transactional(readOnly = true)
     public Pagamento ottieniPerId(Integer id) {
-        return pagamentoRepository.findById(id)
+        return pagamentoRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Pagamento non trovato."));
@@ -64,9 +65,11 @@ public class PagamentiService {
 
     @Transactional
     public void eliminaPagamento(Integer id) {
-        if (!pagamentoRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Impossibile eliminare: pagamento non trovato.");
-        }
-        pagamentoRepository.deleteById(id);
+        Pagamento pagamento = pagamentoRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Impossibile eliminare: pagamento non trovato."));
+        pagamento.setDeleted(true);
+        pagamentoRepository.save(pagamento);
     }
 }
