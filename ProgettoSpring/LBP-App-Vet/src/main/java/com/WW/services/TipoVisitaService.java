@@ -29,6 +29,9 @@ public class TipoVisitaService {
      * @return tipo visita creato
      */
     public TipoVisita aggiungiTipoVisite(TipoVisita tipoVisite) {
+        if (tipoVisite.getIsDeleted() == null) {
+            tipoVisite.setIsDeleted(false);
+        }
         return tipoVisitaRepo.save(tipoVisite);
     }
     
@@ -70,7 +73,7 @@ public class TipoVisitaService {
      * @return elenco dei tipi visita
      */
     public List<TipoVisita> ottieniTutti() {
-        return tipoVisitaRepo.findAll();
+        return tipoVisitaRepo.findByIsDeletedFalse();
     }
 
     /**
@@ -80,7 +83,7 @@ public class TipoVisitaService {
      * @return tipo visita trovato
      */
     public TipoVisita ottieniPerId(Integer id) {
-        return tipoVisitaRepo.findById(id)
+        return tipoVisitaRepo.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Tipo visite non trovato."));
@@ -93,11 +96,11 @@ public class TipoVisitaService {
      * @param id identificativo del tipo visita da eliminare
      */
     public void eliminaTipoVisite(Integer id) {
-        if (!tipoVisitaRepo.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Impossibile eliminare: Tipo visite non trovato.");
-        }
-        tipoVisitaRepo.deleteById(id);
+        TipoVisita tipoVisita = tipoVisitaRepo.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Impossibile eliminare: Tipo visite non trovato."));
+        tipoVisita.setIsDeleted(true);
+        tipoVisitaRepo.save(tipoVisita);
     }
 }

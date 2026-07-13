@@ -31,12 +31,15 @@ public class AnimaleService {
          * }
          */
         if (animale.getMicrochip() != null && !animale.getMicrochip().isBlank()) {
-            animaleRepository.findByMicrochip(animale.getMicrochip())
+            animaleRepository.findByMicrochipAndIsDeletedFalse(animale.getMicrochip())
                     .ifPresent(a -> {
                         throw new ResponseStatusException(
                                 HttpStatus.CONFLICT,
                                 "Il microchip " + a.getMicrochip() + " risulta già registrato nel sistema.");
                     });
+        }
+        if (animale.getIsDeleted() == null) {
+            animale.setIsDeleted(false);
         }
         return animaleRepository.save(animale);
     }
@@ -48,7 +51,7 @@ public class AnimaleService {
 
         // Controllo unicità solo se il microchip viene effettivamente cambiato
         if (datiAggiornati.getMicrochip() != null && !datiAggiornati.getMicrochip().isBlank()) {
-            animaleRepository.findByMicrochip(datiAggiornati.getMicrochip())
+            animaleRepository.findByMicrochipAndIsDeletedFalse(datiAggiornati.getMicrochip())
                     .filter(a -> !a.getId().equals(id))
                     .ifPresent(a -> {
                         throw new ResponseStatusException(
@@ -87,19 +90,19 @@ public class AnimaleService {
     // 3. RECUPERA TUTTI I PAZIENTI/ANIMALISTI DEL SISTEMA
     @Transactional(readOnly = true)
     public List<Animale> ottieniTutti() {
-        return animaleRepository.findAll();
+        return animaleRepository.findByIsDeletedFalse();
     }
 
     // 4. RECUPERA GLI ANIMALI DI UN SINGOLO UTENTE
     @Transactional(readOnly = true)
     public List<Animale> ottieniPerUtente(Integer utenteId) {
-        return animaleRepository.findByUtenteId(utenteId);
+        return animaleRepository.findByUtenteIdAndIsDeletedFalse(utenteId);
     }
 
     // 5. RECUPERA SCHEDA SINGOLO ANIMALE
     @Transactional(readOnly = true)
     public Animale ottieniPerId(Integer id) {
-        return animaleRepository.findById(id)
+        return animaleRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Animale non trovato."));
@@ -108,9 +111,11 @@ public class AnimaleService {
     // 6. CANCELLA UN ANIMALE
     @Transactional
     public void eliminaAnimale(Integer id) {
-        if (!animaleRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Impossibile eliminare: Animale non trovato.");
-        }
-        animaleRepository.deleteById(id);
+        Animale animale = animaleRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Impossibile eliminare: Animale non trovato."));
+        animale.setIsDeleted(true);
+        animaleRepository.save(animale);
     }
 }

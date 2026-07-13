@@ -31,6 +31,9 @@ public class CategoriaVisiteService {
      * @return categoria creata
      */
     public CategoriaVisite aggiungiCategoriaVisite(CategoriaVisite categoriaVisite) {
+        if (categoriaVisite.getIsDeleted() == null) {
+            categoriaVisite.setIsDeleted(false);
+        }
         return categoriaVisiteRepo.save(categoriaVisite);
     }
 
@@ -58,11 +61,11 @@ public class CategoriaVisiteService {
      * @return elenco delle categorie
      */
     public List<CategoriaVisite> ottieniTutte() {
-        return categoriaVisiteRepo.findAll();
+        return categoriaVisiteRepo.findByIsDeletedFalse();
     }
 
     public CategoriaVisite ottieniPerId(Integer id) {
-        return categoriaVisiteRepo.findById(id)
+        return categoriaVisiteRepo.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Categoria visite non trovata."));
@@ -75,11 +78,11 @@ public class CategoriaVisiteService {
      * @param id identificativo della categoria da eliminare
      */
     public void eliminaCategoriaVisite(Integer id) {
-        if (!categoriaVisiteRepo.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Impossibile eliminare: Categoria visite non trovata.");
-        }
-        categoriaVisiteRepo.deleteById(id);
+        CategoriaVisite categoriaVisite = categoriaVisiteRepo.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Impossibile eliminare: Categoria visite non trovata."));
+        categoriaVisite.setIsDeleted(true);
+        categoriaVisiteRepo.save(categoriaVisite);
     }
 }

@@ -21,7 +21,7 @@ public class SpecieService {
      * @return lista di tutte le specie
      */
     public List<Specie> visualizzaTutteSpecie() {
-        return specieRepo.findAll();
+        return specieRepo.findByIsDeletedFalse();
     }
 
     /**
@@ -34,7 +34,7 @@ public class SpecieService {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome della specie non può essere null o vuoto");
         }
-        return specieRepo.findByNome(nome);
+        return specieRepo.findByNomeAndIsDeletedFalse(nome);
     }
 
     /**
@@ -47,7 +47,7 @@ public class SpecieService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della specie non può essere null o negativo");
         }
-        return specieRepo.findById(id);
+        return specieRepo.findByIdAndIsDeletedFalse(id);
     }
 
     /**
@@ -65,7 +65,7 @@ public class SpecieService {
         }
 
         // Verifica unicità del nome
-        List<Specie> specieEsistenti = specieRepo.findByNome(specie.getNome().trim());
+        List<Specie> specieEsistenti = specieRepo.findByNomeAndIsDeletedFalse(specie.getNome().trim());
         if (!specieEsistenti.isEmpty()) {
             throw new IllegalArgumentException("Una specie con nome '" + specie.getNome() + "' esiste già");
         }
@@ -87,7 +87,7 @@ public class SpecieService {
         if (specie.getId() == null || specie.getId() <= 0) {
             throw new IllegalArgumentException("L'ID della specie è obbligatorio per l'aggiornamento");
         }
-        if (!specieRepo.existsById(specie.getId())) {
+        if (specieRepo.findByIdAndIsDeletedFalse(specie.getId()).isEmpty()) {
             throw new IllegalArgumentException("Specie con ID " + specie.getId() + " non trovata");
         }
         if (specie.getNome() == null || specie.getNome().trim().isEmpty()) {
@@ -95,11 +95,12 @@ public class SpecieService {
         }
 
         // Verifica unicità del nome (escludendo l'ID corrente)
-        List<Specie> specieEsistenti = specieRepo.findByNome(specie.getNome().trim());
+        List<Specie> specieEsistenti = specieRepo.findByNomeAndIsDeletedFalse(specie.getNome().trim());
         if (!specieEsistenti.isEmpty() && !specieEsistenti.get(0).getId().equals(specie.getId())) {
             throw new IllegalArgumentException("Una specie con nome '" + specie.getNome() + "' esiste già");
         }
 
+        specie.setDeleted(false);
         return specieRepo.save(specie);
     }
 
@@ -112,7 +113,7 @@ public class SpecieService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della specie non può essere null o negativo");
         }
-        Optional<Specie> specie = specieRepo.findById(id);
+        Optional<Specie> specie = specieRepo.findByIdAndIsDeletedFalse(id);
         if (specie.isEmpty()) {
             throw new IllegalArgumentException("Specie con ID " + id + " non trovata");
         }
@@ -131,9 +132,6 @@ public class SpecieService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della specie non può essere null o negativo");
         }
-        if (!specieRepo.existsById(id)) {
-            throw new IllegalArgumentException("Specie con ID " + id + " non trovata");
-        }
-        specieRepo.deleteById(id);
+        eliminaSpecie(id);
     }
 }

@@ -22,7 +22,7 @@ public class FileReferencesService {
      * Visualizza tutti i file reference
      */
     public List<FileReferences> visualizzaTuttiFileReferences() {
-        return fileReferencesRepo.findAll();
+        return fileReferencesRepo.findByIsDeletedFalse();
     }
 
     /**
@@ -32,7 +32,7 @@ public class FileReferencesService {
         if (owner == null || owner.getId() == null || owner.getId() <= 0) {
             throw new IllegalArgumentException("Owner non valido");
         }
-        return fileReferencesRepo.findByOwner(owner);
+        return fileReferencesRepo.findByOwnerAndIsDeletedFalse(owner);
     }
 
     /**
@@ -42,7 +42,7 @@ public class FileReferencesService {
         if (uploadDate == null) {
             throw new IllegalArgumentException("La data di filtro non può essere null");
         }
-        return fileReferencesRepo.findByUploadDateBefore(uploadDate);
+        return fileReferencesRepo.findByUploadDateBeforeAndIsDeletedFalse(uploadDate);
     }
 
     /**
@@ -52,7 +52,7 @@ public class FileReferencesService {
         if (uploadDate == null) {
             throw new IllegalArgumentException("La data di filtro non può essere null");
         }
-        return fileReferencesRepo.findByUploadDateAfter(uploadDate);
+        return fileReferencesRepo.findByUploadDateAfterAndIsDeletedFalse(uploadDate);
     }
 
     /**
@@ -62,7 +62,7 @@ public class FileReferencesService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID non può essere null o negativo");
         }
-        return fileReferencesRepo.findById(id);
+        return fileReferencesRepo.findByIdAndIsDeletedFalse(id);
     }
 
     /**
@@ -70,6 +70,7 @@ public class FileReferencesService {
      */
     public FileReferences salvaFileReference(FileReferences fileReferences) {
         validateFileReferenceForSave(fileReferences);
+        fileReferences.setDeleted(false);
         return fileReferencesRepo.save(fileReferences);
     }
 
@@ -83,10 +84,11 @@ public class FileReferencesService {
         if (fileReferences.getId() == null || fileReferences.getId() <= 0) {
             throw new IllegalArgumentException("L'ID è obbligatorio per l'aggiornamento");
         }
-        if (!fileReferencesRepo.existsById(fileReferences.getId())) {
+        if (fileReferencesRepo.findByIdAndIsDeletedFalse(fileReferences.getId()).isEmpty()) {
             throw new IllegalArgumentException("FileReference con ID " + fileReferences.getId() + " non trovato");
         }
         validateFileReferenceForSave(fileReferences);
+        fileReferences.setDeleted(false);
         return fileReferencesRepo.save(fileReferences);
     }
 
@@ -97,10 +99,13 @@ public class FileReferencesService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID non può essere null o negativo");
         }
-        if (!fileReferencesRepo.existsById(id)) {
+        Optional<FileReferences> fileReference = fileReferencesRepo.findByIdAndIsDeletedFalse(id);
+        if (fileReference.isEmpty()) {
             throw new IllegalArgumentException("FileReference con ID " + id + " non trovato");
         }
-        fileReferencesRepo.deleteById(id);
+        FileReferences fileReferenceToDelete = fileReference.get();
+        fileReferenceToDelete.setDeleted(true);
+        fileReferencesRepo.save(fileReferenceToDelete);
     }
 
     private void validateFileReferenceForSave(FileReferences f) {
