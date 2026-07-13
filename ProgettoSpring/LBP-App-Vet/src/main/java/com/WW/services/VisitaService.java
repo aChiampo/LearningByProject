@@ -1,6 +1,7 @@
 package com.WW.services;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Pagamento;
 import com.WW.entities.TipoVisita;
+import com.WW.entities.Utente;
 import com.WW.entities.Visita;
 import com.WW.repositories.VisitaRepository;
 
@@ -29,6 +31,10 @@ import com.WW.repositories.VisitaRepository;
 public class VisitaService {
 
     private final VisitaRepository visitaRepository;
+    private final TipoVisitaService tipoVisitaService;
+    private final AnimaleService animaleService;
+    private final UtenteService utenteService;
+    private final PagamentiService pagamentiService;
 
     /**
      * Costruisce il servizio con il repository delle visite.
@@ -36,8 +42,13 @@ public class VisitaService {
      * @param visitaRepository repository delle visite
      */
     public VisitaService(
-            VisitaRepository visitaRepository) {
+            VisitaRepository visitaRepository, TipoVisitaService tipoVisitaService, AnimaleService animaleService,
+            UtenteService utenteService, PagamentiService pagamentiService) {
         this.visitaRepository = visitaRepository;
+        this.tipoVisitaService = tipoVisitaService;
+        this.animaleService = animaleService;
+        this.utenteService = utenteService;
+        this.pagamentiService = pagamentiService;
     }
 
     /**
@@ -65,8 +76,8 @@ public class VisitaService {
                     "Il corpo della visita non può essere nullo.");
         }
 
-        validaSovrapposizioneOrario(visita.getStartDateTime(), tipoVisitaService.ottieniPerId(visita.tipoVisita()),
-                visita.veterinario());
+        validaSovrapposizioneOrario(visita.getStartDateTime(), tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
+                utenteService.ottieniPerId(visita.veterinario().id()));
 
         if (visita.tipoVisita() == null || visita.tipoVisita() == null) {
             throw new ResponseStatusException(
@@ -95,9 +106,9 @@ public class VisitaService {
 
     private Visita toEntity(VisitaDto visita) {
         Visita entity = new Visita();
-        entity.setAnimale(animaleService.ottieniPerId(visita.animale()));
-        entity.setTipoVisita(tipoVisitaService.ottieniPerId(visita.tipoVisita()));
-        entity.setVeterinario(utenteService.ottieniPerId(visita.veterinario()));
+        entity.setAnimale(animaleService.ottieniPerId(visita.animale().id()));
+        entity.setTipoVisita(tipoVisitaService.ottieniPerId(visita.tipoVisita().id()));
+        entity.setVeterinario(utenteService.ottieniPerId(visita.veterinario().id()));
         entity.setDataVisita(visita.getStartDateTime());
         if (visita.pagamento() != null) {
             entity.setPagamento(pagamentiService.ottieniPerId(visita.pagamento().id()));
@@ -117,7 +128,7 @@ public class VisitaService {
      * @throws ResponseStatusException se l'orario richiesto si sovrappone a una
      *                                 visita esistente
      */
-    private void validaSovrapposizioneOrario(LocalDateTime dataVisita, TipoVisita tipoVisita, int veterinarioId) {
+    private void validaSovrapposizioneOrario(LocalDateTime dataVisita, TipoVisita tipoVisita, Utente veterinario) {
         LocalDateTime nuovaInizio = dataVisita;
         LocalDateTime nuovaFine = dataVisita.plusMinutes(tipoVisita.getDurata());
 
@@ -127,7 +138,7 @@ public class VisitaService {
         LocalDateTime windowEnd = nuovaFine.plusHours(6);
 
         List<Visita> candidate = visitaRepository.findVisiteVeterinarioNelPeriodo(
-                veterinarioId, windowStart, windowEnd);
+                veterinario.getId(), windowStart, windowEnd);
 
         for (Visita esistente : candidate) {
             LocalDateTime esistenteInizio = esistente.getDataVisita();
@@ -184,14 +195,14 @@ public class VisitaService {
                 .toList();
     }
 
-    private VisitaDto toDto(Visita visita) {
-        return new VisitaDto(
-                visita.getDataVisita(),
-                visita.getTipoVisita() == null ? null : new TipoVisitaDto(visita.getTipoVisita().getId()),
-                visita.getAnimale() == null ? null : new AnimaleDto(visita.getAnimale().getId()),
-                visita.getVeterinario() == null ? null : new UtenteDto(visita.getVeterinario().getId()),
-                visita.getPagamento() == null ? null : new PagamentoDto(visita.getPagamento().getId()),
-                visita.getNote());
+    /**
+     * Converte un'entità Visita in un DTO VisitaDto.
+     * 
+     * @param visita entità Visita da convertire
+     * @return DTO VisitaDto corrispondente
+     */
+    public VisitaDto toDto(Visita visita) {
+        return VisitaDto.fromEntity(visita);
     }
 
     /**

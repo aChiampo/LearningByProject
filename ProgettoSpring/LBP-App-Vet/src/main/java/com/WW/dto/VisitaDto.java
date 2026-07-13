@@ -3,6 +3,9 @@ package com.WW.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import com.WW.entities.Visita;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
@@ -38,5 +41,17 @@ public record VisitaDto(
             throw new IllegalArgumentException("Invalid time slot: " + fasciaOraria);
         }
         return LocalDateTime.of(data, endTime);
+    }
+
+    public static VisitaDto fromEntity(Visita visita) {
+        return new VisitaDto(
+                new AnimaleDto(visita.getAnimale().getId()),
+                new TipoVisitaDto(visita.getTipoVisita().getId()),
+                new UtenteDto(visita.getVeterinario().getId()),
+                visita.getDataVisita().toLocalDate(),
+                visita.getDataVisita().toLocalTime().isBefore(LocalTime.of(12, 30)) ? "Mattina" : "Pomeriggio",
+                visita.getPagamento() != null ? new PagamentoDto(visita.getPagamento().getId()) : null,
+                null // Assuming note is not present in the entity
+        );
     }
 }
