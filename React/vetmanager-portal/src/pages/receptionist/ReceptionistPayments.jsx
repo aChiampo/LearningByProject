@@ -1,12 +1,67 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
+import { UnpaidVisitCardList } from '../../components/payments/UnpaidVisitCard';
+import { PaidVisitCardList } from '../../components/payments/PaidVisitCard';
+import { fetchPaidVisits, fetchUnpaidVisits } from '../../services/paymentApi';
 
 export default function ReceptionistPayments() {
+  const navigate = useNavigate();
   const { currentRole } = useContext(AppContext);
   const config = ROLE_CONFIG[currentRole];
+  const fallbackPayments = useMemo(() => config?.pendingPayments ?? [], [config?.pendingPayments]);
+  const [unpaidVisits, setUnpaidVisits] = useState(fallbackPayments);
+  const [paidVisits, setPaidVisits] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadUnpaidVisits() {
+      setIsLoading(true);
+      setLoadError('');
+
+      try {
+        const [unpaidVisitList, paidVisitList] = await Promise.all([
+          fetchUnpaidVisits(),
+          fetchPaidVisits(),
+        ]);
+
+        if (isMounted) {
+          setUnpaidVisits(unpaidVisitList);
+          setPaidVisits(paidVisitList);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setLoadError(error.message);
+          setUnpaidVisits(fallbackPayments);
+          setPaidVisits([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadUnpaidVisits();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fallbackPayments]);
+
+  function handlePaidVisit(paidVisit) {
+    setUnpaidVisits((currentVisits) => currentVisits.filter((visit) => visit.id !== paidVisit.id));
+  }
+
+  function handleVisitDetails(visit) {
+    navigate(`/receptionist/appointments?visitaId=${visit.id}`);
+  }
 
   return (
     <div>
@@ -14,36 +69,43 @@ export default function ReceptionistPayments() {
 
       <div className="panel section-spaced-sm">
         <h2>Pendenze Attive</h2>
-        {config?.pendingPayments?.length > 0 ? (
-          <div className="table-responsive">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Intestatario</th>
-                  <th>Prestazione</th>
-                  <th>Importo</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {config.pendingPayments.map((payment, index) => (
-                  <tr key={index}>
-                    <td>{payment.clienteNome}</td>
-                    <td>{payment.descrizioneVisita}</td>
-                    <td><strong>Euro {payment.cifra}</strong></td>
-                    <td>
-                      <div className="actions-row">
-                        <button className="btn btn-primary btn-sm" onClick={() => window.alert('Pagamento registrato')}>Registra Saldo</button>
-                        <button className="btn btn-outline btn-sm" onClick={() => window.alert('Sollecito inviato')}>Invia Sollecito</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
+
+        {isLoading && <p className="muted-text">Caricamento pagamenti...</p>}
+
+        {loadError && (
+          <p className="form-status form-status--error">
+            {loadError}
+          </p>
+        )}
+
+        {!isLoading && unpaidVisits.length > 0 && (
+          <UnpaidVisitCardList
+            visits={unpaidVisits}
+            currentRole={currentRole}
+            onPaid={handlePaidVisit}
+            onVisitDetails={handleVisitDetails}
+          />
+        )}
+
+        {!isLoading && unpaidVisits.length === 0 && (
           <EmptyMessage>Ottimo lavoro! Non ci sono pagamenti in sospeso da riscuotere.</EmptyMessage>
+        )}
+      </div>
+
+      <div className="panel section-spaced-sm">
+        <h2>Pagamenti Registrati</h2>
+
+        {isLoading && <p className="muted-text">Caricamento ricevute...</p>}
+
+        {!isLoading && paidVisits.length > 0 && (
+          <PaidVisitCardList
+            visits={paidVisits}
+            onVisitDetails={handleVisitDetails}
+          />
+        )}
+
+        {!isLoading && paidVisits.length === 0 && (
+          <EmptyMessage>Nessuna visita pagata presente nello storico.</EmptyMessage>
         )}
       </div>
     </div>
