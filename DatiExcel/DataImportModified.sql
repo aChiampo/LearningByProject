@@ -96,7 +96,7 @@ INSERT INTO utenti (id, nome, cognome, email, password, codice_fiscale, telefono
     (3, 'Camillo', 'Zampetti', 'camillo.zampetti@clinicazampetti.it', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ZMPCLL80A01A794Z', '035 1110004', 'Via Zambonate 1', 'Bergamo', '2024-01-01 09:00:00', NULL, 3, FALSE),
     (4, 'Admin', 'Zampetti', 'admin@clinicazampetti.it', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ZMPDMN80A01A794Z', '035 1110000', 'Via Zambonate 1', 'Bergamo', '2024-01-01 09:00:00', NULL, 4, FALSE)
 ON CONFLICT (id) DO UPDATE SET nome = EXCLUDED.nome, cognome = EXCLUDED.cognome, email = EXCLUDED.email, password = EXCLUDED.password, codice_fiscale = EXCLUDED.codice_fiscale, telefono = EXCLUDED.telefono, indirizzo = EXCLUDED.indirizzo, citta = EXCLUDED.citta, data_registrazione = EXCLUDED.data_registrazione, id_azienda = EXCLUDED.id_azienda, id_ruolo = EXCLUDED.id_ruolo, is_deleted = EXCLUDED.is_deleted;
-
+-- password hashata è 'password'
 
 -- ============================================================
 -- 3. Animals
