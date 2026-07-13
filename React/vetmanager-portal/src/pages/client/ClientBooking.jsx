@@ -11,11 +11,13 @@ export default function ClientBooking() {
 
   // State for form fields
   const [formData, setFormData] = useState({
-    animaleId: '',
-    tipoPrestazione: '',
+    animale: '', // Now matches `animale` in VisitaDto
+    tipoVisita: '', // Now matches `tipoVisita` in VisitaDto
     veterinario: '',
     data: '',
     fasciaOraria: '',
+    pagamento: null, // Add payment if needed
+    note: '', // Add notes if needed
   });
 
   // State for loading and error
@@ -35,23 +37,64 @@ export default function ClientBooking() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
     setSuccess(false);
 
+    // Guard against non-numeric / missing selections before hitting the API.
+    // VisitaDto marks animale, tipoVisita, and veterinario as @NotNull,
+    // so a NaN id here would serialize to `null` and fail backend validation
+    // with a less helpful error than we can give here.
+    const animaleId = parseInt(formData.animale, 10);
+    const tipoVisitaId = parseInt(formData.tipoVisita, 10);
+    const veterinarioId = parseInt(formData.veterinario, 10);
+
+    if (Number.isNaN(animaleId)) {
+      setError('Seleziona un animale valido prima di continuare.');
+      return;
+    }
+    if (Number.isNaN(tipoVisitaId)) {
+      setError('Seleziona un tipo di prestazione valido.');
+      return;
+    }
+    if (Number.isNaN(veterinarioId)) {
+      setError('Seleziona un veterinario valido.');
+      return;
+    }
+    if (!formData.data) {
+      setError('Seleziona una data per la visita.');
+      return;
+    }
+    if (!formData.fasciaOraria) {
+      setError('Seleziona una fascia oraria.');
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
+      // Map the form data to the backend's expected structure (VisitaDto).
+      // NOTE: animale/tipoVisita/veterinario are @Valid on the backend, so
+      // Spring validates the *whole* nested DTO, not just presence of `id`.
+      // If AnimaleDto/TipoVisitaDto/UtenteDto have their own @NotNull fields
+      // (e.g. nome, specie), sending only { id } here will fail validation
+      // unless the backend resolves the full entity from the id (e.g. via a
+      // mapper/service lookup). Confirm this against the DTO definitions.
+      const requestBody = {
+        animale: { id: animaleId },
+        tipoVisita: { id: tipoVisitaId },
+        veterinario: { id: veterinarioId },
+        data: formData.data, // ISO string (YYYY-MM-DD), maps to LocalDate
+        fasciaOraria: formData.fasciaOraria,
+        pagamento: formData.pagamento ? { id: parseInt(formData.pagamento, 10) } : null,
+        note: formData.note,
+      };
+
       const response = await fetch('http://localhost:9020/api/visite/prenotazione', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          idAnimale: formData.animaleId,
-          tipoPrestazione: formData.tipoPrestazione,
-          veterinario: formData.veterinario,
-          data: formData.data,
-          fasciaOraria: formData.fasciaOraria,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -76,7 +119,6 @@ export default function ClientBooking() {
   return (
     <div>
       <PageTitle eyebrow="Nuova Richiesta" title="Prenota Appuntamento" />
-
       <div className="panel panel-narrow">
         <form className="stack-form" onSubmit={handleSubmit}>
           {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -85,8 +127,8 @@ export default function ClientBooking() {
           <label>
             Seleziona l'animale
             <select
-              name="animaleId"
-              value={formData.animaleId}
+              name="animale"
+              value={formData.animale}
               onChange={handleChange}
               required
             >
@@ -98,7 +140,9 @@ export default function ClientBooking() {
                   </option>
                 ))
               ) : (
-                <option value="manual">Nessun animale salvato - Inserimento manuale</option>
+                <option value="" disabled>
+                  Nessun animale salvato - contatta la clinica
+                </option>
               )}
             </select>
           </label>
@@ -106,15 +150,15 @@ export default function ClientBooking() {
           <label>
             Tipo di prestazione
             <select
-              name="tipoPrestazione"
-              value={formData.tipoPrestazione}
+              name="tipoVisita"
+              value={formData.tipoVisita}
               onChange={handleChange}
               required
             >
               <option value="">Seleziona un tipo</option>
-              <option value="Vaccino Annuale">Vaccino Annuale</option>
-              <option value="Visita di Controllo">Visita di Controllo</option>
-              <option value="Chirurgia / Intervento">Chirurgia / Intervento</option>
+              <option value="1">Vaccino Annuale</option> {/* Assuming IDs for options */}
+              <option value="2">Visita di Controllo</option>
+              <option value="3">Chirurgia / Intervento</option>
             </select>
           </label>
 
@@ -127,8 +171,8 @@ export default function ClientBooking() {
               required
             >
               <option value="">Seleziona un veterinario</option>
-              <option value="Dott. Camillo Zampetti">Dott. Camillo Zampetti</option>
-              <option value="Qualsiasi Veterinario dello Studio">Qualsiasi Veterinario dello Studio</option>
+              <option value="1">Dott. Camillo Zampetti</option> {/* Assuming IDs for options */}
+              <option value="2">Qualsiasi Veterinario dello Studio</option>
             </select>
           </label>
 

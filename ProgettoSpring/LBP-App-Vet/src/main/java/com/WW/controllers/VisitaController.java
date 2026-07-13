@@ -147,7 +147,7 @@ public class VisitaController {
     @PostMapping("/prenotazione")
     public ResponseEntity<Visita> prenota(@Valid @RequestBody VisitaDto visita) {
         Visita nuovaVisita = visitaService.createVisita(visita);
-        return new ResponseEntity<>(nuovaVisita, HttpStatus.CREATED);
+        return new ResponseEntity<Visita>(nuovaVisita, HttpStatus.CREATED);
     }
 
     /**

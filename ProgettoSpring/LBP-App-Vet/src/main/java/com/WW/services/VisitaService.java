@@ -23,10 +23,6 @@ import com.WW.repositories.VisitaRepository;
 public class VisitaService {
 
     private final VisitaRepository visitaRepository;
-    private final TipoVisitaService tipoVisitaService;
-    private final UtenteService utenteService;
-    private final AnimaleService animaleService;
-    private final PagamentiService pagamentiService;
 
     /**
      * Costruisce il servizio con il repository delle visite.
@@ -34,16 +30,8 @@ public class VisitaService {
      * @param visitaRepository repository delle visite
      */
     public VisitaService(
-            VisitaRepository visitaRepository,
-            TipoVisitaService tipoVisitaService,
-            UtenteService utenteService,
-            AnimaleService animaleService,
-            PagamentiService pagamentiService) {
+            VisitaRepository visitaRepository) {
         this.visitaRepository = visitaRepository;
-        this.tipoVisitaService = tipoVisitaService;
-        this.utenteService = utenteService;
-        this.animaleService = animaleService;
-        this.pagamentiService = pagamentiService;
     }
 
     /**
@@ -71,22 +59,22 @@ public class VisitaService {
                     "Il corpo della visita non può essere nullo.");
         }
 
-        validaSovrapposizioneOrario(visita.dataVisita(), tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
-                visita.veterinario().id());
+        validaSovrapposizioneOrario(visita.getStartDateTime(), tipoVisitaService.ottieniPerId(visita.tipoVisita()),
+                visita.veterinario());
 
-        if (visita.tipoVisita() == null || visita.tipoVisita().id() == null) {
+        if (visita.tipoVisita() == null || visita.tipoVisita() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Il tipo visita è obbligatorio e deve contenere un id valido.");
         }
 
-        if (visita.animale() == null || visita.animale().id() == null) {
+        if (visita.animale() == null || visita.animale() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "L'animale è obbligatorio e deve contenere un id valido.");
         }
 
-        if (visita.veterinario() == null || visita.veterinario().id() == null) {
+        if (visita.veterinario() == null || visita.veterinario() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Il veterinario è obbligatorio e deve contenere un id valido.");
@@ -101,10 +89,10 @@ public class VisitaService {
 
     private Visita toEntity(VisitaDto visita) {
         Visita entity = new Visita();
-        entity.setDataVisita(visita.dataVisita());
-        entity.setTipoVisita(tipoVisitaService.ottieniPerId(visita.tipoVisita().id()));
-        entity.setAnimale(animaleService.ottieniPerId(visita.animale().id()));
-        entity.setVeterinario(utenteService.ottieniPerId(visita.veterinario().id()));
+        entity.setAnimale(animaleService.ottieniPerId(visita.animale()));
+        entity.setTipoVisita(tipoVisitaService.ottieniPerId(visita.tipoVisita()));
+        entity.setVeterinario(utenteService.ottieniPerId(visita.veterinario()));
+        entity.setDataVisita(visita.getStartDateTime());
         if (visita.pagamento() != null) {
             entity.setPagamento(pagamentiService.ottieniPerId(visita.pagamento().id()));
         }

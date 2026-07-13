@@ -77,7 +77,7 @@ public class Utente {
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted;
 
-   // relazioni bi_dimensionali
+    // relazioni bi_dimensionali
 
     // relazione 1-n con VISITA - cristian.pappalardo
     @OneToMany(mappedBy = "veterinario", cascade = CascadeType.ALL)
