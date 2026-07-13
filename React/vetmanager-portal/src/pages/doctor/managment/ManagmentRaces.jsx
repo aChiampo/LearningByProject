@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
+import { apiFetch } from '../../../services/apiClient';
 
 export default function ManagmentRaces() {
   const [razze, setRazze] = useState([]);
@@ -13,7 +14,7 @@ export default function ManagmentRaces() {
   const caricaRazze = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:9020/api/razze');
+      const response = await apiFetch('/api/razze');
       if (!response.ok) throw new Error('Errore nel caricamento delle razze');
       const data = await response.json();
       // Filtra solo le razze non eliminate (soft-delete)
@@ -30,7 +31,7 @@ export default function ManagmentRaces() {
   // Carica le specie dal backend
   const caricaSpecie = async () => {
     try {
-      const response = await fetch('http://localhost:9020/api/specie');
+      const response = await apiFetch('/api/specie');
       if (!response.ok) throw new Error('Errore nel caricamento delle specie');
       const data = await response.json();
       setSpecie(data.filter(s => !s.deleted));
@@ -41,8 +42,10 @@ export default function ManagmentRaces() {
 
   // Carica razze e specie al montaggio del componente
   useEffect(() => {
-    caricaRazze();
-    caricaSpecie();
+    queueMicrotask(() => {
+      caricaRazze();
+      caricaSpecie();
+    });
   }, []);
 
   // Aggiunge una nuova razza
@@ -63,7 +66,7 @@ export default function ManagmentRaces() {
       const specieObj = specie.find(s => s.id === parseInt(specieSelezionata));
       if (!specieObj) throw new Error('Specie non trovata');
 
-      const response = await fetch('http://localhost:9020/api/razze', {
+      const response = await apiFetch('/api/razze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +94,7 @@ export default function ManagmentRaces() {
     }
 
     try {
-      const response = await fetch(`http://localhost:9020/api/razze/${id}`, {
+      const response = await apiFetch(`/api/razze/${id}`, {
         method: 'DELETE',
       });
 

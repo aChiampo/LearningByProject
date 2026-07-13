@@ -4,8 +4,9 @@ import { AppContext } from '../context/AppContext';
 import { ROLE_CONFIG } from '../data/roleConfig.js';
 
 export default function Sidebar() {
-  const { currentRole } = useContext(AppContext);
+  const { currentRole, currentUser } = useContext(AppContext);
   const config = ROLE_CONFIG[currentRole];
+  const userName = [currentUser?.nome, currentUser?.cognome].filter(Boolean).join(' ') || config?.userName;
 
   if (!config) return null;
 
@@ -13,7 +14,7 @@ export default function Sidebar() {
     <nav className="navbar" aria-label={`Navigazione ${config.label}`}>
       <div className="nav-user">
         <span>{config.label}</span>
-        <strong>{config.userName}</strong>
+        <strong>{userName}</strong>
       </div>
 
       <div>

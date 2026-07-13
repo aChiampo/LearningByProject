@@ -71,7 +71,21 @@ public class AutenticazioneService {
 
     private RispostaLogin creaRispostaLogin(Utente utente) {
         String token = servizioJwt.creaToken(utente);
-        return new RispostaLogin(token, "Bearer", servizioJwt.ottieniScadenzaSecondi());
+        return new RispostaLogin(token, "Bearer", servizioJwt.ottieniScadenzaSecondi(), creaProfilo(utente));
+    }
+
+    public ProfiloAutenticato ottieniProfiloAutenticato(Integer idUtente) {
+        return creaProfilo(utenteService.ottieniPerId(idUtente));
+    }
+
+    private ProfiloAutenticato creaProfilo(Utente utente) {
+        return new ProfiloAutenticato(
+                utente.getId(),
+                utente.getEmail(),
+                utente.getRuolo().getRuolo(),
+                utente.getNome(),
+                utente.getCognome()
+        );
     }
 
     private void validaRegistrazione(RichiestaRegistrazione richiesta) {
@@ -89,6 +103,9 @@ public class AutenticazioneService {
         }
         if (campoVuoto(richiesta.cognome())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cognome obbligatorio");
+        }
+        if (campoVuoto(richiesta.codiceFiscale())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Codice fiscale obbligatorio");
         }
         if (campoVuoto(richiesta.telefono())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Telefono obbligatorio");

@@ -73,6 +73,7 @@ export const INITIAL_REGISTRATION_FORM = {
   nome: '',
   cognome: '',
   email: '',
+  codiceFiscale: '',
   telefono: '',
   password: '',
 };

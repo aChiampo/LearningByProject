@@ -50,7 +50,7 @@ public class Utente {
     @Column(name = "Password", length = 255, nullable = false)
     private String passwordHash;
 
-    @Column(name = "codice_fiscale", length = 16, nullable = true, unique = true)
+    @Column(name = "codice_fiscale", length = 16, nullable = false, unique = true)
     private String codiceFiscale;
 
     @Column(name = "Telefono", length = 20, nullable = false)
@@ -80,10 +80,12 @@ public class Utente {
     // relazioni bi_dimensionali
 
     // relazione 1-n con VISITA - cristian.pappalardo
+    @JsonIgnore
     @OneToMany(mappedBy = "veterinario", cascade = CascadeType.ALL)
     private List<Visita> visita;
 
     // relazione 1-n con ORARIO_SETTIMANALE - cristian.pappalardo
+    @JsonIgnore
     @OneToMany(mappedBy = "utente")
     private List<OrarioSettimanale> orariSettimanali;
 

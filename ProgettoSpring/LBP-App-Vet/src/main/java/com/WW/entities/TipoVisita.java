@@ -3,6 +3,8 @@ package com.WW.entities;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,6 +59,7 @@ public class TipoVisita {
     private Boolean isDeleted;
 
     //relazione 1-n con VISITA - cristian.pappalardo
+    @JsonIgnore
     @OneToMany(mappedBy = "tipoVisita", cascade = CascadeType.ALL)
     private List<Visita> visita;
 

@@ -1,18 +1,48 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import { ROLE_CONFIG } from '../../data/roleConfig';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { setCurrentRole, setIsLogged } = useContext(AppContext);
-  const [selectedRole, setSelectedRole] = useState('client');
+  const { currentRole, isLogged, login } = useContext(AppContext);
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+  const [status, setStatus] = useState({ type: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event) {
+  useEffect(() => {
+    if (isLogged) {
+      navigate(ROLE_CONFIG[currentRole]?.dashboard ?? '/', { replace: true });
+    }
+  }, [currentRole, isLogged, navigate]);
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setForm((currentForm) => ({
+      ...currentForm,
+      [name]: value,
+    }));
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault();
-    setCurrentRole(selectedRole);
-    setIsLogged(true);
-    navigate(ROLE_CONFIG[selectedRole].dashboard);
+    setIsSubmitting(true);
+    setStatus({ type: '', message: '' });
+
+    try {
+      const session = await login(form);
+      navigate(ROLE_CONFIG[session.user.role]?.dashboard ?? '/', { replace: true });
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message: error.message || 'Accesso non riuscito.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -20,40 +50,47 @@ export default function LoginPage() {
       <div className="panel login-form auth-card">
         <div className="auth-heading">
           <h2>Accesso al Portale</h2>
-          <p>Seleziona il tuo profilo ed entra nel pannello</p>
+          <p>Inserisci le tue credenziali per entrare nel pannello</p>
         </div>
 
         <form className="stack-form" onSubmit={handleSubmit}>
-          <label htmlFor="roleSelect">
-            Accedi come:
-            <select
-              id="roleSelect"
-              name="roleSelect"
-              value={selectedRole}
-              onChange={(event) => setSelectedRole(event.target.value)}
-            >
-              <option value="client">Cliente (Andrea Rossi)</option>
-              <option value="doctor">Veterinario (Dott. Zampetti)</option>
-              <option value="receptionist">Reception (Giulia Ferri)</option>
-              <option value="super-admin">Amministratore Studio</option>
-            </select>
-          </label>
-
-          <label htmlFor="passwordDemo">
-            Password Demo
+          <label htmlFor="loginEmail">
+            Email
             <input
-              id="passwordDemo"
-              type="password"
+              id="loginEmail"
+              name="email"
+              type="email"
               className="form-control"
-              placeholder="password"
-              defaultValue="password123"
+              autoComplete="email"
+              placeholder="nome@esempio.it"
+              value={form.email}
+              onChange={handleChange}
               required
             />
           </label>
 
-          <button type="submit" className="btn btn-primary btn-full">
-            Accedi
+          <label htmlFor="loginPassword">
+            Password
+            <input
+              id="loginPassword"
+              name="password"
+              type="password"
+              className="form-control"
+              autoComplete="current-password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <button type="submit" className="btn btn-primary btn-full" disabled={isSubmitting}>
+            {isSubmitting ? 'Accesso...' : 'Accedi'}
           </button>
+
+          {status.message && (
+            <p className={`form-status form-status--${status.type}`}>{status.message}</p>
+          )}
         </form>
       </div>
     </div>

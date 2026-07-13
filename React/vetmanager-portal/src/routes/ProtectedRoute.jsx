@@ -3,7 +3,15 @@ import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 
 export default function ProtectedRoute() {
-  const { isLogged } = useContext(AppContext);
+  const { isAuthLoading, isLogged } = useContext(AppContext);
+
+  if (isAuthLoading) {
+    return (
+      <div className="auth-shell">
+        <div className="panel auth-card">Verifica sessione...</div>
+      </div>
+    );
+  }
 
   if (!isLogged) {
     return <Navigate to="/login" replace />;

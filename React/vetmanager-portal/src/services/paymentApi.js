@@ -1,3 +1,5 @@
+import { apiFetch, readApiError } from './apiClient';
+
 const VISITS_API_BASE = '/api/visite';
 const PAYMENTS_API_BASE = '/api/pagamenti';
 const UNPAID_VISITS_ENDPOINT = `${VISITS_API_BASE}/ottieniNonPagate`;
@@ -52,10 +54,10 @@ export function normalizeUnpaidVisit(visit) {
 }
 
 export async function fetchUnpaidVisits() {
-  const response = await fetch(UNPAID_VISITS_ENDPOINT);
+  const response = await apiFetch(UNPAID_VISITS_ENDPOINT);
 
   if (!response.ok) {
-    const errorMessage = await response.text();
+    const errorMessage = await readApiError(response, 'Impossibile recuperare le visite non pagate.');
     throw new Error(errorMessage || 'Impossibile recuperare le visite non pagate.');
   }
 
@@ -66,10 +68,10 @@ export async function fetchUnpaidVisits() {
 }
 
 export async function fetchPaidVisits() {
-  const response = await fetch(PAID_VISITS_ENDPOINT);
+  const response = await apiFetch(PAID_VISITS_ENDPOINT);
 
   if (!response.ok) {
-    const errorMessage = await response.text();
+    const errorMessage = await readApiError(response, 'Impossibile recuperare le visite pagate.');
     throw new Error(errorMessage || 'Impossibile recuperare le visite pagate.');
   }
 
@@ -106,7 +108,7 @@ export async function createPayment(visit, paymentType) {
     payload.utente = { id: visit.ownerId };
   }
 
-  const response = await fetch(`${PAYMENTS_API_BASE}/crea`, {
+  const response = await apiFetch(`${PAYMENTS_API_BASE}/crea`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -115,7 +117,7 @@ export async function createPayment(visit, paymentType) {
   });
 
   if (!response.ok) {
-    const errorMessage = await response.text();
+    const errorMessage = await readApiError(response, 'Impossibile creare il pagamento.');
     throw new Error(errorMessage || 'Impossibile creare il pagamento.');
   }
 
@@ -123,12 +125,12 @@ export async function createPayment(visit, paymentType) {
 }
 
 export async function attachPaymentToVisit(visitId, payment) {
-  const response = await fetch(`${VISITS_API_BASE}/aggiornaPagato/${visitId}?pagamento=${payment.id}`, {
+  const response = await apiFetch(`${VISITS_API_BASE}/aggiornaPagato/${visitId}?pagamento=${payment.id}`, {
     method: 'PATCH',
   });
 
   if (!response.ok) {
-    const errorMessage = await response.text();
+    const errorMessage = await readApiError(response, 'Impossibile associare il pagamento alla visita.');
     throw new Error(errorMessage || 'Impossibile associare il pagamento alla visita.');
   }
 

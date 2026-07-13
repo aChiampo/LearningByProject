@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
+import { apiFetch } from '../../../services/apiClient';
 
 export default function ManagmentVisitType() {
   const [visite, setVisite] = useState([]);
@@ -13,7 +14,7 @@ export default function ManagmentVisitType() {
   const caricaVisite = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:9020/api/tipiVisite/ottieniTutti');
+      const response = await apiFetch('/api/tipiVisite/ottieniTutti');
       if (!response.ok) throw new Error('Errore nel caricamento dei tipi di visita');
       const data = await response.json();
       // Filtra solo le visite non eliminate (soft-delete con isDeleted)
@@ -29,7 +30,9 @@ export default function ManagmentVisitType() {
 
   // Carica le visite al montaggio del componente
   useEffect(() => {
-    caricaVisite();
+    queueMicrotask(() => {
+      caricaVisite();
+    });
   }, []);
 
   // Aggiunge un nuovo tipo di visita
@@ -52,7 +55,7 @@ export default function ManagmentVisitType() {
     }
 
     try {
-      const response = await fetch('http://localhost:9020/api/tipiVisite/aggiungi', {
+      const response = await apiFetch('/api/tipiVisite/aggiungi', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +88,7 @@ export default function ManagmentVisitType() {
     }
 
     try {
-      const response = await fetch(`http://localhost:9020/api/tipiVisite/elimina/${id}`, {
+      const response = await apiFetch(`/api/tipiVisite/elimina/${id}`, {
         method: 'DELETE',
       });
 

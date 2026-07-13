@@ -69,6 +69,20 @@ export default function RegistrationForm({
               required
             />
           </label>
+          <label htmlFor="sign-in-tax-code">
+            Codice fiscale
+            <input
+              id="sign-in-tax-code"
+              name="codiceFiscale"
+              type="text"
+              autoComplete="off"
+              placeholder="Codice fiscale"
+              value={form.codiceFiscale}
+              onChange={onChange}
+              maxLength={16}
+              required
+            />
+          </label>
           <label htmlFor="sign-in-phone">
             Telefono
             <input

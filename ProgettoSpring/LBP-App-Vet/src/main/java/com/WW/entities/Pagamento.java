@@ -46,7 +46,7 @@ public class Pagamento {
     private Utente utente;
 
     @ManyToOne
-    @JoinColumn(name = "riferimento_file", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "riferimento_file", referencedColumnName = "id", nullable = true)
     private FileReferences riferimentoFile;
 
     @Column(name = "is_deleted", nullable = false)
