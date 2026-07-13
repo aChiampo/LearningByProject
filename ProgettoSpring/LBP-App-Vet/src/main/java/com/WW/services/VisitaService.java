@@ -275,8 +275,9 @@ public class VisitaService {
      * @return visita aggiornata
      */
     @Transactional
-    public Visita updateVisitaPagato(Integer id, Pagamento pagato) {
+    public Visita updateVisitaPagato(Integer id, Integer pagamentoId) {
         Visita visita = getVisitaById(id);
+        Pagamento pagato = pagamentiService.ottieniPerId(pagamentoId);
         visita.setPagamento(pagato);
         return visitaRepository.save(visita);
     }
