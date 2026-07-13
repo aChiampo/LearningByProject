@@ -8,7 +8,5 @@ import java.util.List;
 
 public interface SpecieRepo extends JpaRepository<Specie, Integer> {
 
-    List<Specie> findRazzeById(Integer id);
-
     List<Specie> findByNome(String Nome);
 }

@@ -17,6 +17,7 @@ import DoctorDashboard from '../pages/doctor/DoctorDashboard';
 import DoctorProfile from '../pages/doctor/DoctorProfile';
 import DoctorAnimals from '../pages/doctor/DoctorAnimals';
 import DoctorFaq from '../pages/doctor/DoctorFaq';
+import ManagmentConfiguration from '../pages/doctor/managment/ManagmentConfiguration.jsx'
 import ReceptionistDashboard from '../pages/receptionist/ReceptionistDashboard';
 import ReceptionistProfile from '../pages/receptionist/ReceptionistProfile';
 import ReceptionistAppointments from '../pages/receptionist/ReceptionistAppointments';
@@ -54,6 +55,7 @@ export default function AppRouter() {
             <Route path="/doctor/profile" element={<DoctorProfile />} />
             <Route path="/doctor/animals" element={<DoctorAnimals />} />
             <Route path="/doctor/faq" element={<DoctorFaq />} />
+            <Route path="/doctor/management" element={<ManagmentConfiguration />} />
           </Route>
 
           <Route element={<RoleRoute role="receptionist" />}>

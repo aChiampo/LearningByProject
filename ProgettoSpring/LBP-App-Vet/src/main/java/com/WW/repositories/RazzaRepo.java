@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RazzaRepo extends JpaRepository<Razza, Integer> {
 
-    List<Razza> findRazzeById(Integer id);
+    List<Razza> findByIdSpecie_Id(Integer specieId);
 
     List<Razza> findByNome(String Nome);
 }

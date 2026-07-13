@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
-import com.WW.entities.Pagamento;
 import com.WW.entities.Visita;
 import com.WW.services.VisitaService;
 
@@ -139,6 +139,17 @@ public class VisitaController {
     }
 
     /**
+     * Restituisce le visite filtrate dai parametri specificati.
+     *
+     * @param params parametri opzionali di filtro
+     * @return visite filtrate
+     */
+    @PostMapping("/params")
+    public ResponseEntity<List<VisitaDto>> ottieniPerParametri(@RequestBody(required = false) VisitParamDTO params) {
+        return ResponseEntity.ok(visitaService.getVisiteByParams(params));
+    }
+
+    /**
      * Crea una nuova visita.
      *
      * @param visita dati della visita da salvare
@@ -174,8 +185,8 @@ public class VisitaController {
     @PatchMapping("/aggiornaPagato/{id}")
     public ResponseEntity<Visita> aggiornaPagato(
             @PathVariable Integer id,
-            @RequestParam Pagamento pagamento) {
-        return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamento));
+            @RequestParam("pagamento") Integer pagamentoId) {
+        return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamentoId));
     }
 
     /**
