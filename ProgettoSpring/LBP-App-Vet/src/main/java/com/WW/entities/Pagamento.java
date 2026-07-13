@@ -35,8 +35,6 @@ public class Pagamento {
     @Column(name = "tipo_pagamento", length = 30)
     private String tipoPagamento;
 
-    @Column(name = "stato", length = 30)
-    private String stato;
 
     @Column(name = "importo_totale", precision = 8, scale = 2, nullable = false)
     private BigDecimal importoTotale;
