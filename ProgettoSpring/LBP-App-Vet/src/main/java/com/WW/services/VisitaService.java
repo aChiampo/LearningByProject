@@ -103,6 +103,7 @@ public class VisitaService {
             entity.setPagamento(pagamentiService.ottieniPerId(visita.pagamento().id()));
         }
         entity.setNote(visita.note());
+        entity.setIsDeleted(false);
         return entity;
     }
 
@@ -150,7 +151,7 @@ public class VisitaService {
      */
     @Transactional(readOnly = true)
     public List<Visita> getAllVisita() {
-        return visitaRepository.findAll();
+        return visitaRepository.findByIsDeletedFalse();
     }
 
     /**
@@ -201,7 +202,7 @@ public class VisitaService {
      */
     @Transactional(readOnly = true)
     public Visita getVisitaById(Integer id) {
-        return visitaRepository.findById(id)
+        return visitaRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Visita non trovata."));
@@ -215,7 +216,7 @@ public class VisitaService {
      */
     @Transactional(readOnly = true)
     public List<Visita> getVisiteByTipoVisita(Integer idTipoVisita) {
-        return visitaRepository.findByTipoVisitaId(idTipoVisita);
+        return visitaRepository.findByTipoVisitaIdAndIsDeletedFalse(idTipoVisita);
     }
 
     /**
@@ -226,7 +227,7 @@ public class VisitaService {
      */
     @Transactional(readOnly = true)
     public List<Visita> getVisiteByVeterinario(Integer idVeterinario) {
-        return visitaRepository.findByVeterinarioId(idVeterinario);
+        return visitaRepository.findByVeterinarioIdAndIsDeletedFalse(idVeterinario);
     }
 
     /**
@@ -237,7 +238,7 @@ public class VisitaService {
      */
     @Transactional(readOnly = true)
     public List<Visita> getVisiteByAnimale(Integer idAnimale) {
-        return visitaRepository.findByAnimaleId(idAnimale);
+        return visitaRepository.findByAnimaleIdAndIsDeletedFalse(idAnimale);
     }
 
     /**
@@ -249,7 +250,7 @@ public class VisitaService {
     @Transactional(readOnly = true)
     public Visita getVisitaByPagamento(Integer idPagamento) {
 
-        return visitaRepository.findByPagamentoId(idPagamento)
+        return visitaRepository.findByPagamentoIdAndIsDeletedFalse(idPagamento)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Visita collegata al pagamento non trovata."));
@@ -291,12 +292,12 @@ public class VisitaService {
      */
     @Transactional
     public void deleteVisita(Integer id) {
-        if (!visitaRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Impossibile eliminare: Visita non trovata.");
-        }
-        visitaRepository.deleteById(id);
+        Visita visita = visitaRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Impossibile eliminare: Visita non trovata."));
+        visita.setIsDeleted(true);
+        visitaRepository.save(visita);
     }
 
     /**
@@ -306,7 +307,7 @@ public class VisitaService {
      */
     public List<Visita> OttieniVisitePagate() {
 
-        List<Visita> pagate = visitaRepository.findAll().stream()
+        List<Visita> pagate = visitaRepository.findByIsDeletedFalse().stream()
                 .filter(visita -> visita.getPagamento() != null)
                 .toList();
 
@@ -319,7 +320,7 @@ public class VisitaService {
      * @return elenco delle visite non pagate
      */
     public List<Visita> OttieniVisiteNonPagate() {
-        List<Visita> nonPagate = visitaRepository.findAll().stream()
+        List<Visita> nonPagate = visitaRepository.findByIsDeletedFalse().stream()
                 .filter(visita -> visita.getPagamento() == null)
                 .toList();
 
@@ -335,7 +336,7 @@ public class VisitaService {
      */
     public List<Visita> OttieniVisitePagatebyAnimale(int idAnimale) {
 
-        List<Visita> pagate = visitaRepository.findAll().stream()
+        List<Visita> pagate = visitaRepository.findByIsDeletedFalse().stream()
                 .filter(visita -> visita.getPagamento() != null)
                 .filter(visita -> visita.getAnimale().getId() == idAnimale)
                 .toList();
@@ -351,7 +352,7 @@ public class VisitaService {
      * @return elenco delle visite non pagate
      */
     public List<Visita> OttieniVisiteNonPagateByAnimale(int idAnimale) {
-        List<Visita> nonPagate = visitaRepository.findAll().stream()
+        List<Visita> nonPagate = visitaRepository.findByIsDeletedFalse().stream()
                 .filter(visita -> visita.getPagamento() == null)
                 .filter(visita -> visita.getAnimale().getId() == idAnimale)
                 .toList();
@@ -360,7 +361,7 @@ public class VisitaService {
     }
 
     public Visita ottieniVisitaByData(LocalDateTime dataVisita) {
-        return visitaRepository.findByDataVisita(dataVisita)
+        return visitaRepository.findByDataVisitaAndIsDeletedFalse(dataVisita)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Visita non trovata per la data specificata."));

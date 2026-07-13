@@ -22,7 +22,7 @@ public class RazzaService {
      * @return lista di tutte le razze
      */
     public List<Razza> visualizzaTutteRazze() {
-        return razzaRepo.findAll();
+        return razzaRepo.findByIsDeletedFalse();
     }
 
     /**
@@ -35,7 +35,7 @@ public class RazzaService {
         if (specieId == null || specieId <= 0) {
             throw new IllegalArgumentException("L'ID della specie non può essere null o negativo");
         }
-        return razzaRepo.findByIdSpecie_Id(specieId);
+        return razzaRepo.findByIdSpecie_IdAndIsDeletedFalse(specieId);
     }
 
     /**
@@ -48,7 +48,7 @@ public class RazzaService {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome della razza non può essere null o vuoto");
         }
-        return razzaRepo.findByNome(nome);
+        return razzaRepo.findByNomeAndIsDeletedFalse(nome);
     }
 
     /**
@@ -61,7 +61,7 @@ public class RazzaService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della razza non può essere null o negativo");
         }
-        return razzaRepo.findById(id);
+        return razzaRepo.findByIdAndIsDeletedFalse(id);
     }
 
     /**
@@ -101,7 +101,7 @@ public class RazzaService {
         if (razza.getId() == null || razza.getId() <= 0) {
             throw new IllegalArgumentException("L'ID della razza è obbligatorio per l'aggiornamento");
         }
-        if (!razzaRepo.existsById(razza.getId())) {
+        if (razzaRepo.findByIdAndIsDeletedFalse(razza.getId()).isEmpty()) {
             throw new IllegalArgumentException("Razza con ID " + razza.getId() + " non trovata");
         }
         if (razza.getNome() == null || razza.getNome().trim().isEmpty()) {
@@ -114,6 +114,7 @@ public class RazzaService {
             throw new IllegalArgumentException("L'ID della specie è obbligatorio e deve essere valido");
         }
 
+        razza.setDeleted(false);
         return razzaRepo.save(razza);
     }
 
@@ -126,7 +127,7 @@ public class RazzaService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della razza non può essere null o negativo");
         }
-        Optional<Razza> razza = razzaRepo.findById(id);
+        Optional<Razza> razza = razzaRepo.findByIdAndIsDeletedFalse(id);
         if (razza.isEmpty()) {
             throw new IllegalArgumentException("Razza con ID " + id + " non trovata");
         }
@@ -145,9 +146,6 @@ public class RazzaService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della razza non può essere null o negativo");
         }
-        if (!razzaRepo.existsById(id)) {
-            throw new IllegalArgumentException("Razza con ID " + id + " non trovata");
-        }
-        razzaRepo.deleteById(id);
+        eliminaRazza(id);
     }
 }

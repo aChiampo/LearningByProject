@@ -23,7 +23,7 @@ public class VaccinazioneService {
      * @return lista di tutte le vaccinazioni
      */
     public List<Vaccinazione> visualizzaTutteVaccinazioni() {
-        return vaccinazioneRepo.findAll();
+        return vaccinazioneRepo.findByIsDeletedFalse();
     }
 
     /**
@@ -36,7 +36,7 @@ public class VaccinazioneService {
         if (idTipoVaccino == null) {
             throw new IllegalArgumentException("Il tipo di vaccino non può essere null");
         }
-        return vaccinazioneRepo.findByIdTipoVaccino(idTipoVaccino);
+        return vaccinazioneRepo.findByIdTipoVaccinoAndIsDeletedFalse(idTipoVaccino);
     }
 
     /**
@@ -49,7 +49,7 @@ public class VaccinazioneService {
         if (dataVaccinazione == null) {
             throw new IllegalArgumentException("La data di vaccinazione non può essere null");
         }
-        return vaccinazioneRepo.findByDataVaccinazione(dataVaccinazione);
+        return vaccinazioneRepo.findByDataVaccinazioneAndIsDeletedFalse(dataVaccinazione);
     }
 
     /**
@@ -62,7 +62,7 @@ public class VaccinazioneService {
         if (lotto == null || lotto.trim().isEmpty()) {
             throw new IllegalArgumentException("Il numero di lotto non può essere null o vuoto");
         }
-        return vaccinazioneRepo.findByLotto(lotto);
+        return vaccinazioneRepo.findByLottoAndIsDeletedFalse(lotto);
     }
 
     /**
@@ -75,7 +75,7 @@ public class VaccinazioneService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della vaccinazione non può essere null o negativo");
         }
-        return vaccinazioneRepo.findById(id);
+        return vaccinazioneRepo.findByIdAndIsDeletedFalse(id);
     }
 
     /**
@@ -97,6 +97,9 @@ public class VaccinazioneService {
         if (vaccinazione.getDataVaccinazione() == null) {
             throw new IllegalArgumentException("La data di vaccinazione non può essere null");
         }
+        if (vaccinazione.getIsDeleted() == null) {
+            vaccinazione.setIsDeleted(false);
+        }
         return vaccinazioneRepo.save(vaccinazione);
     }
 
@@ -113,7 +116,7 @@ public class VaccinazioneService {
         if (vaccinazione.getId() == null || vaccinazione.getId() <= 0) {
             throw new IllegalArgumentException("L'ID della vaccinazione è obbligatorio per l'aggiornamento");
         }
-        if (!vaccinazioneRepo.existsById(vaccinazione.getId())) {
+        if (vaccinazioneRepo.findByIdAndIsDeletedFalse(vaccinazione.getId()).isEmpty()) {
             throw new IllegalArgumentException("Vaccinazione con ID " + vaccinazione.getId() + " non trovata");
         }
         if (vaccinazione.getIdTipoVaccino() == null) {
@@ -125,6 +128,7 @@ public class VaccinazioneService {
         if (vaccinazione.getDataVaccinazione() == null) {
             throw new IllegalArgumentException("La data di vaccinazione non può essere null");
         }
+        vaccinazione.setIsDeleted(false);
         return vaccinazioneRepo.save(vaccinazione);
     }
 
@@ -137,9 +141,12 @@ public class VaccinazioneService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID della vaccinazione non può essere null o negativo");
         }
-        if (!vaccinazioneRepo.existsById(id)) {
+        Optional<Vaccinazione> vaccinazione = vaccinazioneRepo.findByIdAndIsDeletedFalse(id);
+        if (vaccinazione.isEmpty()) {
             throw new IllegalArgumentException("Vaccinazione con ID " + id + " non trovata");
         }
-        vaccinazioneRepo.deleteById(id);
+        Vaccinazione vaccinazioneToDelete = vaccinazione.get();
+        vaccinazioneToDelete.setIsDeleted(true);
+        vaccinazioneRepo.save(vaccinazioneToDelete);
     }
 }

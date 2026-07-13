@@ -32,13 +32,16 @@ public class UtenteService {
      */
     @Transactional
     public Utente aggiungiUtente(Utente utente) {
-        if (!utenteRepo.findByEmail(utente.getEmail()).isEmpty()) {
+        if (!utenteRepo.findByEmailAndIsDeletedFalse(utente.getEmail()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già in uso.");
         }
         if (utente.getPasswordHash() != null && !utente.getPasswordHash().isBlank()) {
             utente.setPasswordHash(passwordEncoder.encode(utente.getPasswordHash()));
         }
 
+        if (utente.getIsDeleted() == null) {
+            utente.setIsDeleted(false);
+        }
         return utenteRepo.save(utente);
     }
 
@@ -86,7 +89,7 @@ public class UtenteService {
      * @return elenco degli utenti
      */
     public List<Utente> ottieniTutti() {
-        return utenteRepo.findAll();
+        return utenteRepo.findByIsDeletedFalse();
     }
 
     /**
@@ -96,7 +99,7 @@ public class UtenteService {
      * @return utente trovato
      */
     public Utente ottieniPerId(Integer id) {
-        return utenteRepo.findById(id)
+        return utenteRepo.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Utente non trovato."));
@@ -109,15 +112,15 @@ public class UtenteService {
      * @param id identificativo dell'utente da eliminare
      */
     public void eliminaUtente(Integer id) {
-        if (!utenteRepo.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Impossibile eliminare: Utente non trovato.");
-        }
-        utenteRepo.deleteById(id);
+        Utente utente = utenteRepo.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Impossibile eliminare: Utente non trovato."));
+        utente.setIsDeleted(true);
+        utenteRepo.save(utente);
     }
 
     public Optional<Utente> ottieniPerEmail(String email) {
-        return utenteRepo.findByEmail(email);
+        return utenteRepo.findByEmailAndIsDeletedFalse(email);
     }
 }

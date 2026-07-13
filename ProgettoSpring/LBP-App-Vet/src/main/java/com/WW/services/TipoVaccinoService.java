@@ -21,7 +21,7 @@ public class TipoVaccinoService {
      * @return lista di tutti i tipi di vaccino
      */
     public List<TipoVaccino> visualizzaTuttiTipiVaccino() {
-        return tipoVaccinoRepo.findAll();
+        return tipoVaccinoRepo.findByIsDeletedFalse();
     }
 
     /**
@@ -34,7 +34,7 @@ public class TipoVaccinoService {
         if (tipologia == null || tipologia.trim().isEmpty()) {
             throw new IllegalArgumentException("La tipologia del vaccino non può essere null o vuota");
         }
-        return tipoVaccinoRepo.findByTipologia(tipologia);
+        return tipoVaccinoRepo.findByTipologiaAndIsDeletedFalse(tipologia);
     }
 
     /**
@@ -47,7 +47,7 @@ public class TipoVaccinoService {
         if (durata <= 0) {
             throw new IllegalArgumentException("La durata del vaccino deve essere maggiore di zero");
         }
-        return tipoVaccinoRepo.findByDurata(durata);
+        return tipoVaccinoRepo.findByDurataAndIsDeletedFalse(durata);
     }
 
     /**
@@ -60,7 +60,7 @@ public class TipoVaccinoService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID del tipo di vaccino non può essere null o negativo");
         }
-        return tipoVaccinoRepo.findById(id);
+        return tipoVaccinoRepo.findByIdAndIsDeletedFalse(id);
     }
 
     /**
@@ -79,6 +79,9 @@ public class TipoVaccinoService {
         if (tipoVaccino.getDurata() <= 0) {
             throw new IllegalArgumentException("La durata del vaccino deve essere maggiore di zero");
         }
+        if (tipoVaccino.getIsDeleted() == null) {
+            tipoVaccino.setIsDeleted(false);
+        }
         return tipoVaccinoRepo.save(tipoVaccino);
     }
 
@@ -95,7 +98,7 @@ public class TipoVaccinoService {
         if (tipoVaccino.getId() == null || tipoVaccino.getId() <= 0) {
             throw new IllegalArgumentException("L'ID del tipo di vaccino è obbligatorio per l'aggiornamento");
         }
-        if (!tipoVaccinoRepo.existsById(tipoVaccino.getId())) {
+        if (tipoVaccinoRepo.findByIdAndIsDeletedFalse(tipoVaccino.getId()).isEmpty()) {
             throw new IllegalArgumentException("Tipo di vaccino con ID " + tipoVaccino.getId() + " non trovato");
         }
         if (tipoVaccino.getTipologia() == null || tipoVaccino.getTipologia().trim().isEmpty()) {
@@ -104,6 +107,7 @@ public class TipoVaccinoService {
         if (tipoVaccino.getDurata() <= 0) {
             throw new IllegalArgumentException("La durata del vaccino deve essere maggiore di zero");
         }
+        tipoVaccino.setIsDeleted(false);
         return tipoVaccinoRepo.save(tipoVaccino);
     }
 
@@ -116,9 +120,12 @@ public class TipoVaccinoService {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("L'ID del tipo di vaccino non può essere null o negativo");
         }
-        if (!tipoVaccinoRepo.existsById(id)) {
+        Optional<TipoVaccino> tipoVaccino = tipoVaccinoRepo.findByIdAndIsDeletedFalse(id);
+        if (tipoVaccino.isEmpty()) {
             throw new IllegalArgumentException("Tipo di vaccino con ID " + id + " non trovato");
         }
-        tipoVaccinoRepo.deleteById(id);
+        TipoVaccino tipoVaccinoToDelete = tipoVaccino.get();
+        tipoVaccinoToDelete.setIsDeleted(true);
+        tipoVaccinoRepo.save(tipoVaccinoToDelete);
     }
 }
