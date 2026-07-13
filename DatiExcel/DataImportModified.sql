@@ -12,7 +12,6 @@
 
 BEGIN;
 
-
 -- ============================================================
 -- 1. Lookup tables: roles, species, breeds
 -- Import order: ruoli -> specie -> razze.
@@ -109,21 +108,6 @@ INSERT INTO animali (id, nome, specie, razza, sesso, data_nascita, peso, microch
     (3, 'Luna', 'Gatto', 'Europeo Comune', 'F', '2020-02-17', 4.2, '380260040345678', NULL, FALSE, 2),
     (4, 'Pallina', 'Cane', 'Bassotto', 'F', '2016-11-28', 9.1, '380260040456789', 'Problemi alla schiena', FALSE, 3),
     (5, 'Micio', 'Gatto', 'Persiano', 'M', '2019-04-06', 5.8, '380260040567890', NULL, FALSE, 4),
-    (6, 'Fido', 'Cane', 'Golden Retriever', 'M', '2018-08-14', 31.2, '380260040678901', NULL, FALSE, 5),
-    (7, 'Neve', 'Gatto', 'Siamese', 'F', '2021-01-22', 3.9, '380260040789012', NULL, FALSE, 6),
-    (8, 'Birillo', 'Cane', 'Beagle', 'M', '2017-06-09', 12.4, '380260040890123', 'Tendenza all''obesità', FALSE, 7),
-    (9, 'Cioccolata', 'Cane', 'Labrador', 'F', '2019-03-30', 26.0, '380260040901234', NULL, FALSE, 8),
-    (10, 'Tigre', 'Gatto', 'Maine Coon', 'M', '2018-10-11', 7.3, '380260041012345', NULL, FALSE, 9),
-    (11, 'Oscar', 'Cane', 'Boxer', 'M', '2020-07-05', 29.5, '380260041123456', NULL, FALSE, 10),
-    (12, 'Puffo', 'Coniglio', 'Nano Olandese', 'M', '2021-12-18', 1.4, NULL, NULL, FALSE, 11),
-    (13, 'Stella', 'Gatto', 'Europeo Comune', 'F', '2019-05-24', 3.6, '380260041234567', 'FIV positivo', FALSE, 12),
-    (14, 'Zeus', 'Cane', 'Rottweiler', 'M', '2017-02-02', 44.0, '380260041345678', NULL, FALSE, 13),
-    (15, 'Mia', 'Gatto', 'Ragdoll', 'F', '2020-09-16', 5.1, '380260041456789', NULL, FALSE, 14),
-    (16, 'Artù', 'Cane', 'Border Collie', 'M', '2018-11-07', 18.7, '380260041567890', NULL, FALSE, 15),
-    (17, 'Mochi', 'Gatto', 'Birmano', 'M', '2021-06-29', 4.4, '380260041678901', NULL, FALSE, 1),
-    (18, 'Lilly', 'Cane', 'Barboncino', 'F', '2020-03-13', 5.2, '380260041789012', NULL, FALSE, 5),
-    (19, 'Charlie', 'Cane', 'Cocker Spaniel', 'M', '2019-08-25', 11.8, '380260041890123', 'Otite cronica', FALSE, 8),
-    (20, 'Fiocco', 'Coniglio', 'Ariete', 'F', '2022-01-04', 2.1, NULL, NULL, FALSE, 11)
 ON CONFLICT (id) DO UPDATE SET nome = EXCLUDED.nome, specie = EXCLUDED.specie, razza = EXCLUDED.razza, sesso = EXCLUDED.sesso, data_nascita = EXCLUDED.data_nascita, peso = EXCLUDED.peso, microchip = EXCLUDED.microchip, note = EXCLUDED.note, is_deleted = EXCLUDED.is_deleted, id_utente = EXCLUDED.id_utente;
 
 
