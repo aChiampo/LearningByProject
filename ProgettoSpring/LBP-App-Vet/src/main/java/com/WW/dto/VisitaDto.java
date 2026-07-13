@@ -7,14 +7,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public record VisitaDto(
-    @Valid @NotNull(message = "L'animale non può essere nullo") String animale,
-    @Valid @NotNull(message = "Il tipo di visita non può essere nullo") String tipoVisita,
-    @Valid @NotNull(message = "Il veterinario non può essere nullo") String veterinario,
-    @NotNull(message = "La data della visita non può essere nulla") LocalDate data,
-    @NotNull(message = "La fascia oraria non può essere nulla") String fasciaOraria,
-    @Valid PagamentoDto pagamento,
-    String note
-) {
+        @Valid @NotNull(message = "L'animale non può essere nullo") AnimaleDto animale,
+        @Valid @NotNull(message = "Il tipo di visita non può essere nullo") TipoVisitaDto tipoVisita,
+        @Valid @NotNull(message = "Il veterinario non può essere nullo") UtenteDto veterinario,
+        @NotNull(message = "La data della visita non può essere nulla") LocalDate data,
+        @NotNull(message = "La fascia oraria non può essere nulla") String fasciaOraria,
+        @Valid PagamentoDto pagamento,
+        String note) {
     // Computes the start date and time based on `data` and `fasciaOraria`
     public LocalDateTime getStartDateTime() {
         LocalTime startTime;
