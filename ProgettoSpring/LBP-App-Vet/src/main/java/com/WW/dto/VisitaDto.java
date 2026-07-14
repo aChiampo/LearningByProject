@@ -41,4 +41,16 @@ public record VisitaDto(
         }
         return LocalDateTime.of(data, endTime);
     }
+
+    public static VisitaDto fromEntity(Visita visita) {
+        return new VisitaDto(
+                new AnimaleDto(visita.getAnimale().getId()),
+                new TipoVisitaDto(visita.getTipoVisita().getId()),
+                new UtenteDto(visita.getVeterinario().getId()),
+                visita.getDataVisita().toLocalDate(),
+                visita.getDataVisita().toLocalTime().isBefore(LocalTime.of(12, 30)) ? "Mattina" : "Pomeriggio",
+                visita.getPagamento() != null ? new PagamentoDto(visita.getPagamento().getId()) : null,
+                null // Assuming note is not present in the entity
+        );
+    }
 }
