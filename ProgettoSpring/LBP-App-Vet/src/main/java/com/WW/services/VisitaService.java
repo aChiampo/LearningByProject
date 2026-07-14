@@ -113,6 +113,15 @@ public class VisitaService {
     }
 
     @Transactional(readOnly = true)
+    public List<Visita> getAllVisita(Integer clienteId) {
+        if (clienteId == null) {
+            return visitaRepository.findByIsDeletedFalse();
+        }
+
+        return visitaRepository.findByAnimaleUtenteIdAndIsDeletedFalse(clienteId);
+    }
+
+    @Transactional(readOnly = true)
     public List<VisitaDto> getVisiteByParams(VisitParamDTO params) {
         return getAllVisita().stream()
                 .filter(visita -> params == null || params.date() == null
@@ -211,16 +220,32 @@ public class VisitaService {
         visitaRepository.save(visita);
     }
 
+    @Transactional(readOnly = true)
     public List<Visita> OttieniVisitePagate() {
-        return visitaRepository.findByIsDeletedFalse().stream()
-                .filter(visita -> visita.getPagamento() != null)
-                .toList();
+        return OttieniVisitePagate(null);
     }
 
+    @Transactional(readOnly = true)
+    public List<Visita> OttieniVisitePagate(Integer clienteId) {
+        if (clienteId == null) {
+            return visitaRepository.findByPagamentoIsNotNullAndIsDeletedFalse();
+        }
+
+        return visitaRepository.findByPagamentoIsNotNullAndAnimaleUtenteIdAndIsDeletedFalse(clienteId);
+    }
+
+    @Transactional(readOnly = true)
     public List<Visita> OttieniVisiteNonPagate() {
-        return visitaRepository.findByIsDeletedFalse().stream()
-                .filter(visita -> visita.getPagamento() == null)
-                .toList();
+        return OttieniVisiteNonPagate(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Visita> OttieniVisiteNonPagate(Integer clienteId) {
+        if (clienteId == null) {
+            return visitaRepository.findByPagamentoIsNullAndIsDeletedFalse();
+        }
+
+        return visitaRepository.findByPagamentoIsNullAndAnimaleUtenteIdAndIsDeletedFalse(clienteId);
     }
 
     public List<Visita> OttieniVisitePagatebyAnimale(int idAnimale) {

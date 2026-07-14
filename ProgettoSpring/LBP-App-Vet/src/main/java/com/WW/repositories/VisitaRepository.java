@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 public interface VisitaRepository extends JpaRepository<Visita, Integer> {
     public List<Visita> findByIsDeletedFalse();
 
+    public List<Visita> findByAnimaleUtenteIdAndIsDeletedFalse(Integer clienteId);
+
     public Optional<Visita> findByIdAndIsDeletedFalse(Integer id);
 
     // Trova una visita a partire dalla data della visita
@@ -45,6 +47,14 @@ public interface VisitaRepository extends JpaRepository<Visita, Integer> {
     public Optional<Visita> findByPagamentoId(Integer idPagamento);
 
     public Optional<Visita> findByPagamentoIdAndIsDeletedFalse(Integer idPagamento);
+
+    public List<Visita> findByPagamentoIsNotNullAndIsDeletedFalse();
+
+    public List<Visita> findByPagamentoIsNullAndIsDeletedFalse();
+
+    public List<Visita> findByPagamentoIsNotNullAndAnimaleUtenteIdAndIsDeletedFalse(Integer clienteId);
+
+    public List<Visita> findByPagamentoIsNullAndAnimaleUtenteIdAndIsDeletedFalse(Integer clienteId);
 
     // Trova tutte le visite di un veterinario in un determinato intervallo di tempo
        @Query("""
