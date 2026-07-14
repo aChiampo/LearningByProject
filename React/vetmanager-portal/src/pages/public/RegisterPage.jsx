@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RegistrationForm from '../../components/public/RegistrationForm';
 import { INITIAL_REGISTRATION_FORM } from '../../data/homePageData';
+import { registerClient } from '../../services/authApi';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -23,28 +24,12 @@ export default function RegisterPage() {
     setRegistrationStatus({ type: '', message: '' });
 
     try {
-      const response = await fetch('http://localhost:9020/api/utenti/prenotazione', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registrationForm),
+      await registerClient(registrationForm);
+      setRegistrationForm(INITIAL_REGISTRATION_FORM);
+      setRegistrationStatus({
+        type: 'success',
+        message: 'Registrazione completata. Ora puoi accedere al portale.',
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Non e stato possibile completare la registrazione.');
-      }
-
-      if (response.status === 201) {
-        const data = await response.json();
-        console.log('Client created:', data);
-        setRegistrationForm(INITIAL_REGISTRATION_FORM);
-        setRegistrationStatus({
-          type: 'success',
-          message: 'Registrazione completata. Ora puoi accedere al portale.',
-        });
-      }
     } catch (error) {
       console.error('Error:', error);
       setRegistrationStatus({

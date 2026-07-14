@@ -1,14 +1,55 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
+import { fetchAnimalsByOwner } from '../../services/animalApi';
 
 export default function ClientDashboard() {
   const navigate = useNavigate();
-  const { currentRole } = useContext(AppContext);
+  const { currentRole, currentUser } = useContext(AppContext);
   const config = ROLE_CONFIG[currentRole];
+  const ownerId = currentUser?.id;
+
+  const fallbackAnimals = useMemo(() => config?.animals ?? [], [config?.animals]);
+  const [animals, setAnimals] = useState(fallbackAnimals);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    if (!ownerId) return;
+
+    let isMounted = true;
+
+    async function loadAnimals() {
+      setIsLoading(true);
+      setLoadError('');
+
+      try {
+        const animalList = await fetchAnimalsByOwner(ownerId);
+
+        if (isMounted) {
+          setAnimals(animalList);
+        }
+      } catch (error) {
+        if (isMounted) {
+        //  setLoadError(error.message);
+          setAnimals(fallbackAnimals);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadAnimals();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [ownerId, fallbackAnimals]);
 
   return (
     <div>
@@ -17,9 +58,17 @@ export default function ClientDashboard() {
       <section className="section-block">
         <h2>I tuoi animali</h2>
 
-        {config?.animals?.length > 0 ? (
+        {isLoading && <p className="muted-text">Caricamento animali...</p>}
+
+        {loadError && (
+          <p className="form-status form-status--error">
+            {loadError}
+          </p>
+        )}
+
+        {!isLoading && animals.length > 0 ? (
           <div className="grid-cards">
-            {config.animals.map((animale, index) => (
+            {animals.map((animale, index) => (
               <article key={index} className="panel card">
                 <div className="card-header">
                   <h3>{animale.nome}</h3>
@@ -35,7 +84,7 @@ export default function ClientDashboard() {
               </article>
             ))}
           </div>
-        ) : (
+        ) : !isLoading && (
           <EmptyMessage>Nessun animale registrato nel tuo profilo.</EmptyMessage>
         )}
       </section>

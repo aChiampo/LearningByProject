@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
+import { apiFetch, readApiError } from '../../services/apiClient';
 
 export default function ClientBooking() {
   const navigate = useNavigate();
@@ -72,24 +73,17 @@ export default function ClientBooking() {
     setIsLoading(true);
 
     try {
-      // Map the form data to the backend's expected structure (VisitaDto).
-      // NOTE: animale/tipoVisita/veterinario are @Valid on the backend, so
-      // Spring validates the *whole* nested DTO, not just presence of `id`.
-      // If AnimaleDto/TipoVisitaDto/UtenteDto have their own @NotNull fields
-      // (e.g. nome, specie), sending only { id } here will fail validation
-      // unless the backend resolves the full entity from the id (e.g. via a
-      // mapper/service lookup). Confirm this against the DTO definitions.
       const requestBody = {
-        animale: { id: animaleId },
-        tipoVisita: { id: tipoVisitaId },
-        veterinario: { id: veterinarioId },
+        animale: animaleId,
+        tipoVisita: tipoVisitaId,
+        veterinario: veterinarioId,
         data: formData.data, // ISO string (YYYY-MM-DD), maps to LocalDate
         fasciaOraria: formData.fasciaOraria,
         pagamento: formData.pagamento ? { id: parseInt(formData.pagamento, 10) } : null,
         note: formData.note,
       };
 
-      const response = await fetch('http://localhost:9020/api/visite/prenotazione', {
+      const response = await apiFetch('/api/visite/prenotazione', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,8 +92,8 @@ export default function ClientBooking() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit booking request');
+        const errorMessage = await readApiError(response, 'Failed to submit booking request');
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

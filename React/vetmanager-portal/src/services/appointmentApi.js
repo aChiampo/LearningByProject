@@ -1,3 +1,5 @@
+import { apiFetch, readApiError } from './apiClient';
+
 const VISITS_API_BASE = '/api/visite';
 const VISIT_PARAMS_ENDPOINT = `${VISITS_API_BASE}/params`;
 
@@ -39,7 +41,7 @@ function normalizeVisitToAppointment(visit) {
 }
 
 export async function fetchAppointments(params = {}) {
-  const response = await fetch(VISIT_PARAMS_ENDPOINT, {
+  const response = await apiFetch(VISIT_PARAMS_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -48,7 +50,7 @@ export async function fetchAppointments(params = {}) {
   });
 
   if (!response.ok) {
-    const errorMessage = await response.text();
+    const errorMessage = await readApiError(response, 'Impossibile recuperare gli appuntamenti.');
     throw new Error(errorMessage || 'Impossibile recuperare gli appuntamenti.');
   }
 

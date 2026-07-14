@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
+import { apiFetch } from '../../../services/apiClient';
 
 export default function ManagmentVaccineType() {
   const [vaccini, setVaccini] = useState([]);
@@ -13,7 +14,7 @@ export default function ManagmentVaccineType() {
   const caricaVaccini = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:9020/api/tipi-vaccino');
+      const response = await apiFetch('/api/tipi-vaccino');
       if (!response.ok) throw new Error('Errore nel caricamento dei tipi di vaccino');
       const data = await response.json();
       // Filtra solo i vaccini non eliminati (soft-delete con isDeleted)
@@ -29,7 +30,9 @@ export default function ManagmentVaccineType() {
 
   // Carica i vaccini al montaggio del componente
   useEffect(() => {
-    caricaVaccini();
+    queueMicrotask(() => {
+      caricaVaccini();
+    });
   }, []);
 
   // Aggiunge un nuovo tipo di vaccino
@@ -47,7 +50,7 @@ export default function ManagmentVaccineType() {
     }
 
     try {
-      const response = await fetch('http://localhost:9020/api/tipi-vaccino', {
+      const response = await apiFetch('/api/tipi-vaccino', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +82,7 @@ export default function ManagmentVaccineType() {
     }
 
     try {
-      const response = await fetch(`http://localhost:9020/api/tipi-vaccino/${id}`, {
+      const response = await apiFetch(`/api/tipi-vaccino/${id}`, {
         method: 'DELETE',
       });
 

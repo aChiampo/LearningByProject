@@ -6,9 +6,10 @@ import { PALETTES, ROLE_CONFIG } from '../data/roleConfig';
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentRole, isLogged, setIsLogged, palette, setPalette } = useContext(AppContext);
+  const { currentRole, currentUser, isLogged, logout, palette, setPalette } = useContext(AppContext);
 
   const userConfig = ROLE_CONFIG[currentRole];
+  const userName = [currentUser?.nome, currentUser?.cognome].filter(Boolean).join(' ') || userConfig?.userName;
   const publicRoutes = ['/', '/login', '/registrati', '/first-appointment'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
@@ -29,7 +30,7 @@ export default function Header() {
 
   function handleLogout() {
     if (window.confirm('Vuoi uscire dal tuo account?')) {
-      setIsLogged(false);
+      logout();
       navigate('/login');
     }
   }
@@ -54,7 +55,7 @@ export default function Header() {
         {isLogged && isPublicRoute && (
           <div className="user-actions">
             <span className="user-chip">
-              Ciao, <strong>{userConfig?.userName}</strong>
+              Ciao, <strong>{userName}</strong>
             </span>
             <button className="portal-button" onClick={() => navigate(userConfig?.dashboard ?? '/')}>
               Torna alla Dashboard
@@ -65,7 +66,7 @@ export default function Header() {
         {isLogged && !isPublicRoute && (
           <div className="user-actions">
             <span className="user-chip user-chip--bordered">
-              Utenza: <strong>{userConfig?.userName}</strong>
+              Utenza: <strong>{userName}</strong>
             </span>
             <button className="logout-button" onClick={handleLogout}>
               Disconnetti

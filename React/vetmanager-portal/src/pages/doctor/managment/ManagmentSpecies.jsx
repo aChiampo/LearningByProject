@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
+import { apiFetch } from '../../../services/apiClient';
 
 export default function ManagmentSpecies() {
   const [specie, setSpecie] = useState([]);
@@ -11,7 +12,7 @@ export default function ManagmentSpecies() {
   const caricaSpecie = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:9020/api/specie');
+      const response = await apiFetch('/api/specie');
       if (!response.ok) throw new Error('Errore nel caricamento delle specie');
       const data = await response.json();
       // Filtra solo le specie non eliminate (soft-delete)
@@ -27,7 +28,9 @@ export default function ManagmentSpecies() {
 
   // Carica le specie al montaggio del componente
   useEffect(() => {
-    caricaSpecie();
+    queueMicrotask(() => {
+      caricaSpecie();
+    });
   }, []);
 
   // Aggiunge una nuova specie
@@ -40,7 +43,7 @@ export default function ManagmentSpecies() {
     }
 
     try {
-      const response = await fetch('http://localhost:9020/api/specie', {
+      const response = await apiFetch('/api/specie', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +67,7 @@ export default function ManagmentSpecies() {
     }
 
     try {
-      const response = await fetch(`http://localhost:9020/api/specie/${id}`, {
+      const response = await apiFetch(`/api/specie/${id}`, {
         method: 'DELETE',
       });
 

@@ -1,6 +1,5 @@
 package com.WW.services;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -35,9 +34,6 @@ public class PagamentiService {
         if (datiAggiornati.getTipoPagamento() != null && !datiAggiornati.getTipoPagamento().isBlank()) {
             esistente.setTipoPagamento(datiAggiornati.getTipoPagamento());
         }
-        if (datiAggiornati.getStato() != null && !datiAggiornati.getStato().isBlank()) {
-            esistente.setStato(datiAggiornati.getStato());
-        }
         if (datiAggiornati.getData() != null) {
             esistente.setData(datiAggiornati.getData());
         }
@@ -48,11 +44,6 @@ public class PagamentiService {
     @Transactional(readOnly = true)
     public List<Pagamento> ottieniTutti() {
         return pagamentoRepository.findByIsDeletedFalse();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Pagamento> ottieniPerStato(String stato) {
-        return pagamentoRepository.findByTipoPagamentoAndIsDeletedFalse(stato);
     }
 
     @Transactional(readOnly = true)

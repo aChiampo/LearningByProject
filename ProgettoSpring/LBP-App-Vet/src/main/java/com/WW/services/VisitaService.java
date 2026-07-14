@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.WW.dto.AnimaleDto;
 import com.WW.dto.PagamentoDto;
-import com.WW.dto.TipoVisitaDto;
-import com.WW.dto.UtenteDto;
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Pagamento;
@@ -23,9 +20,7 @@ import com.WW.entities.Visita;
 import com.WW.repositories.VisitaRepository;
 
 /**
- * @author: cristian.pappalardo
- *          Servizio per la tabella VISITA
- *          Last update: 28/06/2026
+ * Servizio per la tabella VISITA.
  */
 @Service
 public class VisitaService {
@@ -36,11 +31,6 @@ public class VisitaService {
     private final UtenteService utenteService;
     private final PagamentiService pagamentiService;
 
-    /**
-     * Costruisce il servizio con il repository delle visite.
-     *
-     * @param visitaRepository repository delle visite
-     */
     public VisitaService(
             VisitaRepository visitaRepository, TipoVisitaService tipoVisitaService, AnimaleService animaleService,
             UtenteService utenteService, PagamentiService pagamentiService) {
@@ -63,17 +53,9 @@ public class VisitaService {
         return visitaRepository.save(toEntity(visita));
     }
 
-    /**
-     * Valida i dati della visita prima della creazione.
-     * 
-     * @param visita
-     * @throws ResponseStatusException se i dati della visita non sono validi
-     */
     private void validaVisitaPerCreazione(VisitaDto visita) {
         if (visita == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Il corpo della visita non può essere nullo.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il corpo della visita non puo essere nullo.");
         }
 
         validaSovrapposizioneOrario(visita.getStartDateTime(), tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
@@ -84,24 +66,20 @@ public class VisitaService {
                     HttpStatus.BAD_REQUEST,
                     "Il tipo visita è obbligatorio e deve contenere un id valido.");
         }
-
-        if (visita.animale() == null || visita.animale() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "L'animale è obbligatorio e deve contenere un id valido.");
+        if (visita.animale() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'animale e obbligatorio.");
         }
-
-        if (visita.veterinario() == null || visita.veterinario() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Il veterinario è obbligatorio e deve contenere un id valido.");
+        if (visita.veterinario() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il veterinario e obbligatorio.");
         }
-
         if (visita.pagamento() != null && visita.pagamento().id() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Se presente, il pagamento deve contenere un id valido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il pagamento deve contenere un id valido.");
         }
+
+        validaSovrapposizioneOrario(
+                visita.getStartDateTime(),
+                tipoVisitaService.ottieniPerId(visita.tipoVisita()),
+                visita.veterinario());
     }
 
     private Visita toEntity(VisitaDto visita) {
@@ -131,9 +109,6 @@ public class VisitaService {
     private void validaSovrapposizioneOrario(LocalDateTime dataVisita, TipoVisita tipoVisita, Utente veterinario) {
         LocalDateTime nuovaInizio = dataVisita;
         LocalDateTime nuovaFine = dataVisita.plusMinutes(tipoVisita.getDurata());
-
-        // Finestra di ricerca abbondante: nessuna visita esistente più lunga
-        // di qualche ora dovrebbe sfuggire a questo intervallo.
         LocalDateTime windowStart = dataVisita.minusHours(6);
         LocalDateTime windowEnd = nuovaFine.plusHours(6);
 
@@ -143,34 +118,30 @@ public class VisitaService {
         for (Visita esistente : candidate) {
             LocalDateTime esistenteInizio = esistente.getDataVisita();
             LocalDateTime esistenteFine = esistenteInizio.plusMinutes(esistente.getTipoVisita().getDurata());
-
-            // due intervalli si sovrappongono se: inizioA < fineB AND inizioB < fineA
             boolean sovrapposte = nuovaInizio.isBefore(esistenteFine) && esistenteInizio.isBefore(nuovaFine);
 
             if (sovrapposte) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
-                        "Il veterinario ha già una visita prenotata in questo intervallo orario.");
+                        "Il veterinario ha gia una visita prenotata in questo intervallo orario.");
             }
         }
     }
 
-    /**
-     * Restituisce tutte le visite.
-     *
-     * @return elenco delle visite
-     */
     @Transactional(readOnly = true)
     public List<Visita> getAllVisita() {
         return visitaRepository.findByIsDeletedFalse();
     }
 
-    /**
-     * Restituisce le visite filtrate dai parametri specificati.
-     *
-     * @param params parametri opzionali di filtro
-     * @return visite filtrate convertite in DTO
-     */
+    @Transactional(readOnly = true)
+    public List<Visita> getAllVisita(Integer clienteId) {
+        if (clienteId == null) {
+            return visitaRepository.findByIsDeletedFalse();
+        }
+
+        return visitaRepository.findByAnimaleUtenteIdAndIsDeletedFalse(clienteId);
+    }
+
     @Transactional(readOnly = true)
     public List<VisitaDto> getVisiteByParams(VisitParamDTO params) {
         return getAllVisita().stream()
@@ -205,75 +176,45 @@ public class VisitaService {
         return VisitaDto.fromEntity(visita);
     }
 
-    /**
-     * Restituisce una visita a partire dall'id.
-     *
-     * @param id identificativo della visita
-     * @return visita trovata
-     */
+    private String toFasciaOraria(LocalDateTime dataVisita) {
+        if (dataVisita == null) {
+            return null;
+        }
+
+        return dataVisita.getHour() < 13
+                ? "Mattina (09:00 - 12:30)"
+                : "Pomeriggio (14:30 - 18:30)";
+    }
+
     @Transactional(readOnly = true)
     public Visita getVisitaById(Integer id) {
         return visitaRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Visita non trovata."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Visita non trovata."));
     }
 
-    /**
-     * Restituisce le visite associate a un tipo visita.
-     *
-     * @param idTipoVisita identificativo del tipo visita
-     * @return visite filtrate
-     */
     @Transactional(readOnly = true)
     public List<Visita> getVisiteByTipoVisita(Integer idTipoVisita) {
         return visitaRepository.findByTipoVisitaIdAndIsDeletedFalse(idTipoVisita);
     }
 
-    /**
-     * Restituisce le visite associate a un veterinario.
-     *
-     * @param idVeterinario identificativo del veterinario
-     * @return visite filtrate
-     */
     @Transactional(readOnly = true)
     public List<Visita> getVisiteByVeterinario(Integer idVeterinario) {
         return visitaRepository.findByVeterinarioIdAndIsDeletedFalse(idVeterinario);
     }
 
-    /**
-     * Restituisce le visite associate a un animale.
-     *
-     * @param idAnimale identificativo dell'animale
-     * @return visite filtrate
-     */
     @Transactional(readOnly = true)
     public List<Visita> getVisiteByAnimale(Integer idAnimale) {
         return visitaRepository.findByAnimaleIdAndIsDeletedFalse(idAnimale);
     }
 
-    /**
-     * Restituisce la visita collegata a un pagamento.
-     *
-     * @param idPagamento identificativo del pagamento
-     * @return visita trovata
-     */
     @Transactional(readOnly = true)
     public Visita getVisitaByPagamento(Integer idPagamento) {
-
         return visitaRepository.findByPagamentoIdAndIsDeletedFalse(idPagamento)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Visita collegata al pagamento non trovata."));
     }
 
-    /**
-     * Aggiorna lo stato di pagamento di una visita.
-     *
-     * @param id     identificativo della visita
-     * @param pagato nuovo stato di pagamento
-     * @return visita aggiornata
-     */
     @Transactional
     public Visita updateVisitaPagato(Integer id, Integer pagamentoId) {
         Visita visita = getVisitaById(id);
@@ -282,13 +223,6 @@ public class VisitaService {
         return visitaRepository.save(visita);
     }
 
-    /**
-     * Aggiorna le note di una visita a partire dall'id.
-     *
-     * @param id   identificativo della visita
-     * @param note nuove note
-     * @return visita aggiornata
-     */
     @Transactional
     public Visita updateVisitaNote(Integer id, String note) {
         Visita visita = getVisitaById(id);
@@ -296,11 +230,6 @@ public class VisitaService {
         return visitaRepository.save(visita);
     }
 
-    /**
-     * Elimina una visita esistente.
-     *
-     * @param id identificativo della visita da eliminare
-     */
     @Transactional
     public void deleteVisita(Integer id) {
         Visita visita = visitaRepository.findByIdAndIsDeletedFalse(id)
@@ -311,64 +240,46 @@ public class VisitaService {
         visitaRepository.save(visita);
     }
 
-    /**
-     * Restituisce tutte le visite che risultano pagate.
-     *
-     * @return elenco delle visite pagate
-     */
+    @Transactional(readOnly = true)
     public List<Visita> OttieniVisitePagate() {
-
-        List<Visita> pagate = visitaRepository.findByIsDeletedFalse().stream()
-                .filter(visita -> visita.getPagamento() != null)
-                .toList();
-
-        return pagate;
+        return OttieniVisitePagate(null);
     }
 
-    /**
-     * Restituisce tutte le visite che risultano non pagate.
-     *
-     * @return elenco delle visite non pagate
-     */
+    @Transactional(readOnly = true)
+    public List<Visita> OttieniVisitePagate(Integer clienteId) {
+        if (clienteId == null) {
+            return visitaRepository.findByPagamentoIsNotNullAndIsDeletedFalse();
+        }
+
+        return visitaRepository.findByPagamentoIsNotNullAndAnimaleUtenteIdAndIsDeletedFalse(clienteId);
+    }
+
+    @Transactional(readOnly = true)
     public List<Visita> OttieniVisiteNonPagate() {
-        List<Visita> nonPagate = visitaRepository.findByIsDeletedFalse().stream()
-                .filter(visita -> visita.getPagamento() == null)
-                .toList();
-
-        return nonPagate;
+        return OttieniVisiteNonPagate(null);
     }
 
-    /**
-     * Restituisce tutte le visite che risultano pagate.
-     * 
-     * @param idAnimale identificativo dell'Animale
-     * 
-     * @return elenco delle visite pagate
-     */
-    public List<Visita> OttieniVisitePagatebyAnimale(int idAnimale) {
+    @Transactional(readOnly = true)
+    public List<Visita> OttieniVisiteNonPagate(Integer clienteId) {
+        if (clienteId == null) {
+            return visitaRepository.findByPagamentoIsNullAndIsDeletedFalse();
+        }
 
-        List<Visita> pagate = visitaRepository.findByIsDeletedFalse().stream()
+        return visitaRepository.findByPagamentoIsNullAndAnimaleUtenteIdAndIsDeletedFalse(clienteId);
+    }
+
+    public List<Visita> OttieniVisitePagatebyAnimale(int idAnimale) {
+        return visitaRepository.findByIsDeletedFalse().stream()
                 .filter(visita -> visita.getPagamento() != null)
                 .filter(visita -> visita.getAnimale().getId() == idAnimale)
                 .toList();
-
-        return pagate;
     }
 
-    /**
-     * Restituisce tutte le visite che risultano non pagate.
-     * 
-     * @param idAnimale identificativo dell'Animale
-     * 
-     * @return elenco delle visite non pagate
-     */
     public List<Visita> OttieniVisiteNonPagateByAnimale(int idAnimale) {
-        List<Visita> nonPagate = visitaRepository.findByIsDeletedFalse().stream()
+        return visitaRepository.findByIsDeletedFalse().stream()
                 .filter(visita -> visita.getPagamento() == null)
                 .filter(visita -> visita.getAnimale().getId() == idAnimale)
                 .toList();
-
-        return nonPagate;
     }
 
     public Visita ottieniVisitaByData(LocalDateTime dataVisita) {
@@ -377,5 +288,4 @@ public class VisitaService {
                         HttpStatus.NOT_FOUND,
                         "Visita non trovata per la data specificata."));
     }
-
 }

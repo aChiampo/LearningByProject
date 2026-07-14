@@ -43,7 +43,15 @@ public class ConfigurazioneSicurezza {
                 .cors(cors -> cors.configurationSource(configurazioneCors()))
                 .sessionManagement(sessione -> sessione.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(autorizzazioni -> autorizzazioni
-                        .requestMatchers("/api/auth/**", "/api/autenticazione/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/auth/login",
+                                "/api/auth/signin",
+                                "/api/autenticazione/login",
+                                "/api/autenticazione/signin"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

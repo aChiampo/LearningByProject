@@ -21,37 +21,24 @@ public record VisitaDto(
     public LocalDateTime getStartDateTime() {
         LocalTime startTime;
         if (fasciaOraria.contains("Mattina")) {
-            startTime = LocalTime.of(9, 0); // 09:00
+            startTime = LocalTime.of(9, 0);
         } else if (fasciaOraria.contains("Pomeriggio")) {
-            startTime = LocalTime.of(14, 30); // 14:30
+            startTime = LocalTime.of(14, 30);
         } else {
             throw new IllegalArgumentException("Invalid time slot: " + fasciaOraria);
         }
         return LocalDateTime.of(data, startTime);
     }
 
-    // Computes the end date and time based on `data` and `fasciaOraria`
     public LocalDateTime getEndDateTime() {
         LocalTime endTime;
         if (fasciaOraria.contains("Mattina")) {
-            endTime = LocalTime.of(12, 30); // 12:30
+            endTime = LocalTime.of(12, 30);
         } else if (fasciaOraria.contains("Pomeriggio")) {
-            endTime = LocalTime.of(18, 30); // 18:30
+            endTime = LocalTime.of(18, 30);
         } else {
             throw new IllegalArgumentException("Invalid time slot: " + fasciaOraria);
         }
         return LocalDateTime.of(data, endTime);
-    }
-
-    public static VisitaDto fromEntity(Visita visita) {
-        return new VisitaDto(
-                new AnimaleDto(visita.getAnimale().getId()),
-                new TipoVisitaDto(visita.getTipoVisita().getId()),
-                new UtenteDto(visita.getVeterinario().getId()),
-                visita.getDataVisita().toLocalDate(),
-                visita.getDataVisita().toLocalTime().isBefore(LocalTime.of(12, 30)) ? "Mattina" : "Pomeriggio",
-                visita.getPagamento() != null ? new PagamentoDto(visita.getPagamento().getId()) : null,
-                null // Assuming note is not present in the entity
-        );
     }
 }

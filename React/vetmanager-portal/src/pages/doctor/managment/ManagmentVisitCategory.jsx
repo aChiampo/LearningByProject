@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
+import { apiFetch } from '../../../services/apiClient';
 
 export default function ManagmentVisitCategory() {
   const [categorie, setCategorie] = useState([]);
@@ -11,7 +12,7 @@ export default function ManagmentVisitCategory() {
   const caricaCategorie = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:9020/api/categorieVisite/ottieniTutte');
+      const response = await apiFetch('/api/categorieVisite/ottieniTutte');
       if (!response.ok) throw new Error('Errore nel caricamento delle categorie di visita');
       const data = await response.json();
       // Filtra solo le categorie non eliminate (soft-delete con isDeleted)
@@ -27,7 +28,9 @@ export default function ManagmentVisitCategory() {
 
   // Carica le categorie al montaggio del componente
   useEffect(() => {
-    caricaCategorie();
+    queueMicrotask(() => {
+      caricaCategorie();
+    });
   }, []);
 
   // Aggiunge una nuova categoria di visita
@@ -40,7 +43,7 @@ export default function ManagmentVisitCategory() {
     }
 
     try {
-      const response = await fetch('http://localhost:9020/api/categorieVisite/aggiungi', {
+      const response = await apiFetch('/api/categorieVisite/aggiungi', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +71,7 @@ export default function ManagmentVisitCategory() {
     }
 
     try {
-      const response = await fetch(`http://localhost:9020/api/categorieVisite/elimina/${id}`, {
+      const response = await apiFetch(`/api/categorieVisite/elimina/${id}`, {
         method: 'DELETE',
       });
 

@@ -1,5 +1,16 @@
 export const PALETTES = ['aurora', 'lago', 'energia', 'iris', 'cielo', 'rosa'];
 
+export const BACKEND_ROLE_TO_FRONTEND_ROLE = {
+  CLIENTE: 'client',
+  VETERINARIO: 'doctor',
+  RECEPTIONIST: 'receptionist',
+  ADMIN: 'super-admin',
+};
+
+export function normalizeRole(role) {
+  return BACKEND_ROLE_TO_FRONTEND_ROLE[role] ?? role ?? 'client';
+}
+
 export const ROLE_CONFIG = {
   client: {
     label: "Area Cliente",

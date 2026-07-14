@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Visita;
+import com.WW.sicurezza.UtenteAutenticato;
 import com.WW.services.VisitaService;
 
 import jakarta.validation.Valid;
@@ -37,8 +40,8 @@ public class VisitaController {
      * @return elenco delle visite
      */
     @GetMapping("/ottieniTutte")
-    public ResponseEntity<List<Visita>> ottieniTutte() {
-        return ResponseEntity.ok(visitaService.getAllVisita());
+    public ResponseEntity<List<Visita>> ottieniTutte(Authentication authentication) {
+        return ResponseEntity.ok(visitaService.getAllVisita(getClienteIdIfCliente(authentication)));
     }
 
     /**
@@ -102,8 +105,8 @@ public class VisitaController {
      * @return visite pagate
      */
     @GetMapping("/ottieniPagate")
-    public ResponseEntity<List<Visita>> ottieniPagate() {
-        return ResponseEntity.ok(visitaService.OttieniVisitePagate());
+    public ResponseEntity<List<Visita>> ottieniPagate(Authentication authentication) {
+        return ResponseEntity.ok(visitaService.OttieniVisitePagate(getClienteIdIfCliente(authentication)));
     }
 
     /**
@@ -112,8 +115,8 @@ public class VisitaController {
      * @return visite non pagate
      */
     @GetMapping("/ottieniNonPagate")
-    public ResponseEntity<List<Visita>> ottieniNonPagate() {
-        return ResponseEntity.ok(visitaService.OttieniVisiteNonPagate());
+    public ResponseEntity<List<Visita>> ottieniNonPagate(Authentication authentication) {
+        return ResponseEntity.ok(visitaService.OttieniVisiteNonPagate(getClienteIdIfCliente(authentication)));
     }
 
     /**
@@ -199,5 +202,29 @@ public class VisitaController {
     public ResponseEntity<Void> elimina(@PathVariable Integer id) {
         visitaService.deleteVisita(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private Integer getClienteIdIfCliente(Authentication authentication) {
+        if (!isCliente(authentication)) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UtenteAutenticato utenteAutenticato) {
+            return utenteAutenticato.id();
+        }
+
+        return Integer.valueOf(authentication.getName());
+    }
+
+    private boolean isCliente(Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
+
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(authority -> authority.equals("ROLE_CLIENTE"));
     }
 }
