@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
 
 export default function ManagmentVisitCategory() {
   const [categorie, setCategorie] = useState([]);
@@ -43,16 +43,12 @@ export default function ManagmentVisitCategory() {
     }
 
     try {
-      const response = await apiFetch('/api/categorieVisite/aggiungi', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await apiFetchWithPayload('/api/categorieVisite/aggiungi', [
+        {
           nome: nome.trim(),
           isDeleted: false,
-        }),
-      });
+        }
+      ]);
 
       if (!response.ok) throw new Error('Errore nel salvataggio della categoria di visita');
 

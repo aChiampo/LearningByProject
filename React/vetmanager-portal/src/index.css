@@ -680,6 +680,73 @@ body:has(#homepage:target) #homepage {
   width: min(100%, 1180px);
 }
 
+.dialog-screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 82px);
+  padding: clamp(18px, 4vw, 44px);
+  overflow: hidden;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--secondary) 22%, transparent), transparent 52%),
+    rgba(24, 32, 31, 0.5);
+}
+
+.dialog-window {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  width: min(100%, 760px);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line));
+  border-top: 4px solid var(--primary);
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 24px 70px rgba(24, 32, 31, 0.24);
+}
+
+.dialog-copy {
+  min-width: 0;
+}
+
+.dialog-copy .login-back {
+  margin-bottom: 22px;
+}
+
+.dialog-copy h1 {
+  max-width: none;
+  margin-bottom: 12px;
+  color: var(--primary-dark);
+  font-size: clamp(30px, 5vw, 42px);
+  line-height: 1.08;
+}
+
+.dialog-copy > p:not(.eyebrow) {
+  max-width: 680px;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.first-appointment-dialog .login-form {
+  padding: 0;
+  border: 0 !important;
+  border-top: 1px solid var(--line) !important;
+  border-radius: 0;
+  padding-top: 24px;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 .form-grid-two {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1318,6 +1385,18 @@ dd {
   .route-options,
   .form-grid-two {
     grid-template-columns: 1fr;
+  }
+
+  .dialog-screen {
+    min-height: calc(100vh - 82px);
+    padding: 16px;
+  }
+
+  .dialog-window {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    max-height: calc(100vh - 112px);
+    padding: 22px 18px;
   }
 
   .route-option {

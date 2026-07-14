@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
 
 export default function ManagmentVaccineType() {
   const [vaccini, setVaccini] = useState([]);
@@ -50,18 +50,14 @@ export default function ManagmentVaccineType() {
     }
 
     try {
-      const response = await apiFetch('/api/tipi-vaccino', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await apiFetchWithPayload('/api/tipi-vaccino', [
+        {
           tipologia: tipologia.trim(),
           durata: parseInt(durata),
           note: note.trim() || null,
           isDeleted: false,
-        }),
-      });
+        }
+      ]);
 
       if (!response.ok) throw new Error('Errore nel salvataggio del tipo di vaccino');
 

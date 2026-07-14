@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
-import { apiFetch, readApiError } from '../../services/apiClient';
+import { apiFetchWithPayload, readApiError } from '../../services/apiClient';
 
 export default function ClientBooking() {
   const navigate = useNavigate();
@@ -83,13 +83,7 @@ export default function ClientBooking() {
         note: formData.note,
       };
 
-      const response = await apiFetch('/api/visite/prenotazione', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const response = await apiFetchWithPayload('/api/visite/prenotazione', [requestBody]);
 
       if (!response.ok) {
         const errorMessage = await readApiError(response, 'Failed to submit booking request');

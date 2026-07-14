@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
 
 export default function ManagmentSpecies() {
   const [specie, setSpecie] = useState([]);
@@ -43,13 +43,7 @@ export default function ManagmentSpecies() {
     }
 
     try {
-      const response = await apiFetch('/api/specie', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ nome: nuomaSpecie }),
-      });
+      const response = await apiFetchWithPayload('/api/specie', [{ nome: nuomaSpecie }]);
 
       if (!response.ok) throw new Error('Errore nel salvataggio della specie');
       

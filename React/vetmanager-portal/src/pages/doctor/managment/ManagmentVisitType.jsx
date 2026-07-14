@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
 
 export default function ManagmentVisitType() {
   const [visite, setVisite] = useState([]);
@@ -55,19 +55,15 @@ export default function ManagmentVisitType() {
     }
 
     try {
-      const response = await apiFetch('/api/tipiVisite/aggiungi', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await apiFetchWithPayload('/api/tipiVisite/aggiungi', [
+        {
           nome: nome.trim(),
           durata: parseInt(durata),
           prezzo: parseFloat(prezzo),
           isDeleted: false,
           attivo: true,
-        }),
-      });
+        }
+      ]);
 
       if (!response.ok) throw new Error('Errore nel salvataggio del tipo di visita');
 

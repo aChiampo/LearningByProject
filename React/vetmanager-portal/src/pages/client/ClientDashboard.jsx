@@ -56,7 +56,12 @@ export default function ClientDashboard() {
       <PageTitle eyebrow="Area Riservata" title="Dashboard Cliente" />
 
       <section className="section-block">
-        <h2>I tuoi animali</h2>
+        <div className="section-head">
+          <h2>I tuoi animali</h2>
+          <button className="btn btn-primary btn-sm" type="button" onClick={() => navigate('/client/add-animal')}>
+            Aggiungi Animale
+          </button>
+        </div>
 
         {isLoading && <p className="muted-text">Caricamento animali...</p>}
 
@@ -85,7 +90,14 @@ export default function ClientDashboard() {
             ))}
           </div>
         ) : !isLoading && (
-          <EmptyMessage>Nessun animale registrato nel tuo profilo.</EmptyMessage>
+          <>
+            <EmptyMessage>Nessun animale registrato nel tuo profilo.</EmptyMessage>
+            <div className="page-actions">
+              <button className="btn btn-primary" type="button" onClick={() => navigate('/client/add-animal')}>
+                Aggiungi Animale
+              </button>
+            </div>
+          </>
         )}
       </section>
 

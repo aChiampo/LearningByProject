@@ -11,6 +11,7 @@ import FirstAppointmentPage from '../pages/public/FirstAppointmentPage';
 import ClientDashboard from '../pages/client/ClientDashboard';
 import ClientProfile from '../pages/client/ClientProfile';
 import ClientBooking from '../pages/client/ClientBooking';
+import ClientAddAnimal from '../pages/client/ClientAddAnimal';
 import ClientBilling from '../pages/client/ClientBilling';
 import ClientFaq from '../pages/client/ClientFaq';
 import DoctorDashboard from '../pages/doctor/DoctorDashboard';
@@ -45,6 +46,7 @@ export default function AppRouter() {
             <Route path="/client/dashboard" element={<ClientDashboard />} />
             <Route path="/client/profile" element={<ClientProfile />} />
             <Route path="/client/booking" element={<ClientBooking />} />
+            <Route path="/client/add-animal" element={<ClientAddAnimal />} />
             <Route path="/client/billing" element={<ClientBilling />} />
             <Route path="/client/faq" element={<ClientFaq />} />
           </Route>
