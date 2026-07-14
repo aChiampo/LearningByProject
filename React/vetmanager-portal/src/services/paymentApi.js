@@ -99,7 +99,6 @@ export async function createPayment(visit, paymentType) {
   const payload = {
     data: new Date().toISOString().slice(0, 10),
     tipoPagamento: paymentType,
-    stato: 'PAGATO',
     importoTotale: visit.totalAmount,
     isDeleted: false,
   };
