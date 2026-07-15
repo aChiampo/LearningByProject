@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
 
 export default function ManagmentRaces() {
   const [razze, setRazze] = useState([]);
@@ -66,16 +66,12 @@ export default function ManagmentRaces() {
       const specieObj = specie.find(s => s.id === parseInt(specieSelezionata));
       if (!specieObj) throw new Error('Specie non trovata');
 
-      const response = await apiFetch('/api/razze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
+      const response = await apiFetchWithPayload('/api/razze', [
+        {
           nome: nuovaRazza,
           idSpecie: specieObj
-        }),
-      });
+        }
+      ]);
 
       if (!response.ok) throw new Error('Errore nel salvataggio della razza');
       

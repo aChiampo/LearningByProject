@@ -1,4 +1,4 @@
-import { apiFetch, readApiError } from './apiClient';
+import { apiFetch, apiFetchWithPayload, readApiError } from './apiClient';
 
 const VISITS_API_BASE = '/api/visite';
 const PAYMENTS_API_BASE = '/api/pagamenti';
@@ -107,13 +107,7 @@ export async function createPayment(visit, paymentType) {
     payload.utente = { id: visit.ownerId };
   }
 
-  const response = await apiFetch(`${PAYMENTS_API_BASE}/crea`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  const response = await apiFetchWithPayload(`${PAYMENTS_API_BASE}/crea`, [payload]);
 
   if (!response.ok) {
     const errorMessage = await readApiError(response, 'Impossibile creare il pagamento.');

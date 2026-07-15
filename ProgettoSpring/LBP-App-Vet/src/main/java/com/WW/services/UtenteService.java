@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.WW.dto.UtenteDto;
 import com.WW.entities.Utente;
 import com.WW.repositories.UtenteRepo;
 
@@ -79,6 +80,31 @@ public class UtenteService {
         }
         if (modificato.getCodiceFiscale() != null && !modificato.getCodiceFiscale().isBlank()) {
             originale.setCodiceFiscale(modificato.getCodiceFiscale());
+        }
+        return utenteRepo.save(originale);
+    }
+
+    @Transactional
+    public Utente modificaUtente(Integer id, UtenteDto modificato) {
+        Utente originale = ottieniPerId(id);
+
+        if (modificato.nome() != null && !modificato.nome().isBlank()) {
+            originale.setNome(modificato.nome());
+        }
+        if (modificato.cognome() != null && !modificato.cognome().isBlank()) {
+            originale.setCognome(modificato.cognome());
+        }
+        if (modificato.email() != null && !modificato.email().isBlank()) {
+            originale.setEmail(modificato.email());
+        }
+        if (modificato.telefono() != null && !modificato.telefono().isBlank()) {
+            originale.setTelefono(modificato.telefono());
+        }
+        if (modificato.indirizzo() != null) {
+            originale.setIndirizzo(modificato.indirizzo());
+        }
+        if (modificato.citta() != null) {
+            originale.setCitta(modificato.citta());
         }
         return utenteRepo.save(originale);
     }

@@ -75,6 +75,24 @@ export const AppProvider = ({ children }) => {
     return session;
   }
 
+  function updateCurrentUser(user) {
+    setCurrentUser(user);
+    setCurrentRole(user.role);
+    setAuthSession((currentSession) => {
+      if (!currentSession) {
+        return currentSession;
+      }
+
+      const updatedSession = {
+        ...currentSession,
+        user,
+      };
+
+      storeAuthSession(updatedSession);
+      return updatedSession;
+    });
+  }
+
   function logout() {
     clearAuthSession();
     setAuthSession(null);
@@ -95,6 +113,7 @@ export const AppProvider = ({ children }) => {
         isAuthLoading,
         login,
         logout,
+        updateCurrentUser,
       }}
     >
       {children}

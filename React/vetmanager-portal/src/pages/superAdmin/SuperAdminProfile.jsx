@@ -1,17 +1,11 @@
 import PageTitle from '../../components/common/PageTitle';
+import UserProfile from '../../components/common/UserProfile';
 
 export default function SuperAdminProfile() {
   return (
     <div>
-      <PageTitle eyebrow="Configurazione" title="Impostazioni di Sistema" />
-      <div className="panel panel-narrow">
-        <h2>Parametri Globali</h2>
-        <p className="muted-text">Versione Mockup: v2.0-React (Vite)</p>
-        <div className="config-box">
-          <p><strong>Database:</strong> Simulato in memoria locale</p>
-          <p><strong>Routing:</strong> Gestito tramite React Router</p>
-        </div>
-      </div>
+      <PageTitle eyebrow="Configurazione" title="Profilo Amministratore" />
+      <UserProfile fallbackName="Direzione San Luca" description="Amministratore" />
     </div>
   );
 }

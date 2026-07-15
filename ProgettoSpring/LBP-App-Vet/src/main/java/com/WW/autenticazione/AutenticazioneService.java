@@ -84,7 +84,10 @@ public class AutenticazioneService {
                 utente.getEmail(),
                 utente.getRuolo().getRuolo(),
                 utente.getNome(),
-                utente.getCognome()
+                utente.getCognome(),
+                utente.getTelefono(),
+                utente.getIndirizzo(),
+                utente.getCitta()
         );
     }
 

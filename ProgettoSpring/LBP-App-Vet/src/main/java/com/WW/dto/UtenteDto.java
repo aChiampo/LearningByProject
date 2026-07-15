@@ -1,7 +1,11 @@
 package com.WW.dto;
 
-import jakarta.validation.constraints.NotNull;
-
 public record UtenteDto(
-        @NotNull Integer id) {
+    String nome,
+    String cognome,
+    String email,
+    String telefono,
+    String indirizzo,
+    String citta
+) {
 }

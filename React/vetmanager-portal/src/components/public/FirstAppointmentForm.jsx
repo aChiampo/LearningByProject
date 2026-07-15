@@ -1,23 +1,40 @@
-export default function FirstAppointmentForm({ backLabel = 'Torna alle opzioni', onBack }) {
+export default function FirstAppointmentForm({
+  backLabel = 'Torna alle opzioni',
+  copy = {},
+  onBack,
+}) {
+  const {
+    eyebrow = 'Prima visita',
+    title = 'Conosciamoci.',
+    description = 'Lascia alcune informazioni essenziali. Lo studio potra ricontattarti per concordare il momento piu adatto per il primo appuntamento.',
+    formEyebrow = 'Richiesta appuntamento',
+    formTitle = 'Parlaci di voi',
+    ariaLabel = 'Richiesta primo appuntamento',
+  } = copy;
+
   return (
-    <section className="login-screen public-form-screen home-public-section" id="first-appointment">
-      <div className="login-shell public-form-shell">
-        <div className="login-copy">
+    <section className="dialog-screen home-public-section" id="first-appointment">
+      <div className="dialog-backdrop" aria-hidden="true" onClick={onBack}></div>
+      <div
+        className="dialog-window first-appointment-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="first-appointment-title"
+        aria-describedby="first-appointment-description"
+      >
+        <div className="dialog-copy">
           <button className="login-back login-back-button" type="button" onClick={onBack}>
             {backLabel}
           </button>
-          <p className="eyebrow">Prima visita</p>
-          <h1>Conosciamoci.</h1>
-          <p>
-            Lascia alcune informazioni essenziali. Lo studio potra ricontattarti per concordare il
-            momento piu adatto per il primo appuntamento.
-          </p>
+          <p className="eyebrow">{eyebrow}</p>
+          <h1 id="first-appointment-title">{title}</h1>
+          <p id="first-appointment-description">{description}</p>
         </div>
 
-        <form className="login-form public-form" aria-label="Richiesta primo appuntamento">
+        <form className="login-form public-form" aria-label={ariaLabel}>
           <div>
-            <p className="eyebrow">Richiesta appuntamento</p>
-            <h2>Parlaci di voi</h2>
+            <p className="eyebrow">{formEyebrow}</p>
+            <h2>{formTitle}</h2>
           </div>
           <label htmlFor="first-owner">
             Nome e cognome

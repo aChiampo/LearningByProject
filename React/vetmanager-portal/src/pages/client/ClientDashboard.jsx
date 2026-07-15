@@ -56,7 +56,12 @@ export default function ClientDashboard() {
       <PageTitle eyebrow="Area Riservata" title="Dashboard Cliente" />
 
       <section className="section-block">
-        <h2>I tuoi animali</h2>
+        <div className="section-head">
+          <h2>I tuoi animali</h2>
+          <button className="btn btn-primary btn-sm" type="button" onClick={() => navigate('/client/add-animal')}>
+            Aggiungi Animale
+          </button>
+        </div>
 
         {isLoading && <p className="muted-text">Caricamento animali...</p>}
 
@@ -74,7 +79,8 @@ export default function ClientDashboard() {
                   <h3>{animale.nome}</h3>
                   <span className="badge">{animale.specie}</span>
                 </div>
-                <p className="muted-text">Razza: {animale.razza} - Eta: {animale.eta}</p>
+                <p className="muted-text">Razza: {animale.razza}</p>
+                <p className="muted-text">Eta: {new Date().getFullYear() - new Date(animale.dataNascita).getFullYear()}</p>
                 <div className="actions-row">
                   <button className="btn btn-primary btn-sm" onClick={() => navigate('/client/booking')}>
                     Prenota Visita
@@ -85,7 +91,14 @@ export default function ClientDashboard() {
             ))}
           </div>
         ) : !isLoading && (
-          <EmptyMessage>Nessun animale registrato nel tuo profilo.</EmptyMessage>
+          <>
+            <EmptyMessage>Nessun animale registrato nel tuo profilo.</EmptyMessage>
+            <div className="page-actions">
+              <button className="btn btn-primary" type="button" onClick={() => navigate('/client/add-animal')}>
+                Aggiungi Animale
+              </button>
+            </div>
+          </>
         )}
       </section>
 

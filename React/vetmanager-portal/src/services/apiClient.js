@@ -41,6 +41,35 @@ export async function apiFetch(url, options = {}) {
   });
 }
 
+export function buildPayload(params = []) {
+  const paramList = Array.isArray(params) ? params : [params];
+
+  return paramList.reduce((payload, param) => {
+    if (!param || typeof param !== 'object' || Array.isArray(param)) {
+      return payload;
+    }
+
+    return {
+      ...payload,
+      ...param,
+    };
+  }, {});
+}
+
+export async function apiFetchWithPayload(endpointPath, params = [], options = {}) {
+  const { headers, ...requestOptions } = options;
+
+  return apiFetch(endpointPath, {
+    method: 'POST',
+    ...requestOptions,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: JSON.stringify(buildPayload(params)),
+  });
+}
+
 export async function readApiError(response, fallbackMessage) {
   const contentType = response.headers.get('content-type') ?? '';
 

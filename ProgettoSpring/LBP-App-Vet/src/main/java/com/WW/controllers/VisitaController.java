@@ -186,9 +186,7 @@ public class VisitaController {
      * @return visita aggiornata
      */
     @PatchMapping("/aggiornaPagato/{id}")
-    public ResponseEntity<Visita> aggiornaPagato(
-            @PathVariable Integer id,
-            @RequestParam("pagamento") Integer pagamentoId) {
+    public ResponseEntity<Visita> aggiornaPagato( @PathVariable Integer id, @RequestParam("pagamento") Integer pagamentoId) {
         return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamentoId));
     }
 
