@@ -1,22 +1,28 @@
 import {
   apiFetch,
+  apiFetchWithPayload,
   readApiError,
   storeAuthSession,
 } from './apiClient';
 import { normalizeRole } from '../data/roleConfig';
 
-function normalizeUser(user) {
+export function normalizeUser(user) {
   if (!user) {
     return null;
   }
 
+  const backendRole = user.ruolo?.ruolo ?? user.role?.ruolo ?? user.ruolo ?? user.role;
+
   return {
     id: user.id ?? user.userId ?? user.idUtente,
     email: user.email,
-    backendRole: user.ruolo ?? user.role,
-    role: normalizeRole(user.ruolo ?? user.role),
+    backendRole,
+    role: normalizeRole(backendRole),
     nome: user.nome ?? '',
     cognome: user.cognome ?? '',
+    telefono: user.telefono ?? '',
+    indirizzo: user.indirizzo ?? '',
+    citta: user.citta ?? '',
   };
 }
 
@@ -32,13 +38,7 @@ function normalizeLoginResponse(data) {
 }
 
 export async function loginUser(payload) {
-  const response = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  const response = await apiFetchWithPayload('/api/auth/login', [payload]);
 
   if (!response.ok) {
     const errorMessage = await readApiError(response, 'Credenziali non valide.');
@@ -67,13 +67,7 @@ export async function fetchCurrentUser() {
 }
 
 export async function registerClient(payload) {
-  const response = await fetch('/api/auth/signin', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  const response = await apiFetchWithPayload('/api/auth/signin', [payload]);
 
   if (!response.ok) {
     const errorMessage = await readApiError(response, 'Registrazione non riuscita.');

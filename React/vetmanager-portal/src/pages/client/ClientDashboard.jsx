@@ -79,7 +79,8 @@ export default function ClientDashboard() {
                   <h3>{animale.nome}</h3>
                   <span className="badge">{animale.specie}</span>
                 </div>
-                <p className="muted-text">Razza: {animale.razza} - Eta: {animale.eta}</p>
+                <p className="muted-text">Razza: {animale.razza}</p>
+                <p className="muted-text">Eta: {new Date().getFullYear() - new Date(animale.dataNascita).getFullYear()}</p>
                 <div className="actions-row">
                   <button className="btn btn-primary btn-sm" onClick={() => navigate('/client/booking')}>
                     Prenota Visita

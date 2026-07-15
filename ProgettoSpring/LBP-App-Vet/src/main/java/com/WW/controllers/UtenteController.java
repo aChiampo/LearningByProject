@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.UtenteDto;
 import com.WW.entities.Utente;
 import com.WW.services.UtenteService;
 
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
  * REST controller per la gestione degli utenti.
  */
 @RestController
-@RequestMapping("/api/utenti")
+@RequestMapping({"/api/utenti", "/api/utente"})
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UtenteController {
@@ -71,7 +72,7 @@ public class UtenteController {
      * @return utente aggiornato
      */
     @PatchMapping("/modifica/{id}")
-    public ResponseEntity<Utente> modifica(@PathVariable Integer id, @RequestBody Utente utente) {
+    public ResponseEntity<Utente> modifica(@PathVariable Integer id, @RequestBody UtenteDto utente) {
         Utente utenteAggiornato = utenteService.modificaUtente(id, utente);
         return ResponseEntity.ok(utenteAggiornato);
     }

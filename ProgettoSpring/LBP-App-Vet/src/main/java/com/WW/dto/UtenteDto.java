@@ -1,8 +1,11 @@
 package com.WW.dto;
 
-import jakarta.validation.constraints.NotNull;
-
 public record UtenteDto(
-    
+    String nome,
+    String cognome,
+    String email,
+    String telefono,
+    String indirizzo,
+    String citta
 ) {
 }
