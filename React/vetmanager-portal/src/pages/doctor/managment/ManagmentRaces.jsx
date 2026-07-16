@@ -118,7 +118,7 @@ export default function ManagmentRaces() {
               <option value="">-- Seleziona una specie --</option>
               {specie.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.nome}
+                  {s.Nome}
                 </option>
               ))}
             </select>
@@ -164,8 +164,8 @@ export default function ManagmentRaces() {
                 {razze.map((r) => (
                   <tr key={r.id}>
                     <td>{r.id}</td>
-                    <td><strong>{r.nome}</strong></td>
-                    <td>{r.idSpecie?.nome || 'N/A'}</td>
+                    <td><strong>{r.Nome}</strong></td>
+                    <td>{r.idSpecie.Nome || 'N/A'}</td>
                     <td>
                       <button
                         className="btn btn-outline btn-sm"
