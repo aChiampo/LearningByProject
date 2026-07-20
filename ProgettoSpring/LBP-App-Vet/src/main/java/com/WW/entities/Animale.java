@@ -2,6 +2,9 @@ package com.WW.entities;
 
 import java.time.LocalDate;
 
+import com.WW.dto.input.AnimaleInputDTO;
+import com.WW.dto.output.AnimaleOutputDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,15 +19,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** 
+/**
  * @author: Anqi Xu
- * Modello di entità per la tabella ANIMALI
- * Last update: 27/06/2026
+ *          Modello di entità per la tabella ANIMALI
+ *          Last update: 27/06/2026
  */
 
 @Entity
 @Table(name = "ANIMALI")
-@Data //Potrebbe causare problemi se non gestito bene, meglio scrivere separatamente i metodi che servono
+@Data // Potrebbe causare problemi se non gestito bene, meglio scrivere separatamente
+      // i metodi che servono
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -65,4 +69,41 @@ public class Animale {
     @ManyToOne(fetch = FetchType.LAZY) // Evita di caricare l'utente se non serve
     @JoinColumn(name = "ID_UTENTE", nullable = false)
     private Utente utente;
+
+    /**
+     * @author: Cristian Pappalardo
+     * @description: Metodo statico per convertire un DTO in un'entità Animale
+     * @param dto
+     * @return Animale entity created from AnimaleInputDTO
+     */
+    public static Animale fromDTO(AnimaleInputDTO dto) {
+        return Animale.builder()
+                .nome(dto.nome())
+                .specie(dto.specie())
+                .razza(dto.razza())
+                .sesso(dto.sesso())
+                .peso(dto.peso())
+                .microchip(dto.microchip())
+                .note(dto.note())
+                .dataNascita(LocalDate.parse(dto.dataNascita()))
+                .isDeleted(false)
+                .build();
+    }
+
+    /**
+     * @author: Cristian Pappalardo
+     * @description: Metodo statico per convertire un DTO in un'entità Animale
+     * @param dto
+     * @return Animale entity created from AnimaleOutputDTO
+     */
+    public static Animale fromDTO(AnimaleOutputDTO dto) {
+        return Animale.builder()
+                .nome(dto.nome())
+                .specie(dto.specie())
+                .razza(dto.razza())
+                .sesso(dto.sesso())
+                .isDeleted(false)
+                .build();
+    }
+
 }

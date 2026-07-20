@@ -2,6 +2,7 @@ package com.WW.entities;
 
 import java.time.LocalDateTime;
 
+import com.WW.dto.input.VisitaInputDTO;
 import com.WW.enums.VisitaStato;
 
 import jakarta.persistence.CascadeType;
@@ -21,11 +22,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 /**
  * @author: cristian.pappalardo
- * Modello di entità per la tabella VISITA
- * Last update: 28/06/2026
+ *          Modello di entità per la tabella VISITA
+ *          Last update: 28/06/2026
  */
 @Entity
 @Table(name = "VISITA")
@@ -42,7 +42,7 @@ public class Visita {
 
     @Column(name = "Data_Visita", nullable = false, updatable = false)
     private LocalDateTime dataVisita;
-    
+
     @ManyToOne
     @JoinColumn(name = "ID_TIPO_VISITA", nullable = false)
     private TipoVisita tipoVisita;
@@ -58,10 +58,10 @@ public class Visita {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_PAGAMENTO", nullable = true)
     private Pagamento pagamento;
-    
+
     @Column(name = "Note", nullable = true)
     private String note;
-    
+
     @Column(name = "Nota_Privata", nullable = true)
     private String notaPrivata;
 
@@ -71,4 +71,17 @@ public class Visita {
 
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted;
+
+    // Metodo statico per convertire un DTO in un'entità Visita
+    public static Visita fromDTO(VisitaInputDTO dto) {
+        return Visita.builder()
+                .dataVisita(LocalDateTime.parse(dto.dataVisita() + "T" + dto.orarioVisita()))
+                .tipoVisita(TipoVisita.fromDTO(dto.tipoVisita()))
+                .animale(Animale.fromDTO(dto.animale()))
+                .veterinario(Utente.fromDTO(dto.veterinario()))
+                .stato(VisitaStato.PRENOTATA)
+                .isDeleted(false)
+                .build();
+    }
+
 }

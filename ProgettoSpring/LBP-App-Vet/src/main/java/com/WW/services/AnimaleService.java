@@ -60,8 +60,9 @@ public class AnimaleService {
                     });
             esistente.setMicrochip(datiAggiornati.getMicrochip());
         }
-        
-        //Se i campi sono null o vuoti, rimangono invariati, altrimenti vengono aggiornati
+
+        // Se i campi sono null o vuoti, rimangono invariati, altrimenti vengono
+        // aggiornati
         if (datiAggiornati.getNome() != null && !datiAggiornati.getNome().isBlank()) {
             esistente.setNome(datiAggiornati.getNome());
         }

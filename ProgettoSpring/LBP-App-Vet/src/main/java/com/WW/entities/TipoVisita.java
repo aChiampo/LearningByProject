@@ -3,6 +3,7 @@ package com.WW.entities;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.WW.dto.input.TipoVisitaInputDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -22,8 +23,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author: A. Chiampo
- * Modello di entità per la tabella TIPI_VISITE
- * Last update: 26/06/2026
+ *          Modello di entità per la tabella TIPI_VISITE
+ *          Last update: 26/06/2026
  */
 @Data
 @Entity
@@ -45,25 +46,38 @@ public class TipoVisita {
     private int durata;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", referencedColumnName= "ID", nullable= true)
+    @JoinColumn(name = "id_categoria", referencedColumnName = "ID", nullable = true)
     private CategoriaVisite categoria;
-    
-    @Column(name = "Prezzo",precision = 8, scale = 2, nullable = false)
+
+    @Column(name = "Prezzo", precision = 8, scale = 2, nullable = false)
     private BigDecimal prezzo;
-    
+
     @ManyToOne
-    @JoinColumn(name = "id_dottore", referencedColumnName= "ID", nullable=false)
+    @JoinColumn(name = "id_dottore", referencedColumnName = "ID", nullable = false)
     private Utente dottore;
-    
+
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted;
 
-    //relazione 1-n con VISITA - cristian.pappalardo
+    // relazione 1-n con VISITA - cristian.pappalardo
     @JsonIgnore
     @OneToMany(mappedBy = "tipoVisita", cascade = CascadeType.ALL)
     private List<Visita> visita;
 
     @Builder.Default
     @Column(name = "Attivo", nullable = false)
-    private boolean attivo=true;
+    private boolean attivo = true;
+
+    public static TipoVisita fromDTO(TipoVisitaInputDTO dto) {
+        return TipoVisita.builder()
+                .nome(dto.nome())
+                .durata(dto.durata())
+                .categoria(dto.categoria())
+                .prezzo(dto.prezzo())
+                .dottore(dto.dottore())
+                .isDeleted(false)
+                .attivo(true)
+                .build();
+    }
+
 }

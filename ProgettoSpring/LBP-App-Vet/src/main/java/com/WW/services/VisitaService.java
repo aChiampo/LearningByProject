@@ -12,7 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.dto.PagamentoDto;
 import com.WW.dto.VisitParamDTO;
-import com.WW.dto.VisitaDto;
+import com.WW.dto.input.VisitaInputDTO;
+import com.WW.dto.output.VisitaOutputDTO;
 import com.WW.entities.Pagamento;
 import com.WW.entities.TipoVisita;
 import com.WW.entities.Utente;
@@ -48,84 +49,14 @@ public class VisitaService {
      * @return visita creata
      */
     @Transactional
-    public Visita createVisita(VisitaDto visita) {
-        validaVisitaPerCreazione(visita);
-        return visitaRepository.save(toEntity(visita));
-    }
+    public VisitaOutputDTO createVisita(VisitaInputDTO visita) {
+        // Converte il DTO in entità e salva la visita
+        Visita savedVisita = visitaRepository.save(Visita.fromDto(visita));
 
-    private void validaVisitaPerCreazione(VisitaDto visita) {
-        if (visita == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il corpo della visita non puo essere nullo.");
-        }
+        // Converte l'entità salvata in DTO e restituisce il risultato
+        VisitaOutputDTO visitaOutputDTO = VisitaOutputDTO.fromEntity(savedVisita);
 
-        validaSovrapposizioneOrario(visita.getStartDateTime(), tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
-                utenteService.ottieniPerId(visita.veterinario().id()));
-
-        if (visita.tipoVisita() == null || visita.tipoVisita() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Il tipo visita è obbligatorio e deve contenere un id valido.");
-        }
-        if (visita.animale() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'animale e obbligatorio.");
-        }
-        if (visita.veterinario() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il veterinario e obbligatorio.");
-        }
-        if (visita.pagamento() != null && visita.pagamento().id() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il pagamento deve contenere un id valido.");
-        }
-
-        validaSovrapposizioneOrario(
-                visita.getStartDateTime(),
-                tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
-                utenteService.ottieniPerId(visita.veterinario().id()));
-    }
-
-    private Visita toEntity(VisitaDto visita) {
-        Visita entity = new Visita();
-        entity.setAnimale(animaleService.ottieniPerId(visita.animale().id()));
-        entity.setTipoVisita(tipoVisitaService.ottieniPerId(visita.tipoVisita().id()));
-        entity.setVeterinario(utenteService.ottieniPerId(visita.veterinario().id()));
-        entity.setDataVisita(visita.getStartDateTime());
-        if (visita.pagamento() != null) {
-            entity.setPagamento(pagamentiService.ottieniPerId(visita.pagamento().id()));
-        }
-        entity.setNote(visita.note());
-        entity.setIsDeleted(false);
-        return entity;
-    }
-
-    /**
-     * Verifica che l'orario richiesto per la nuova visita non si sovrapponga
-     * a un'altra visita già prenotata per lo stesso veterinario.
-     *
-     * @param dataVisita    data/ora di inizio della nuova visita
-     * @param tipoVisita    tipo di visita richiesto (fornisce la durata)
-     * @param veterinarioId id del veterinario
-     * @throws ResponseStatusException se l'orario richiesto si sovrappone a una
-     *                                 visita esistente
-     */
-    private void validaSovrapposizioneOrario(LocalDateTime dataVisita, TipoVisita tipoVisita, Utente veterinario) {
-        LocalDateTime nuovaInizio = dataVisita;
-        LocalDateTime nuovaFine = dataVisita.plusMinutes(tipoVisita.getDurata());
-        LocalDateTime windowStart = dataVisita.minusHours(6);
-        LocalDateTime windowEnd = nuovaFine.plusHours(6);
-
-        List<Visita> candidate = visitaRepository.findVisiteVeterinarioNelPeriodo(
-                veterinario.getId(), windowStart, windowEnd);
-
-        for (Visita esistente : candidate) {
-            LocalDateTime esistenteInizio = esistente.getDataVisita();
-            LocalDateTime esistenteFine = esistenteInizio.plusMinutes(esistente.getTipoVisita().getDurata());
-            boolean sovrapposte = nuovaInizio.isBefore(esistenteFine) && esistenteInizio.isBefore(nuovaFine);
-
-            if (sovrapposte) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Il veterinario ha gia una visita prenotata in questo intervallo orario.");
-            }
-        }
+        return visitaOutputDTO;
     }
 
     @Transactional(readOnly = true)
@@ -143,7 +74,7 @@ public class VisitaService {
     }
 
     @Transactional(readOnly = true)
-    public List<VisitaDto> getVisiteByParams(VisitParamDTO params) {
+    public List<VisitaInputDTO> getVisiteByParams(VisitParamDTO params) {
         return getAllVisita().stream()
                 .filter(visita -> params == null || params.date() == null
                         || !visita.getDataVisita().isBefore(params.date()))
@@ -166,15 +97,6 @@ public class VisitaService {
                 .toList();
     }
 
-    /**
-     * Converte un'entità Visita in un DTO VisitaDto.
-     * 
-     * @param visita entità Visita da convertire
-     * @return DTO VisitaDto corrispondente
-     */
-    public VisitaDto toDto(Visita visita) {
-        return VisitaDto.fromEntity(visita);
-    }
 
     private String toFasciaOraria(LocalDateTime dataVisita) {
         if (dataVisita == null) {
