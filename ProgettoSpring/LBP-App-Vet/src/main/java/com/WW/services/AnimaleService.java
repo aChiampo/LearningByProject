@@ -17,19 +17,17 @@ import lombok.RequiredArgsConstructor;
 public class AnimaleService {
 
     private final AnimaleRepository animaleRepository;
+    private final UtenteService utenteService;
 
     // 1. REGISTRA UN NUOVO ANIMALE
     @Transactional
     public Animale creaAnimale(Animale animale) {
-        // Validazione dell'utente proprietario (da aggiungere quando verrà implementato
-        // il repository Utente)
-        /*
-         * if (animale.getUtente() == null || animale.getUtente().getId() == null
-         * || !utenteRepository.existsById(animale.getUtente().getId())) {
-         * throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-         * "Utente proprietario non valido o inesistente.");
-         * }
-         */
+        if (animale.getUtente() == null || animale.getUtente().getId() == null
+        || utenteService.ottieniPerId(animale.getUtente().getId()) == null) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+        "Utente proprietario non valido o inesistente.");
+        }
+         
         if (animale.getMicrochip() != null && !animale.getMicrochip().isBlank()) {
             animaleRepository.findByMicrochipAndIsDeletedFalse(animale.getMicrochip())
                     .ifPresent(a -> {
