@@ -79,7 +79,7 @@ export default function ManagmentSpecies() {
 
     try {
       const response = await apiFetchWithPayload(`/api/specie/${specieInModifica}`, [
-        { nome: nomeSpecieModificato }
+        { nome: nomeSpecieModificato, isDeleted: false }
       ], { method: 'PUT' });
 
       if (!response.ok) throw new Error('Errore nel salvataggio della specie');

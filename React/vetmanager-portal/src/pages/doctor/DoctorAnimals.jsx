@@ -1,12 +1,14 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
+import AddAnimalForm from '../../components/animals/AddAnimalForm';
 
 export default function DoctorAnimals() {
   const { currentRole } = useContext(AppContext);
   const config = ROLE_CONFIG[currentRole];
+  const [isAddAnimalFormOpen, setIsAddAnimalFormOpen] = useState(false);
 
   return (
     <div>
@@ -18,7 +20,20 @@ export default function DoctorAnimals() {
           <button className="btn btn-primary" onClick={() => window.alert('Simulazione ricerca effettiva')}>
             Cerca
           </button>
+          <button
+            className="btn btn-secondary"
+            type="button"
+            onClick={() => setIsAddAnimalFormOpen((isOpen) => !isOpen)}
+          >
+            {isAddAnimalFormOpen ? 'Chiudi form' : 'Aggiungi animale'}
+          </button>
         </div>
+
+        {isAddAnimalFormOpen && (
+          <div className="section-spaced-sm">
+            <AddAnimalForm onCreated={() => setIsAddAnimalFormOpen(false)} />
+          </div>
+        )}
 
         {config?.patientsRegistry?.length > 0 ? (
           <div className="table-responsive">

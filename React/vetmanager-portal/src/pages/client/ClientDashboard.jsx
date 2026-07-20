@@ -32,7 +32,7 @@ export default function ClientDashboard() {
         if (isMounted) {
           setAnimals(animalList);
         }
-      } catch (error) {
+      } catch {
         if (isMounted) {
         //  setLoadError(error.message);
           setAnimals(fallbackAnimals);

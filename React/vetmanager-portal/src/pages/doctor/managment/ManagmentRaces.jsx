@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload, readApiError } from '../../../services/apiClient';
+
+function getEntityName(entity) {
+  return entity?.nome ?? entity?.Nome ?? '';
+}
+
+function isActiveEntity(entity) {
+  return !entity?.deleted && !entity?.isDeleted;
+}
 
 export default function ManagmentRaces() {
   const [razze, setRazze] = useState([]);
@@ -21,7 +29,7 @@ export default function ManagmentRaces() {
       if (!response.ok) throw new Error('Errore nel caricamento delle razze');
       const data = await response.json();
       // Filtra solo le razze non eliminate (soft-delete)
-      setRazze(data.filter(r => !r.deleted));
+      setRazze(data.filter(isActiveEntity));
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -37,7 +45,7 @@ export default function ManagmentRaces() {
       const response = await apiFetch('/api/specie');
       if (!response.ok) throw new Error('Errore nel caricamento delle specie');
       const data = await response.json();
-      setSpecie(data.filter(s => !s.deleted));
+      setSpecie(data.filter(isActiveEntity));
     } catch (err) {
       console.error('Errore nel caricamento delle specie:', err);
     }
@@ -66,19 +74,17 @@ export default function ManagmentRaces() {
     }
 
     try {
-      const specieObj = specie.find(s => s.id === parseInt(specieSelezionata));
+      const specieObj = specie.find(s => s.id === Number(specieSelezionata));
       if (!specieObj) throw new Error('Specie non trovata');
 
       const response = await apiFetchWithPayload('/api/razze/aggiungiRazza', {
-        nome: nuovaRazza,
-        idSpecie: {
-          id: specieObj.id,
-          isDeleted: false
-        },
-        deleted: false
+        nome: nuovaRazza.trim(),
+        idSpecie: specieObj.id
       });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio della razza');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio della razza'));
+      }
       
       setNuovaRazza('');
       setSpecieSelezionata('');
@@ -91,7 +97,7 @@ export default function ManagmentRaces() {
   // Apre il modal di modifica
   const handleAperturModifica = (razza) => {
     setRazzaInModifica(razza.id);
-    setNomeRazzaModificato(razza.Nome);
+    setNomeRazzaModificato(getEntityName(razza));
     setSpecieRazzaModificata(razza.idSpecie.id.toString());
   };
 
@@ -117,21 +123,17 @@ export default function ManagmentRaces() {
     }
 
     try {
-      const specieObj = specie.find(s => s.id === parseInt(specieRazzaModificata));
+      const specieObj = specie.find(s => s.id === Number(specieRazzaModificata));
       if (!specieObj) throw new Error('Specie non trovata');
 
-      const response = await apiFetchWithPayload(`/api/razze/${razzaInModifica}`, [
-        {
-          nome: nomeRazzaModificato,
-          idSpecie: {
-            id: specieObj.id,
-            isDeleted: false
-          },
-          deleted: false
-        }
-      ], { method: 'PUT' });
+      const response = await apiFetchWithPayload(`/api/razze/${razzaInModifica}`, {
+        nome: nomeRazzaModificato.trim(),
+        idSpecie: specieObj.id
+      }, { method: 'PUT' });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio della razza');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio della razza'));
+      }
       
       handleChiudiModifica();
       caricaRazze();
@@ -175,7 +177,7 @@ export default function ManagmentRaces() {
               <option value="">-- Seleziona una specie --</option>
               {specie.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.Nome}
+                  {getEntityName(s)}
                 </option>
               ))}
             </select>
@@ -221,8 +223,8 @@ export default function ManagmentRaces() {
                 {razze.map((r) => (
                   <tr key={r.id}>
                     <td>{r.id}</td>
-                    <td><strong>{r.Nome}</strong></td>
-                    <td>{r.idSpecie.Nome || 'N/A'}</td>
+                    <td><strong>{getEntityName(r)}</strong></td>
+                    <td>{getEntityName(r.idSpecie) || 'N/A'}</td>
                     <td>
                       <button
                         className="btn btn-outline btn-sm"
@@ -280,7 +282,7 @@ export default function ManagmentRaces() {
                   <option value="">-- Seleziona una specie --</option>
                   {specie.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.Nome}
+                      {getEntityName(s)}
                     </option>
                   ))}
                 </select>
