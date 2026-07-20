@@ -69,12 +69,13 @@ export default function ManagmentRaces() {
       const specieObj = specie.find(s => s.id === parseInt(specieSelezionata));
       if (!specieObj) throw new Error('Specie non trovata');
 
-      const response = await apiFetchWithPayload('/api/razze', [
-        {
-          nome: nuovaRazza,
-          idSpecie: specieObj
-        }
-      ]);
+      const response = await apiFetchWithPayload('/api/razze/aggiungiRazza', {
+        nome: nuovaRazza,
+        idSpecie: {
+          id: specieObj.id
+        },
+        deleted: false
+      });
 
       if (!response.ok) throw new Error('Errore nel salvataggio della razza');
       
