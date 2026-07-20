@@ -74,7 +74,8 @@ export default function ManagmentRaces() {
         idSpecie: {
           id: specieObj.id,
           isDeleted: false
-        }
+        },
+        deleted: false
       });
 
       if (!response.ok) throw new Error('Errore nel salvataggio della razza');
@@ -116,7 +117,7 @@ export default function ManagmentRaces() {
     }
 
     try {
-      const specieObj = specie.find(s => s.id === parseInt(specieSelezionata));
+      const specieObj = specie.find(s => s.id === parseInt(specieRazzaModificata));
       if (!specieObj) throw new Error('Specie non trovata');
 
       const response = await apiFetchWithPayload(`/api/razze/${razzaInModifica}`, [
@@ -125,7 +126,8 @@ export default function ManagmentRaces() {
           idSpecie: {
             id: specieObj.id,
             isDeleted: false
-          }
+          },
+          deleted: false
         }
       ], { method: 'PUT' });
 
