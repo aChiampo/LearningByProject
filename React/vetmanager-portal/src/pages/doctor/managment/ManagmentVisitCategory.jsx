@@ -7,6 +7,8 @@ export default function ManagmentVisitCategory() {
   const [nome, setNome] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categoriaInModifica, setCategoriaInModifica] = useState(null);
+  const [nomeModificato, setNomeModificato] = useState('');
 
   // Carica le categorie di visita dal backend
   const caricaCategorie = async () => {
@@ -54,6 +56,44 @@ export default function ManagmentVisitCategory() {
 
       // Resetta il campo del form
       setNome('');
+      caricaCategorie();
+    } catch (err) {
+      alert('Errore: ' + err.message);
+    }
+  };
+
+  // Apre il modal di modifica
+  const handleAperturModifica = (categoria) => {
+    setCategoriaInModifica(categoria.id);
+    setNomeModificato(categoria.nome);
+  };
+
+  // Chiude il modal di modifica
+  const handleChiudiModifica = () => {
+    setCategoriaInModifica(null);
+    setNomeModificato('');
+  };
+
+  // Salva le modifiche
+  const handleSalvaModifica = async (e) => {
+    e.preventDefault();
+
+    if (!nomeModificato.trim()) {
+      alert('Inserisci il nome della categoria');
+      return;
+    }
+
+    try {
+      const response = await apiFetchWithPayload(`/api/categorieVisite/modifica/${categoriaInModifica}`, [
+        {
+          nome: nomeModificato.trim(),
+          isDeleted: false,
+        }
+      ], { method: 'PUT' });
+
+      if (!response.ok) throw new Error('Errore nel salvataggio della categoria di visita');
+      
+      handleChiudiModifica();
       caricaCategorie();
     } catch (err) {
       alert('Errore: ' + err.message);
@@ -130,6 +170,12 @@ export default function ManagmentVisitCategory() {
                     <td>
                       <button
                         className="btn btn-outline btn-sm"
+                        onClick={() => handleAperturModifica(c)}
+                      >
+                        Modifica
+                      </button>
+                      <button
+                        className="btn btn-outline btn-sm"
                         onClick={() => handleEliminaCategoria(c.id)}
                       >
                         Elimina
@@ -144,6 +190,52 @@ export default function ManagmentVisitCategory() {
           <EmptyMessage>Nessuna categoria di visita trovata. Aggiungine una usando il form sopra.</EmptyMessage>
         )}
       </div>
+
+      {/* Modal di modifica */}
+      {categoriaInModifica && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <h3>Modifica Categoria Visita</h3>
+            <form className="stack-form" onSubmit={handleSalvaModifica}>
+              <label>
+                Nome della Categoria
+                <input
+                  type="text"
+                  className="form-control"
+                  value={nomeModificato}
+                  onChange={(e) => setNomeModificato(e.target.value)}
+                />
+              </label>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" className="btn btn-primary">
+                  Salva
+                </button>
+                <button type="button" className="btn btn-outline" onClick={handleChiudiModifica}>
+                  Annulla
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

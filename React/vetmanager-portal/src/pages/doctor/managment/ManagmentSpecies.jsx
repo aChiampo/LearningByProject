@@ -7,6 +7,8 @@ export default function ManagmentSpecies() {
   const [nuomaSpecie, setNuomaSpecie] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [specieInModifica, setSpecieInModifica] = useState(null);
+  const [nomeSpecieModificato, setNomeSpecieModificato] = useState('');
 
   // Carica le specie dal backend
   const caricaSpecie = async () => {
@@ -48,6 +50,41 @@ export default function ManagmentSpecies() {
       if (!response.ok) throw new Error('Errore nel salvataggio della specie');
       
       setNuomaSpecie('');
+      caricaSpecie();
+    } catch (err) {
+      alert('Errore: ' + err.message);
+    }
+  };
+
+  // Apre il modal di modifica
+  const handleAperturModifica = (species) => {
+    setSpecieInModifica(species.id);
+    setNomeSpecieModificato(species.Nome);
+  };
+
+  // Chiude il modal di modifica
+  const handleChiudiModifica = () => {
+    setSpecieInModifica(null);
+    setNomeSpecieModificato('');
+  };
+
+  // Salva le modifiche
+  const handleSalvaModifica = async (e) => {
+    e.preventDefault();
+
+    if (!nomeSpecieModificato.trim()) {
+      alert('Inserisci il nome della specie');
+      return;
+    }
+
+    try {
+      const response = await apiFetchWithPayload(`/api/specie/${specieInModifica}`, [
+        { nome: nomeSpecieModificato }
+      ], { method: 'PUT' });
+
+      if (!response.ok) throw new Error('Errore nel salvataggio della specie');
+      
+      handleChiudiModifica();
       caricaSpecie();
     } catch (err) {
       alert('Errore: ' + err.message);
@@ -123,6 +160,12 @@ export default function ManagmentSpecies() {
                     <td>
                       <button
                         className="btn btn-outline btn-sm"
+                        onClick={() => handleAperturModifica(s)}
+                      >
+                        Modifica
+                      </button>
+                      <button
+                        className="btn btn-outline btn-sm"
                         onClick={() => handleEliminaSpecie(s.id)}
                       >
                         Elimina
@@ -137,6 +180,51 @@ export default function ManagmentSpecies() {
           <EmptyMessage>Nessuna specie trovata. Aggiungine una usando il form sopra.</EmptyMessage>
         )}
       </div>
+
+      {/* Modal di modifica */}
+      {specieInModifica && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <h3>Modifica Specie</h3>
+            <form className="stack-form" onSubmit={handleSalvaModifica}>
+              <label>
+                Nome Specie
+                <input
+                  type="text"
+                  className="form-control"
+                  value={nomeSpecieModificato}
+                  onChange={(e) => setNomeSpecieModificato(e.target.value)}
+                />
+              </label>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" className="btn btn-primary">
+                  Salva
+                </button>
+                <button type="button" className="btn btn-outline" onClick={handleChiudiModifica}>
+                  Annulla
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
