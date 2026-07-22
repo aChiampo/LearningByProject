@@ -52,3 +52,14 @@ export async function createAnimal(payload) {
 
   return response.json();
 }
+
+export async function sendAnimalEvaluationRequest(payload) {
+  const response = await apiFetchWithPayload('/api/richieste-animali/valutazione', [payload]);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile inviare la richiesta di valutazione.');
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+}

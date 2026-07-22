@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import PageTitle from '../../components/common/PageTitle';
-import AddAnimalForm from '../../components/animals/AddAnimalForm';
+import ClientAnimalForm from '../../components/animals/ClientAnimalForm';
 
 export default function ClientAddAnimal() {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ export default function ClientAddAnimal() {
   return (
     <div>
       <PageTitle eyebrow="Area Riservata" title="Aggiungi animale" />
-      <AddAnimalForm onCreated={() => navigate('/client/dashboard')} />
+      <ClientAnimalForm onCreated={() => navigate('/client/dashboard')} />
     </div>
   );
 }
