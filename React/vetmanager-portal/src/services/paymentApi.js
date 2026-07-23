@@ -134,7 +134,6 @@ export async function payVisit(visit, paymentType) {
   const payment = await createPayment(visit, paymentType);
   const updatedVisit = await attachPaymentToVisit(visit.id, payment);
 
-  fetchPaidVisits();
   return {
     payment,
     updatedVisit,
