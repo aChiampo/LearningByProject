@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
+import AddAnimalForm from '../../components/animals/AddAnimalForm';
 import { fetchAllAnimals } from '../../services/animalApi';
 
 function getOwnerName(animal) {
@@ -13,6 +14,7 @@ export default function DoctorAnimals() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [isAddAnimalFormOpen, setIsAddAnimalFormOpen] = useState(false);
 
   const filteredAnimals = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -95,6 +97,12 @@ export default function DoctorAnimals() {
           <p className="form-status form-status--error">
             {loadError}
           </p>
+        )}
+
+        {isAddAnimalFormOpen && (
+          <div className="section-spaced-sm">
+            <AddAnimalForm />
+          </div>
         )}
 
         {!isLoading && filteredAnimals.length > 0 ? (
