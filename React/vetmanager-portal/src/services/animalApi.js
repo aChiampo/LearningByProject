@@ -102,3 +102,24 @@ export async function sendAnimalEvaluationRequest(payload) {
 
   return response.json();
 }
+
+export async function fetchOpenAnimalEvaluationRequests() {
+  const response = await apiFetch('/api/richieste-animali/aperte');
+
+  if (!response.ok) {
+    throw new Error(`Impossibile recuperare le richieste animali (status ${response.status})`);
+  }
+
+  return response.json();
+}
+
+export async function closeAnimalEvaluationRequest(requestId) {
+  const response = await apiFetch(`/api/richieste-animali/${requestId}/chiudi`, {
+    method: 'PATCH',
+  });
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile chiudere la richiesta.');
+    throw new Error(errorMessage);
+  }
+}

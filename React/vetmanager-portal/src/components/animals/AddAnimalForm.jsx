@@ -33,7 +33,17 @@ function normalizeOptionalText(value) {
   return trimmedValue || null;
 }
 
-export default function AddAnimalForm({ onCreated }) {
+function findEntityIdByName(entities, name) {
+  if (!name) {
+    return '';
+  }
+
+  const normalizedName = name.trim().toLowerCase();
+  const entity = entities.find((item) => getEntityName(item).trim().toLowerCase() === normalizedName);
+  return entity?.id ? String(entity.id) : '';
+}
+
+export default function AddAnimalForm({ initialValues, onCreated }) {
   const { currentUser } = useContext(AppContext);
   const [formData, setFormData] = useState(() => ({
     ...initialFormData,
@@ -113,6 +123,29 @@ export default function AddAnimalForm({ onCreated }) {
   }, []);
 
   useEffect(() => {
+    if (isLoadingInitialData || !initialValues) {
+      return;
+    }
+
+    queueMicrotask(() => {
+      setOwnerSearch('');
+      setBreeds([]);
+      setFormData({
+        ...initialFormData,
+        utente: initialValues.utenteId ? String(initialValues.utenteId) : '',
+        nome: initialValues.nome ?? '',
+        specie: findEntityIdByName(species, initialValues.specie),
+        razza: '',
+        sesso: initialValues.sesso ?? 'Maschio',
+        dataNascita: initialValues.dataNascita ?? '',
+        peso: initialValues.peso != null ? String(initialValues.peso) : '',
+        microchip: initialValues.microchip ?? '',
+        note: initialValues.note ?? '',
+      });
+    });
+  }, [initialValues, isLoadingInitialData, species]);
+
+  useEffect(() => {
     if (!formData.specie) {
       return;
     }
@@ -149,6 +182,25 @@ export default function AddAnimalForm({ onCreated }) {
       isMounted = false;
     };
   }, [formData.specie]);
+
+  useEffect(() => {
+    if (!initialValues?.razza || !breeds.length) {
+      return;
+    }
+
+    const breedId = findEntityIdByName(breeds, initialValues.razza);
+
+    if (!breedId) {
+      return;
+    }
+
+    queueMicrotask(() => {
+      setFormData((currentData) => ({
+        ...currentData,
+        razza: currentData.razza || breedId,
+      }));
+    });
+  }, [breeds, initialValues]);
 
   function updateField(fieldName, value) {
     if (fieldName === 'specie') {

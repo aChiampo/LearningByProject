@@ -25,7 +25,6 @@ public class EmailSenderService {
     private static final String TEMPLATE_CANCELLAZIONE_APPUNTAMENTO = "mail/cancellazione-appuntamento";
     private static final String TEMPLATE_PROMEMORIA_VACCINAZIONE = "mail/promemoria-scadenza-vaccinazione";
     private static final String TEMPLATE_AVVISO_RITARDO = "mail/avviso-ritardo-appuntamento";
-    private static final String TEMPLATE_RICHIESTA_VALUTAZIONE_ANIMALE = "mail/richiesta-valutazione-animale";
 
     private final JavaMailSender mailSender;
     private final TemplateService templateService;
@@ -78,14 +77,6 @@ public class EmailSenderService {
                 destinatario,
                 "Avviso ritardo appuntamento",
                 TEMPLATE_AVVISO_RITARDO,
-                variabili);
-    }
-
-    public void inviaRichiestaValutazioneAnimale(String destinatario, Map<String, Object> variabili) {
-        inviaEmailTemplate(
-                destinatario,
-                "Nuova richiesta di valutazione animale",
-                TEMPLATE_RICHIESTA_VALUTAZIONE_ANIMALE,
                 variabili);
     }
 
