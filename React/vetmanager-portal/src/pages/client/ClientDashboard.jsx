@@ -1,19 +1,17 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
-import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { fetchAnimalsByOwner } from '../../services/animalApi';
+import { fetchAppointments } from '../../services/appointmentApi';
 
 export default function ClientDashboard() {
   const navigate = useNavigate();
-  const { currentRole, currentUser } = useContext(AppContext);
-  const config = ROLE_CONFIG[currentRole];
+  const { currentUser } = useContext(AppContext);
   const ownerId = currentUser?.id;
-
-  const fallbackAnimals = useMemo(() => config?.animals ?? [], [config?.animals]);
-  const [animals, setAnimals] = useState(fallbackAnimals);
+  const [animals, setAnimals] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
 
@@ -27,15 +25,20 @@ export default function ClientDashboard() {
       setLoadError('');
 
       try {
-        const animalList = await fetchAnimalsByOwner(ownerId);
+        const [animalList, appointmentList] = await Promise.all([
+          fetchAnimalsByOwner(ownerId),
+          fetchAppointments({ clientID: ownerId }),
+        ]);
 
         if (isMounted) {
           setAnimals(animalList);
+          setAppointments(appointmentList);
         }
       } catch {
         if (isMounted) {
-        //  setLoadError(error.message);
-          setAnimals(fallbackAnimals);
+          setLoadError(error.message);
+          setAnimals([]);
+          setAppointments([]);
         }
       } finally {
         if (isMounted) {
@@ -49,7 +52,7 @@ export default function ClientDashboard() {
     return () => {
       isMounted = false;
     };
-  }, [ownerId, fallbackAnimals]);
+  }, [ownerId]);
 
   return (
     <div>
@@ -105,7 +108,7 @@ export default function ClientDashboard() {
       <section className="section-block section-spaced">
         <h2>Prossimi Appuntamenti</h2>
 
-        {config?.appointments?.length > 0 ? (
+        {appointments.length > 0 ? (
           <div className="panel table-responsive">
             <table className="data-table">
               <thead>
@@ -118,12 +121,12 @@ export default function ClientDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {config.appointments.map((appointment, index) => (
+                {appointments.map((appointment, index) => (
                   <tr key={index}>
                     <td><strong>{appointment.animalName}</strong></td>
-                    <td>{appointment.date}</td>
-                    <td>{appointment.type}</td>
-                    <td>{appointment.doctor}</td>
+                    <td>{appointment.appointmentDate || appointment.appointmentHour}</td>
+                    <td>{appointment.visitType}</td>
+                    <td>{appointment.doctorName}</td>
                     <td><span className="badge badge-success">{appointment.status}</span></td>
                   </tr>
                 ))}

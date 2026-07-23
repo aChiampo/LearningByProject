@@ -78,8 +78,8 @@ public class VisitaService {
 
         validaSovrapposizioneOrario(
                 visita.getStartDateTime(),
-                tipoVisitaService.ottieniPerId(visita.tipoVisita()),
-                visita.veterinario());
+                tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
+                utenteService.ottieniPerId(visita.veterinario().id()));
     }
 
     private Visita toEntity(VisitaDto visita) {

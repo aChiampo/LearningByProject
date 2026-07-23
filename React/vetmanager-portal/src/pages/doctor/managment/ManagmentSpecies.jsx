@@ -156,7 +156,7 @@ export default function ManagmentSpecies() {
                 {specie.map((s) => (
                   <tr key={s.id}>
                     <td>{s.id}</td>
-                    <td><strong>{s.Nome}</strong></td>
+                    <td><strong>{s.nome}</strong></td>
                     <td>
                       <button
                         className="btn btn-outline btn-sm"
