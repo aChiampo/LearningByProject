@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.WW.dto.VisitParamDTO;
-import com.WW.dto.input.VisitaInputDTO;
+import com.WW.dto.input.CreateVisitaDTO;
 import com.WW.entities.Visita;
 import com.WW.sicurezza.UtenteAutenticato;
 import com.WW.services.VisitaService;
@@ -148,7 +148,7 @@ public class VisitaController {
      * @return visite filtrate
      */
     @PostMapping("/params")
-    public ResponseEntity<List<VisitaInputDTO>> ottieniPerParametri(@RequestBody(required = false) VisitParamDTO params) {
+    public ResponseEntity<List<CreateVisitaDTO>> ottieniPerParametri(@RequestBody(required = false) VisitParamDTO params) {
         return ResponseEntity.ok(visitaService.getVisiteByParams(params));
     }
 
@@ -159,9 +159,9 @@ public class VisitaController {
      * @return visita creata
      */
     @PostMapping("/prenotazione")
-    public ResponseEntity<VisitaInputDTO> prenota(@Valid @RequestBody VisitaInputDTO visita) {
+    public ResponseEntity<CreateVisitaDTO> prenota(@Valid @RequestBody CreateVisitaDTO visita) {
         Visita nuovaVisita = visitaService.createVisita(visita);
-        return new ResponseEntity<VisitaInputDTO>(nuovaVisita, HttpStatus.CREATED);
+        return new ResponseEntity<CreateVisitaDTO>(nuovaVisita, HttpStatus.CREATED);
     }
 
     /**

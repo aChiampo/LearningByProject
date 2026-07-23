@@ -2,7 +2,7 @@ package com.WW.entities;
 
 import java.time.LocalDate;
 
-import com.WW.dto.input.AnimaleInputDTO;
+import com.WW.dto.input.CreateAnimaleDTO;
 import com.WW.dto.output.AnimaleOutputDTO;
 
 import jakarta.persistence.Column;
@@ -74,9 +74,10 @@ public class Animale {
      * @author: Cristian Pappalardo
      * @description: Metodo statico per convertire un DTO in un'entità Animale
      * @param dto
-     * @return Animale entity created from AnimaleInputDTO
+     * @param utente
+     * @return Animale entity created from CreateAnimaleDTO
      */
-    public static Animale fromDTO(AnimaleInputDTO dto) {
+    public static Animale fromDTO(CreateAnimaleDTO dto, Utente utente) {
         return Animale.builder()
                 .nome(dto.nome())
                 .specie(dto.specie())
@@ -87,23 +88,7 @@ public class Animale {
                 .note(dto.note())
                 .dataNascita(LocalDate.parse(dto.dataNascita()))
                 .isDeleted(false)
+                .utente(utente)
                 .build();
     }
-
-    /**
-     * @author: Cristian Pappalardo
-     * @description: Metodo statico per convertire un DTO in un'entità Animale
-     * @param dto
-     * @return Animale entity created from AnimaleOutputDTO
-     */
-    public static Animale fromDTO(AnimaleOutputDTO dto) {
-        return Animale.builder()
-                .nome(dto.nome())
-                .specie(dto.specie())
-                .razza(dto.razza())
-                .sesso(dto.sesso())
-                .isDeleted(false)
-                .build();
-    }
-
 }

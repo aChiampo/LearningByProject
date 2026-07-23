@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.dto.PagamentoDto;
 import com.WW.dto.VisitParamDTO;
-import com.WW.dto.input.VisitaInputDTO;
+import com.WW.dto.input.CreateVisitaDTO;
 import com.WW.dto.output.VisitaOutputDTO;
 import com.WW.entities.Pagamento;
 import com.WW.entities.TipoVisita;
@@ -49,7 +49,7 @@ public class VisitaService {
      * @return visita creata
      */
     @Transactional
-    public VisitaOutputDTO createVisita(VisitaInputDTO visita) {
+    public VisitaOutputDTO createVisita(CreateVisitaDTO visita) {
         // Converte il DTO in entità e salva la visita
         Visita savedVisita = visitaRepository.save(Visita.fromDto(visita));
 
@@ -74,7 +74,7 @@ public class VisitaService {
     }
 
     @Transactional(readOnly = true)
-    public List<VisitaInputDTO> getVisiteByParams(VisitParamDTO params) {
+    public List<CreateVisitaDTO> getVisiteByParams(VisitParamDTO params) {
         return getAllVisita().stream()
                 .filter(visita -> params == null || params.date() == null
                         || !visita.getDataVisita().isBefore(params.date()))

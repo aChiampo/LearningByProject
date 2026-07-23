@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.WW.entities.Utente;
 
-public interface UtenteRepo extends JpaRepository<Utente, Integer> {
+public interface UtenteRepository extends JpaRepository<Utente, Integer> {
     List<Utente> findByIsDeletedFalse();
     Optional<Utente> findByIdAndIsDeletedFalse(Integer id);
 

@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.dto.UtenteDto;
 import com.WW.entities.Utente;
-import com.WW.repositories.UtenteRepo;
+import com.WW.repositories.UtenteRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UtenteService {
 
-    private final UtenteRepo utenteRepo;
+    private final UtenteRepository utenteRepo;
     private final PasswordEncoder passwordEncoder;
 
     /**

@@ -7,41 +7,50 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.WW.dto.input.CreateAnimaleDTO;
+import com.WW.dto.output.AnimaleOutputDTO;
 import com.WW.entities.Animale;
+import com.WW.entities.Utente;
 import com.WW.repositories.AnimaleRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.WW.repositories.UtenteRepository;
 
 @Service
-@RequiredArgsConstructor
 public class AnimaleService {
 
     private final AnimaleRepository animaleRepository;
+    private final UtenteRepository utenteRepository;
+
+    public AnimaleService(AnimaleRepository animaleRepository, UtenteRepository utenteRepository) {
+        this.animaleRepository = animaleRepository;
+        this.utenteRepository = utenteRepository;
+    }
 
     // 1. REGISTRA UN NUOVO ANIMALE
     @Transactional
-    public Animale creaAnimale(Animale animale) {
-        // Validazione dell'utente proprietario (da aggiungere quando verrà implementato
-        // il repository Utente)
-        /*
-         * if (animale.getUtente() == null || animale.getUtente().getId() == null
-         * || !utenteRepository.existsById(animale.getUtente().getId())) {
-         * throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-         * "Utente proprietario non valido o inesistente.");
-         * }
-         */
-        if (animale.getMicrochip() != null && !animale.getMicrochip().isBlank()) {
-            animaleRepository.findByMicrochipAndIsDeletedFalse(animale.getMicrochip())
+    public AnimaleOutputDTO creaAnimale(CreateAnimaleDTO animale, Utente utente) {
+        // Controllo unicità del microchip
+        if (animale.microchip() != null && !animale.microchip().isBlank()) {
+            animaleRepository.findByMicrochipAndIsDeletedFalse(animale.microchip())
                     .ifPresent(a -> {
                         throw new ResponseStatusException(
                                 HttpStatus.CONFLICT,
                                 "Il microchip " + a.getMicrochip() + " risulta già registrato nel sistema.");
                     });
         }
-        if (animale.getIsDeleted() == null) {
-            animale.setIsDeleted(false);
-        }
-        return animaleRepository.save(animale);
+
+        // Controllo che l'utente associato all'animale esista
+        Utente utente = utenteRepository.findByIdAndIsDeletedFalse(animale.utenteId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Utente con ID " + animale.utenteId() + " non trovato."));
+
+        // Converte il DTO in entità e salva l'animale
+        Animale savedAnimale = animaleRepository.save(Animale.fromDTO(animale, utente));
+
+        // Converte l'entità salvata in DTO e restituisce il risultato
+        AnimaleOutputDTO animaleOutputDTO = AnimaleOutputDTO.fromEntity(savedAnimale);
+
+        return animaleOutputDTO;
     }
 
     // 2. AGGIORNA UN ANIMALE ESISTENTE

@@ -2,7 +2,7 @@ package com.WW.entities;
 
 import java.time.LocalDateTime;
 
-import com.WW.dto.input.VisitaInputDTO;
+import com.WW.dto.input.CreateVisitaDTO;
 import com.WW.enums.VisitaStato;
 
 import jakarta.persistence.CascadeType;
@@ -73,11 +73,11 @@ public class Visita {
     private Boolean isDeleted;
 
     // Metodo statico per convertire un DTO in un'entità Visita
-    public static Visita fromDTO(VisitaInputDTO dto) {
+    public static Visita fromDTO(CreateVisitaDTO dto) {
         return Visita.builder()
                 .dataVisita(LocalDateTime.parse(dto.dataVisita() + "T" + dto.orarioVisita()))
                 .tipoVisita(TipoVisita.fromDTO(dto.tipoVisita()))
-                .animale(Animale.fromDTO(dto.animale()))
+                .animale(Animale.fromDTO(dto.animale(), dto.animale().utente()))
                 .veterinario(Utente.fromDTO(dto.veterinario()))
                 .stato(VisitaStato.PRENOTATA)
                 .isDeleted(false)
