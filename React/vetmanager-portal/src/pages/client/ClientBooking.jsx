@@ -1,32 +1,77 @@
-import { useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
-import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
 import { apiFetchWithPayload, readApiError } from '../../services/apiClient';
+import { fetchAnimalsByOwner } from '../../services/animalApi';
+import { fetchDoctors } from '../../services/userApi';
+import { fetchVisitTypes } from '../../services/visitTypeApi';
 
 export default function ClientBooking() {
   const navigate = useNavigate();
-  const { currentRole } = useContext(AppContext);
-  const config = ROLE_CONFIG[currentRole];
+  const { currentUser } = useContext(AppContext);
+  const ownerId = currentUser?.id;
 
-  // State for form fields
   const [formData, setFormData] = useState({
-    animale: '', // Now matches `animale` in VisitaDto
-    tipoVisita: '', // Now matches `tipoVisita` in VisitaDto
+    animale: '',
+    tipoVisita: '',
     veterinario: '',
     data: '',
     fasciaOraria: '',
-    pagamento: null, // Add payment if needed
-    note: '', // Add notes if needed
+    pagamento: null,
+    note: '',
   });
 
-  // State for loading and error
+  const [animals, setAnimals] = useState([]);
+  const [visitTypes, setVisitTypes] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [isOptionsLoading, setIsOptionsLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Handle input changes
+  useEffect(() => {
+    if (!ownerId) return;
+
+    let isMounted = true;
+
+    async function loadOptions() {
+      setIsOptionsLoading(true);
+      setError(null);
+
+      try {
+        const [animalList, visitTypeList, doctorList] = await Promise.all([
+          fetchAnimalsByOwner(ownerId),
+          fetchVisitTypes(),
+          fetchDoctors(),
+        ]);
+
+        if (isMounted) {
+          setAnimals(animalList);
+          setVisitTypes(visitTypeList);
+          setDoctors(doctorList);
+        }
+      } catch (loadError) {
+        if (isMounted) {
+          setError(loadError.message || 'Non e stato possibile caricare i dati della prenotazione.');
+          setAnimals([]);
+          setVisitTypes([]);
+          setDoctors([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsOptionsLoading(false);
+        }
+      }
+    }
+
+    loadOptions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [ownerId]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -41,10 +86,6 @@ export default function ClientBooking() {
     setError(null);
     setSuccess(false);
 
-    // Guard against non-numeric / missing selections before hitting the API.
-    // VisitaDto marks animale, tipoVisita, and veterinario as @NotNull,
-    // so a NaN id here would serialize to `null` and fail backend validation
-    // with a less helpful error than we can give here.
     const animaleId = parseInt(formData.animale, 10);
     const tipoVisitaId = parseInt(formData.tipoVisita, 10);
     const veterinarioId = parseInt(formData.veterinario, 10);
@@ -74,10 +115,10 @@ export default function ClientBooking() {
 
     try {
       const requestBody = {
-        animale: animaleId,
-        tipoVisita: tipoVisitaId,
-        veterinario: veterinarioId,
-        data: formData.data, // ISO string (YYYY-MM-DD), maps to LocalDate
+        animale: { id: animaleId },
+        tipoVisita: { id: tipoVisitaId },
+        veterinario: { id: veterinarioId },
+        data: formData.data,
         fasciaOraria: formData.fasciaOraria,
         pagamento: formData.pagamento ? { id: parseInt(formData.pagamento, 10) } : null,
         note: formData.note,
@@ -90,14 +131,12 @@ export default function ClientBooking() {
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      console.log('Booking request submitted:', data);
+      await response.json();
       setSuccess(true);
       setTimeout(() => {
         navigate('/client/dashboard');
       }, 1500);
     } catch (err) {
-      console.error('Error:', err);
       setError(err.message || 'An error occurred while submitting the request.');
     } finally {
       setIsLoading(false);
@@ -109,6 +148,7 @@ export default function ClientBooking() {
       <PageTitle eyebrow="Nuova Richiesta" title="Prenota Appuntamento" />
       <div className="panel panel-narrow">
         <form className="stack-form" onSubmit={handleSubmit}>
+          {isOptionsLoading && <p className="muted-text">Caricamento opzioni...</p>}
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {success && <p style={{ color: 'green' }}>Richiesta inviata con successo!</p>}
 
@@ -121,8 +161,8 @@ export default function ClientBooking() {
               required
             >
               <option value="">Seleziona un animale</option>
-              {config?.animals?.length > 0 ? (
-                config.animals.map((animale) => (
+              {animals.length > 0 ? (
+                animals.map((animale) => (
                   <option key={animale.id} value={animale.id}>
                     {animale.nome} ({animale.specie})
                   </option>
@@ -144,9 +184,11 @@ export default function ClientBooking() {
               required
             >
               <option value="">Seleziona un tipo</option>
-              <option value="1">Vaccino Annuale</option> {/* Assuming IDs for options */}
-              <option value="2">Visita di Controllo</option>
-              <option value="3">Chirurgia / Intervento</option>
+              {visitTypes.map((visitType) => (
+                <option key={visitType.id} value={visitType.id}>
+                  {visitType.nome}
+                </option>
+              ))}
             </select>
           </label>
 
@@ -159,8 +201,11 @@ export default function ClientBooking() {
               required
             >
               <option value="">Seleziona un veterinario</option>
-              <option value="1">Dott. Camillo Zampetti</option> {/* Assuming IDs for options */}
-              <option value="2">Qualsiasi Veterinario dello Studio</option>
+              {doctors.map((doctor) => (
+                <option key={doctor.id} value={doctor.id}>
+                  {[doctor.nome, doctor.cognome].filter(Boolean).join(' ') || doctor.email}
+                </option>
+              ))}
             </select>
           </label>
 
@@ -189,7 +234,7 @@ export default function ClientBooking() {
           </label>
 
           <div className="actions-row">
-            <button type="submit" className="btn btn-primary" disabled={isLoading}>
+            <button type="submit" className="btn btn-primary" disabled={isLoading || isOptionsLoading}>
               {isLoading ? 'Invio in corso...' : 'Invia Richiesta'}
             </button>
             <button

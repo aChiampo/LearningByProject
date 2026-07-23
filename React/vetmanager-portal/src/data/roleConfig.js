@@ -23,11 +23,7 @@ export const ROLE_CONFIG = {
       { label: "Prenota Visita", target: "/client/booking" },
       { label: "Fatture & Pagamenti", target: "/client/billing" },
       { label: "Supporto FAQ", target: "/client/faq" }
-    ],
-    // Le tre liste vuote che servono alla tua Dashboard
-    animals: [], 
-    appointments: [],
-    billing: []
+    ]
   },
   
   receptionist: {
@@ -42,17 +38,7 @@ export const ROLE_CONFIG = {
       { label: "Anagrafica Clienti", target: "/receptionist/clients" },
       { label: "Gestione Cassa", target: "/receptionist/payments" },
       { label: "Supporto FAQ", target: "/receptionist/faq" }
-    ],
-    // Dati dei contatori statistici della home
-    stats: {
-      todayAppointmentsCount: 0,
-      newClientsCount: 0,
-      pendingAmount: 0
-    },
-    // Array dinamici pronti per Java
-    allAppointments: [],
-    allClients: [],
-    pendingPayments: []
+    ]
   },
   
   doctor: {
@@ -66,10 +52,7 @@ export const ROLE_CONFIG = {
         { label: "Registro Animali", target: "/doctor/animals" },
         { label: "Gestione", target: "/doctor/management" },
         { label: "Supporto FAQ", target: "/doctor/faq" }
-      ],
-      // I dati dinamici che arriveranno da Spring Boot
-      todayAppointments: [], // Sostituisce l'agenda fissa di oggi
-      patientsRegistry: []   // Sostituisce il registro fisso di tutti gli animali
+      ]
     },
   
   'super-admin': {
@@ -83,8 +66,6 @@ export const ROLE_CONFIG = {
       { label: "Gestione Personale", target: "/super-admin/staff" },
       { label: "Configurazione Hub", target: "/super-admin/settings" },
       { label: "Supporto FAQ", target: "/super-admin/faq" }
-    ],
-    // Array vuoto: pronto per tracciare le azioni reali sul server
-    logs: [] 
+    ]
   }
 };
