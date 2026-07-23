@@ -1,13 +1,25 @@
 package com.WW.controllers;
 
-import com.WW.entities.Razza;
-import com.WW.services.RazzaService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.WW.dto.RazzaRequest;
+import com.WW.entities.Razza;
+import com.WW.entities.Specie;
+import com.WW.services.RazzaService;
 
 @RestController
 @RequestMapping("/api/razze")
@@ -20,11 +32,28 @@ public class RazzaController {
         this.razzaService = razzaService;
     }
 
+    private Razza toRazza(RazzaRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("I dati della razza sono obbligatori");
+        }
+
+        Specie specie = new Specie();
+        specie.setId(request.idSpecie());
+        specie.setDeleted(false);
+
+        Razza razza = new Razza();
+        razza.setNome(request.nome());
+        razza.setIdSpecie(specie);
+        razza.setDeleted(false);
+
+        return razza;
+    }
+
     /**
      * Endpoint GET per visualizzare tutte le razze
      * @return lista di tutte le razze
      */
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<Razza>> getAllRazze() {
         try {
             List<Razza> razze = razzaService.visualizzaTutteRazze();
@@ -88,12 +117,13 @@ public class RazzaController {
 
     /**
      * Endpoint POST per creare una nuova razza
-     * @param razza i dati della razza da creare
+     * @param request i dati della razza da creare
      * @return la razza creata
      */
-    @PostMapping
-    public ResponseEntity<Razza> createRazza(@RequestBody Razza razza) {
+    @PostMapping("/aggiungiRazza")
+    public ResponseEntity<Razza> createRazza(@RequestBody RazzaRequest request) {
         try {
+            Razza razza = toRazza(request);
             Razza razzaCreata = razzaService.salvaRazza(razza);
             return ResponseEntity.status(HttpStatus.CREATED).body(razzaCreata);
         } catch (IllegalArgumentException e) {
@@ -106,15 +136,16 @@ public class RazzaController {
     /**
      * Endpoint PUT per aggiornare una razza esistente
      * @param id l'ID della razza da aggiornare
-     * @param razza i nuovi dati della razza
+     * @param request i nuovi dati della razza
      * @return la razza aggiornata
      */
     @PutMapping("/{id}")
     public ResponseEntity<Razza> updateRazza(
             @PathVariable Integer id,
-            @RequestBody Razza razza) {
+            @RequestBody RazzaRequest request) {
         try {
-            razza.setId(id);
+            Razza razza = toRazza(request);
+             razza.setId(id);
             Razza razzaAggiornata = razzaService.aggiornaRazza(razza);
             return ResponseEntity.ok(razzaAggiornata);
         } catch (IllegalArgumentException e) {

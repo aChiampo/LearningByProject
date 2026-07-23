@@ -9,6 +9,10 @@ export default function ManagmentVaccineType() {
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [vaccinoInModifica, setVaccinoInModifica] = useState(null);
+  const [tipologiaModificata, setTipologiaModificata] = useState('');
+  const [durataModificata, setDurataModificata] = useState('');
+  const [noteModificate, setNoteModificate] = useState('');
 
   // Carica i tipi di vaccino dal backend
   const caricaVaccini = async () => {
@@ -65,6 +69,55 @@ export default function ManagmentVaccineType() {
       setTipologia('');
       setDurata('');
       setNote('');
+      caricaVaccini();
+    } catch (err) {
+      alert('Errore: ' + err.message);
+    }
+  };
+
+  // Apre il modal di modifica
+  const handleAperturModifica = (vaccino) => {
+    setVaccinoInModifica(vaccino.id);
+    setTipologiaModificata(vaccino.tipologia);
+    setDurataModificata(vaccino.durata.toString());
+    setNoteModificate(vaccino.note || '');
+  };
+
+  // Chiude il modal di modifica
+  const handleChiudiModifica = () => {
+    setVaccinoInModifica(null);
+    setTipologiaModificata('');
+    setDurataModificata('');
+    setNoteModificate('');
+  };
+
+  // Salva le modifiche
+  const handleSalvaModifica = async (e) => {
+    e.preventDefault();
+
+    if (!tipologiaModificata.trim()) {
+      alert('Inserisci la tipologia del vaccino');
+      return;
+    }
+
+    if (!durataModificata || durataModificata <= 0) {
+      alert('Inserisci una durata valida (maggiore di 0)');
+      return;
+    }
+
+    try {
+      const response = await apiFetchWithPayload(`/api/tipi-vaccino/${vaccinoInModifica}`, [
+        {
+          tipologia: tipologiaModificata.trim(),
+          durata: parseInt(durataModificata),
+          note: noteModificate.trim() || null,
+          isDeleted: false,
+        }
+      ], { method: 'PUT' });
+
+      if (!response.ok) throw new Error('Errore nel salvataggio del tipo di vaccino');
+      
+      handleChiudiModifica();
       caricaVaccini();
     } catch (err) {
       alert('Errore: ' + err.message);
@@ -168,6 +221,12 @@ export default function ManagmentVaccineType() {
                     <td>
                       <button
                         className="btn btn-outline btn-sm"
+                        onClick={() => handleAperturModifica(v)}
+                      >
+                        Modifica
+                      </button>
+                      <button
+                        className="btn btn-outline btn-sm"
                         onClick={() => handleEliminaVaccino(v.id)}
                       >
                         Elimina
@@ -182,6 +241,73 @@ export default function ManagmentVaccineType() {
           <EmptyMessage>Nessun tipo di vaccino trovato. Aggiungine uno usando il form sopra.</EmptyMessage>
         )}
       </div>
+
+      {/* Modal di modifica */}
+      {vaccinoInModifica && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <h3>Modifica Tipo di Vaccino</h3>
+            <form className="stack-form" onSubmit={handleSalvaModifica}>
+              <label>
+                Tipologia
+                <input
+                  type="text"
+                  className="form-control"
+                  value={tipologiaModificata}
+                  onChange={(e) => setTipologiaModificata(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Durata in Mesi
+                <input
+                  type="number"
+                  className="form-control"
+                  min="1"
+                  value={durataModificata}
+                  onChange={(e) => setDurataModificata(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Note
+                <textarea
+                  className="form-control"
+                  value={noteModificate}
+                  onChange={(e) => setNoteModificate(e.target.value)}
+                  rows="3"
+                />
+              </label>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" className="btn btn-primary">
+                  Salva
+                </button>
+                <button type="button" className="btn btn-outline" onClick={handleChiudiModifica}>
+                  Annulla
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

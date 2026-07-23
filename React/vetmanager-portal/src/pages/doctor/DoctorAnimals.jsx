@@ -80,6 +80,13 @@ export default function DoctorAnimals() {
           <button className="btn btn-primary" onClick={() => setSearchTerm('')}>
             Reset
           </button>
+          <button
+            className="btn btn-secondary"
+            type="button"
+            onClick={() => setIsAddAnimalFormOpen((isOpen) => !isOpen)}
+          >
+            {isAddAnimalFormOpen ? 'Chiudi form' : 'Aggiungi animale'}
+          </button>
         </div>
 
         {isLoading && <p className="muted-text">Caricamento registro animali...</p>}

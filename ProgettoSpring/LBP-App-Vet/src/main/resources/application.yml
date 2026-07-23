@@ -28,6 +28,7 @@ app:
       expiration-seconds: 3600
   mail:
     from: segreteria.clinicaZampetti@gmail.com
+    vet-recipient: segreteria.clinicaZampetti@gmail.com
   files:
     fatture-folder: storage/fatture
     ricette-folder: storage/ricette

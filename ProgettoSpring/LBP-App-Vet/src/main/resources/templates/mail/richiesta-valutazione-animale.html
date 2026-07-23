@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
+  <table width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f6f8; padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellspacing="0" cellpadding="0" style="width:600px; max-width:100%; background-color:#ffffff; border:1px solid #e5e7eb;">
+          <tr>
+            <td style="padding:24px 28px; background-color:#1f7a70; color:#ffffff;">
+              <h1 style="margin:0; font-size:24px; line-height:1.3;">Nuova richiesta di valutazione animale</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px;">
+              <p style="margin:0 0 16px; font-size:16px; line-height:1.5;">
+                Un cliente ha richiesto la valutazione di una specie o razza non disponibile nel sistema.
+              </p>
+
+              <h2 style="margin:24px 0 12px; font-size:18px;">Dati cliente</h2>
+              <table width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 20px; border:1px solid #e5e7eb;">
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Cliente</td>
+                  <td style="padding:10px 12px;" th:text="${nomeCliente}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Email</td>
+                  <td style="padding:10px 12px;" th:text="${emailCliente}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Telefono</td>
+                  <td style="padding:10px 12px;" th:text="${telefonoCliente}"></td>
+                </tr>
+              </table>
+
+              <h2 style="margin:24px 0 12px; font-size:18px;">Dati animale</h2>
+              <table width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 20px; border:1px solid #e5e7eb;">
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Nome</td>
+                  <td style="padding:10px 12px;" th:text="${nomeAnimale}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Specie selezionata</td>
+                  <td style="padding:10px 12px;" th:text="${specie}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Razza selezionata</td>
+                  <td style="padding:10px 12px;" th:text="${razza}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Sesso</td>
+                  <td style="padding:10px 12px;" th:text="${sesso}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Data di nascita</td>
+                  <td style="padding:10px 12px;" th:text="${dataNascita}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Peso</td>
+                  <td style="padding:10px 12px;"><span th:text="${peso}"></span> kg</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Microchip</td>
+                  <td style="padding:10px 12px;" th:text="${microchip}"></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px; background-color:#f9fafb; font-weight:bold;">Note</td>
+                  <td style="padding:10px 12px;" th:text="${note}"></td>
+                </tr>
+              </table>
+
+              <h2 style="margin:24px 0 12px; font-size:18px;">Descrizione inserita dal cliente</h2>
+              <p style="margin:0 0 20px; padding:14px 16px; background-color:#f9fafb; border:1px solid #e5e7eb; font-size:16px; line-height:1.5;" th:text="${descrizione}"></p>
+
+              <p style="margin:0; padding:14px 16px; background-color:#fff7df; border:1px solid #f3d88b; font-size:16px; line-height:1.5;">
+                Memo per il veterinario: verifica se la clinica puo accogliere questa specie o razza e scrivi una mail al cliente con la risposta alla richiesta.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

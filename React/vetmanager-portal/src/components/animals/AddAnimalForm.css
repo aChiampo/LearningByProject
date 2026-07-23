@@ -1,0 +1,81 @@
+.add-animal-form {
+  display: grid;
+  gap: 16px;
+  max-width: 860px;
+}
+
+.add-animal-form__heading h2 {
+  margin-bottom: 0;
+  color: var(--primary-dark);
+}
+
+.add-animal-form label {
+  margin-bottom: 0;
+}
+
+.add-animal-form input,
+.add-animal-form select,
+.add-animal-form textarea {
+  margin-top: 6px;
+}
+
+.add-animal-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.add-animal-form__sex {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+}
+
+.add-animal-form__sex label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.add-animal-form__sex input {
+  position: static;
+  width: 18px;
+  min-height: 18px;
+  margin: 0;
+  opacity: 1;
+  pointer-events: auto;
+  accent-color: var(--primary);
+}
+
+.add-animal-form__submit {
+  justify-self: start;
+  min-width: 190px;
+}
+
+.add-animal-form__submit:disabled,
+.add-animal-form select:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+@media (max-width: 620px) {
+  .add-animal-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .add-animal-form__sex {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .add-animal-form__submit {
+    width: 100%;
+  }
+}

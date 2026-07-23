@@ -9,6 +9,10 @@ export default function ManagmentVisitType() {
   const [prezzo, setPrezzo] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [visitaInModifica, setVisitaInModifica] = useState(null);
+  const [nomeModificato, setNomeModificato] = useState('');
+  const [durataModificata, setDurataModificata] = useState('');
+  const [prezzoModificato, setPrezzoModificato] = useState('');
 
   // Carica i tipi di visita dal backend
   const caricaVisite = async () => {
@@ -71,6 +75,61 @@ export default function ManagmentVisitType() {
       setNome('');
       setDurata('');
       setPrezzo('');
+      caricaVisite();
+    } catch (err) {
+      alert('Errore: ' + err.message);
+    }
+  };
+
+  // Apre il modal di modifica
+  const handleAperturModifica = (visita) => {
+    setVisitaInModifica(visita.id);
+    setNomeModificato(visita.nome);
+    setDurataModificata(visita.durata.toString());
+    setPrezzoModificato(visita.prezzo.toString());
+  };
+
+  // Chiude il modal di modifica
+  const handleChiudiModifica = () => {
+    setVisitaInModifica(null);
+    setNomeModificato('');
+    setDurataModificata('');
+    setPrezzoModificato('');
+  };
+
+  // Salva le modifiche
+  const handleSalvaModifica = async (e) => {
+    e.preventDefault();
+
+    if (!nomeModificato.trim()) {
+      alert('Inserisci il nome della visita');
+      return;
+    }
+
+    if (!durataModificata || durataModificata <= 0) {
+      alert('Inserisci una durata valida (maggiore di 0)');
+      return;
+    }
+
+    if (prezzoModificato === '' || prezzoModificato < 0) {
+      alert('Inserisci un prezzo valido (maggiore o uguale a 0)');
+      return;
+    }
+
+    try {
+      const response = await apiFetchWithPayload(`/api/tipiVisite/modifica/${visitaInModifica}`, [
+        {
+          nome: nomeModificato.trim(),
+          durata: parseInt(durataModificata),
+          prezzo: parseFloat(prezzoModificato),
+          isDeleted: false,
+          attivo: true,
+        }
+      ], { method: 'PUT' });
+
+      if (!response.ok) throw new Error('Errore nel salvataggio del tipo di visita');
+      
+      handleChiudiModifica();
       caricaVisite();
     } catch (err) {
       alert('Errore: ' + err.message);
@@ -176,6 +235,12 @@ export default function ManagmentVisitType() {
                     <td>
                       <button
                         className="btn btn-outline btn-sm"
+                        onClick={() => handleAperturModifica(v)}
+                      >
+                        Modifica
+                      </button>
+                      <button
+                        className="btn btn-outline btn-sm"
                         onClick={() => handleEliminaVisita(v.id)}
                       >
                         Elimina
@@ -190,6 +255,75 @@ export default function ManagmentVisitType() {
           <EmptyMessage>Nessun tipo di visita trovato. Aggiungine uno usando il form sopra.</EmptyMessage>
         )}
       </div>
+
+      {/* Modal di modifica */}
+      {visitaInModifica && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <h3>Modifica Tipo di Visita</h3>
+            <form className="stack-form" onSubmit={handleSalvaModifica}>
+              <label>
+                Nome della Visita
+                <input
+                  type="text"
+                  className="form-control"
+                  value={nomeModificato}
+                  onChange={(e) => setNomeModificato(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Durata in Minuti
+                <input
+                  type="number"
+                  className="form-control"
+                  min="1"
+                  value={durataModificata}
+                  onChange={(e) => setDurataModificata(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Prezzo (€)
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  step="0.01"
+                  value={prezzoModificato}
+                  onChange={(e) => setPrezzoModificato(e.target.value)}
+                />
+              </label>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" className="btn btn-primary">
+                  Salva
+                </button>
+                <button type="button" className="btn btn-outline" onClick={handleChiudiModifica}>
+                  Annulla
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

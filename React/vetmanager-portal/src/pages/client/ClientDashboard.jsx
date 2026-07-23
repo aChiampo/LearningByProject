@@ -34,7 +34,7 @@ export default function ClientDashboard() {
           setAnimals(animalList);
           setAppointments(appointmentList);
         }
-      } catch (error) {
+      } catch {
         if (isMounted) {
           setLoadError(error.message);
           setAnimals([]);
