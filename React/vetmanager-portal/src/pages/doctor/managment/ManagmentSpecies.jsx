@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload, readApiError } from '../../../services/apiClient';
+
+function getEntityName(entity) {
+  return entity?.nome ?? entity?.Nome ?? '';
+}
+
+function isActiveEntity(entity) {
+  return !entity?.deleted && !entity?.isDeleted;
+}
 
 export default function ManagmentSpecies() {
   const [specie, setSpecie] = useState([]);
@@ -18,7 +26,7 @@ export default function ManagmentSpecies() {
       if (!response.ok) throw new Error('Errore nel caricamento delle specie');
       const data = await response.json();
       // Filtra solo le specie non eliminate (soft-delete)
-      setSpecie(data.filter(s => !s.deleted));
+      setSpecie(data.filter(isActiveEntity));
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -45,9 +53,13 @@ export default function ManagmentSpecies() {
     }
 
     try {
-      const response = await apiFetchWithPayload('/api/specie', [{ nome: nuomaSpecie }]);
+      const response = await apiFetchWithPayload('/api/specie', {
+        nome: nuomaSpecie.trim()
+      });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio della specie');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio della specie'));
+      }
       
       setNuomaSpecie('');
       caricaSpecie();
@@ -59,7 +71,7 @@ export default function ManagmentSpecies() {
   // Apre il modal di modifica
   const handleAperturModifica = (species) => {
     setSpecieInModifica(species.id);
-    setNomeSpecieModificato(species.Nome);
+    setNomeSpecieModificato(getEntityName(species));
   };
 
   // Chiude il modal di modifica
@@ -78,11 +90,13 @@ export default function ManagmentSpecies() {
     }
 
     try {
-      const response = await apiFetchWithPayload(`/api/specie/${specieInModifica}`, [
-        { nome: nomeSpecieModificato, isDeleted: false }
-      ], { method: 'PUT' });
+      const response = await apiFetchWithPayload(`/api/specie/${specieInModifica}`, {
+        nome: nomeSpecieModificato.trim()
+      }, { method: 'PUT' });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio della specie');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio della specie'));
+      }
       
       handleChiudiModifica();
       caricaSpecie();
@@ -156,7 +170,7 @@ export default function ManagmentSpecies() {
                 {specie.map((s) => (
                   <tr key={s.id}>
                     <td>{s.id}</td>
-                    <td><strong>{s.Nome}</strong></td>
+                    <td><strong>{getEntityName(s)}</strong></td>
                     <td>
                       <button
                         className="btn btn-outline btn-sm"

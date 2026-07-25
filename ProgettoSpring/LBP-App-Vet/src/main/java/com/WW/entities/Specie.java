@@ -18,7 +18,7 @@ public class Specie {
     @Column(name = "ID")
     private Integer id;
     @Column(name = "Nome", nullable = false)
-    private String Nome;
+    private String nome;
     @Column(name = "Is_Deleted", nullable = false)
     private boolean isDeleted;
 }

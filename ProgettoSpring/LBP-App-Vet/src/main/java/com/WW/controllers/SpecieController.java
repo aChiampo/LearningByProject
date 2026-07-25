@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.SpecieRequest;
 import com.WW.entities.Specie;
 import com.WW.services.SpecieService;
 
@@ -79,39 +80,47 @@ public class SpecieController {
 
     /**
      * Endpoint POST per creare una nuova specie
-     * @param specie i dati della specie da creare
+     * @param request i dati della specie da creare
      * @return la specie creata
      */
     @PostMapping
-    public ResponseEntity<Specie> createSpecie(@RequestBody Specie specie) {
+    public ResponseEntity<?> createSpecie(@RequestBody SpecieRequest request) {
         try {
+            Specie specie = new Specie();
+            specie.setNome(request.nome());
+            specie.setDeleted(false);
+            
             Specie specieCreata = specieService.salvaSpecie(specie);
             return ResponseEntity.status(HttpStatus.CREATED).body(specieCreata);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     /**
      * Endpoint PUT per aggiornare una specie esistente
      * @param id l'ID della specie da aggiornare
-     * @param specie i nuovi dati della specie
+     * @param request i nuovi dati della specie
      * @return la specie aggiornata
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Specie> updateSpecie(
+    public ResponseEntity<?> updateSpecie(
             @PathVariable Integer id,
-            @RequestBody Specie specie) {
+            @RequestBody SpecieRequest request) {
         try {
+            Specie specie = new Specie();
             specie.setId(id);
+            specie.setNome(request.nome());
+            specie.setDeleted(false);
+            
             Specie specieAggiornata = specieService.aggiornaSpecie(specie);
             return ResponseEntity.ok(specieAggiornata);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

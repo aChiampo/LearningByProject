@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload, readApiError } from '../../../services/apiClient';
 
 export default function ManagmentVisitCategory() {
   const [categorie, setCategorie] = useState([]);
@@ -45,14 +45,13 @@ export default function ManagmentVisitCategory() {
     }
 
     try {
-      const response = await apiFetchWithPayload('/api/categorieVisite/aggiungi', [
-        {
-          nome: nome.trim(),
-          isDeleted: false,
-        }
-      ]);
+      const response = await apiFetchWithPayload('/api/categorieVisite/aggiungi', {
+        nome: nome.trim(),
+      });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio della categoria di visita');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio della categoria di visita'));
+      }
 
       // Resetta il campo del form
       setNome('');
@@ -84,14 +83,13 @@ export default function ManagmentVisitCategory() {
     }
 
     try {
-      const response = await apiFetchWithPayload(`/api/categorieVisite/modifica/${categoriaInModifica}`, [
-        {
-          nome: nomeModificato.trim(),
-          isDeleted: false,
-        }
-      ], { method: 'PUT' });
+      const response = await apiFetchWithPayload(`/api/categorieVisite/modifica/${categoriaInModifica}`, {
+        nome: nomeModificato.trim(),
+      }, { method: 'PATCH' });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio della categoria di visita');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio della categoria di visita'));
+      }
       
       handleChiudiModifica();
       caricaCategorie();

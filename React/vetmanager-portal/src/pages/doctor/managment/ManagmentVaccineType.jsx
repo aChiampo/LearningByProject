@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
+import { apiFetch, apiFetchWithPayload, readApiError } from '../../../services/apiClient';
 
 export default function ManagmentVaccineType() {
   const [vaccini, setVaccini] = useState([]);
@@ -54,16 +54,15 @@ export default function ManagmentVaccineType() {
     }
 
     try {
-      const response = await apiFetchWithPayload('/api/tipi-vaccino', [
-        {
-          tipologia: tipologia.trim(),
-          durata: parseInt(durata),
-          note: note.trim() || null,
-          isDeleted: false,
-        }
-      ]);
+      const response = await apiFetchWithPayload('/api/tipi-vaccino', {
+        tipologia: tipologia.trim(),
+        durata: parseInt(durata, 10),
+        note: note.trim() || null,
+      });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio del tipo di vaccino');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio del tipo di vaccino'));
+      }
 
       // Resetta i campi del form
       setTipologia('');
@@ -106,16 +105,15 @@ export default function ManagmentVaccineType() {
     }
 
     try {
-      const response = await apiFetchWithPayload(`/api/tipi-vaccino/${vaccinoInModifica}`, [
-        {
-          tipologia: tipologiaModificata.trim(),
-          durata: parseInt(durataModificata),
-          note: noteModificate.trim() || null,
-          isDeleted: false,
-        }
-      ], { method: 'PUT' });
+      const response = await apiFetchWithPayload(`/api/tipi-vaccino/${vaccinoInModifica}`, {
+        tipologia: tipologiaModificata.trim(),
+        durata: parseInt(durataModificata, 10),
+        note: noteModificate.trim() || null,
+      }, { method: 'PUT' });
 
-      if (!response.ok) throw new Error('Errore nel salvataggio del tipo di vaccino');
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio del tipo di vaccino'));
+      }
       
       handleChiudiModifica();
       caricaVaccini();

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.CategoriaVisiteRequest;
 import com.WW.entities.CategoriaVisite;
 import com.WW.services.CategoriaVisiteService;
 
@@ -54,12 +55,12 @@ public class CategoriaVisiteController {
     /**
      * Crea una nuova categoria visita.
      *
-     * @param categoriaVisite dati della categoria da salvare
+     * @param request dati della categoria da salvare
      * @return categoria creata
      */
     @PostMapping("/aggiungi")
-    public ResponseEntity<CategoriaVisite> aggiungi(@RequestBody CategoriaVisite categoriaVisite) {
-        CategoriaVisite nuovaCategoriaVisite = categoriaVisiteService.aggiungiCategoriaVisite(categoriaVisite);
+    public ResponseEntity<CategoriaVisite> aggiungi(@RequestBody CategoriaVisiteRequest request) {
+        CategoriaVisite nuovaCategoriaVisite = categoriaVisiteService.aggiungiCategoriaVisite(toEntity(request));
         return new ResponseEntity<>(nuovaCategoriaVisite, HttpStatus.CREATED);
     }
 
@@ -67,15 +68,22 @@ public class CategoriaVisiteController {
      * Aggiorna una categoria visita esistente.
      *
      * @param id identificativo della categoria da aggiornare
-     * @param categoriaVisite nuovi dati da applicare
+     * @param request nuovi dati da applicare
      * @return categoria aggiornata
      */
     @PatchMapping("/modifica/{id}")
     public ResponseEntity<CategoriaVisite> modifica(
             @PathVariable Integer id,
-            @RequestBody CategoriaVisite categoriaVisite) {
-        CategoriaVisite categoriaVisiteAggiornata = categoriaVisiteService.modificaCategoriaVisite(id, categoriaVisite);
+            @RequestBody CategoriaVisiteRequest request) {
+        CategoriaVisite categoriaVisiteAggiornata = categoriaVisiteService.modificaCategoriaVisite(id, toEntity(request));
         return ResponseEntity.ok(categoriaVisiteAggiornata);
+    }
+
+    private CategoriaVisite toEntity(CategoriaVisiteRequest request) {
+        CategoriaVisite categoriaVisite = new CategoriaVisite();
+        categoriaVisite.setNome(request.nome());
+        categoriaVisite.setIsDeleted(false);
+        return categoriaVisite;
     }
 
     /**

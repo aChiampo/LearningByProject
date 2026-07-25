@@ -1,5 +1,6 @@
 package com.WW.controllers;
 
+import com.WW.dto.TipoVaccinoRequest;
 import com.WW.entities.TipoVaccino;
 import com.WW.services.TipoVaccinoService;
 import org.springframework.http.HttpStatus;
@@ -88,13 +89,13 @@ public class TipoVaccinoController {
 
     /**
      * Endpoint POST per creare un nuovo tipo di vaccino
-     * @param tipoVaccino i dati del tipo di vaccino da creare
+     * @param request i dati del tipo di vaccino da creare
      * @return il tipo di vaccino creato
      */
     @PostMapping
-    public ResponseEntity<TipoVaccino> createTipoVaccino(@RequestBody TipoVaccino tipoVaccino) {
+    public ResponseEntity<TipoVaccino> createTipoVaccino(@RequestBody TipoVaccinoRequest request) {
         try {
-            TipoVaccino tipoVaccinoCreato = tipoVaccinoService.salvaTipoVaccino(tipoVaccino);
+            TipoVaccino tipoVaccinoCreato = tipoVaccinoService.salvaTipoVaccino(toEntity(request));
             return ResponseEntity.status(HttpStatus.CREATED).body(tipoVaccinoCreato);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -106,14 +107,15 @@ public class TipoVaccinoController {
     /**
      * Endpoint PUT per aggiornare un tipo di vaccino esistente
      * @param id l'ID del tipo di vaccino da aggiornare
-     * @param tipoVaccino i nuovi dati del tipo di vaccino
+     * @param request i nuovi dati del tipo di vaccino
      * @return il tipo di vaccino aggiornato
      */
     @PutMapping("/{id}")
     public ResponseEntity<TipoVaccino> updateTipoVaccino(
             @PathVariable Integer id,
-            @RequestBody TipoVaccino tipoVaccino) {
+            @RequestBody TipoVaccinoRequest request) {
         try {
+            TipoVaccino tipoVaccino = toEntity(request);
             tipoVaccino.setId(id);
             TipoVaccino tipoVaccinoAggiornato = tipoVaccinoService.aggiornaTipoVaccino(tipoVaccino);
             return ResponseEntity.ok(tipoVaccinoAggiornato);
@@ -122,6 +124,17 @@ public class TipoVaccinoController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private TipoVaccino toEntity(TipoVaccinoRequest request) {
+        TipoVaccino tipoVaccino = new TipoVaccino();
+        tipoVaccino.setTipologia(request.tipologia());
+        if (request.durata() != null) {
+            tipoVaccino.setDurata(request.durata());
+        }
+        tipoVaccino.setNote(request.note());
+        tipoVaccino.setIsDeleted(false);
+        return tipoVaccino;
     }
 
     /**

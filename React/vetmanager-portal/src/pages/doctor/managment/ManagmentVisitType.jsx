@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import EmptyMessage from '../../../components/common/EmptyMessage';
-import { apiFetch, apiFetchWithPayload } from '../../../services/apiClient';
+import { AppContext } from '../../../context/AppContext';
+import { apiFetch, apiFetchWithPayload, readApiError } from '../../../services/apiClient';
 
 export default function ManagmentVisitType() {
+  const { currentUser } = useContext(AppContext);
   const [visite, setVisite] = useState([]);
   const [nome, setNome] = useState('');
   const [durata, setDurata] = useState('');
@@ -58,18 +60,24 @@ export default function ManagmentVisitType() {
       return;
     }
 
-    try {
-      const response = await apiFetchWithPayload('/api/tipiVisite/aggiungi', [
-        {
-          nome: nome.trim(),
-          durata: parseInt(durata),
-          prezzo: parseFloat(prezzo),
-          isDeleted: false,
-          attivo: true,
-        }
-      ]);
+    const doctorId = Number(currentUser?.id);
+    if (!doctorId) {
+      alert('Impossibile identificare il dottore autenticato');
+      return;
+    }
 
-      if (!response.ok) throw new Error('Errore nel salvataggio del tipo di visita');
+    try {
+      const response = await apiFetchWithPayload('/api/tipiVisite/aggiungi', {
+        nome: nome.trim(),
+        durata: parseInt(durata, 10),
+        prezzo: parseFloat(prezzo),
+        idDottore: doctorId,
+        attivo: true,
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio del tipo di visita'));
+      }
 
       // Resetta i campi del form
       setNome('');
@@ -116,18 +124,24 @@ export default function ManagmentVisitType() {
       return;
     }
 
-    try {
-      const response = await apiFetchWithPayload(`/api/tipiVisite/modifica/${visitaInModifica}`, [
-        {
-          nome: nomeModificato.trim(),
-          durata: parseInt(durataModificata),
-          prezzo: parseFloat(prezzoModificato),
-          isDeleted: false,
-          attivo: true,
-        }
-      ], { method: 'PUT' });
+    const doctorId = Number(currentUser?.id);
+    if (!doctorId) {
+      alert('Impossibile identificare il dottore autenticato');
+      return;
+    }
 
-      if (!response.ok) throw new Error('Errore nel salvataggio del tipo di visita');
+    try {
+      const response = await apiFetchWithPayload(`/api/tipiVisite/modifica/${visitaInModifica}`, {
+        nome: nomeModificato.trim(),
+        durata: parseInt(durataModificata, 10),
+        prezzo: parseFloat(prezzoModificato),
+        idDottore: doctorId,
+        attivo: true,
+      }, { method: 'PATCH' });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response, 'Errore nel salvataggio del tipo di visita'));
+      }
       
       handleChiudiModifica();
       caricaVisite();

@@ -65,11 +65,13 @@ public class SpecieService {
         }
 
         // Verifica unicità del nome
-        List<Specie> specieEsistenti = specieRepo.findByNomeAndIsDeletedFalse(specie.getNome().trim());
+        String nome = specie.getNome().trim();
+        List<Specie> specieEsistenti = specieRepo.findByNomeAndIsDeletedFalse(nome);
         if (!specieEsistenti.isEmpty()) {
             throw new IllegalArgumentException("Una specie con nome '" + specie.getNome() + "' esiste già");
         }
 
+        specie.setNome(nome);
         specie.setDeleted(false);
         return specieRepo.save(specie);
     }
@@ -95,11 +97,13 @@ public class SpecieService {
         }
 
         // Verifica unicità del nome (escludendo l'ID corrente)
-        List<Specie> specieEsistenti = specieRepo.findByNomeAndIsDeletedFalse(specie.getNome().trim());
+        String nome = specie.getNome().trim();
+        List<Specie> specieEsistenti = specieRepo.findByNomeAndIsDeletedFalse(nome);
         if (!specieEsistenti.isEmpty() && !specieEsistenti.get(0).getId().equals(specie.getId())) {
             throw new IllegalArgumentException("Una specie con nome '" + specie.getNome() + "' esiste già");
         }
 
+        specie.setNome(nome);
         specie.setDeleted(false);
         return specieRepo.save(specie);
     }

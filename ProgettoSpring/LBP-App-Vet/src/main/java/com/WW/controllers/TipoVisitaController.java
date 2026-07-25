@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.TipoVisitaRequest;
+import com.WW.entities.CategoriaVisite;
 import com.WW.entities.TipoVisita;
+import com.WW.entities.Utente;
 import com.WW.services.TipoVisitaService;
 
 import lombok.RequiredArgsConstructor;
@@ -54,12 +57,12 @@ public class TipoVisitaController {
     /**
      * Crea un nuovo tipo visita.
      *
-     * @param tipoVisite dati del tipo visita da salvare
+     * @param request dati del tipo visita da salvare
      * @return tipo visita creato
      */
     @PostMapping("/aggiungi")
-    public ResponseEntity<TipoVisita> crea(@RequestBody TipoVisita tipoVisite) {
-        TipoVisita nuovoTipoVisite = tipoVisitaService.aggiungiTipoVisite(tipoVisite);
+    public ResponseEntity<TipoVisita> crea(@RequestBody TipoVisitaRequest request) {
+        TipoVisita nuovoTipoVisite = tipoVisitaService.aggiungiTipoVisite(toEntity(request));
         return new ResponseEntity<>(nuovoTipoVisite, HttpStatus.CREATED);
     }
 
@@ -67,13 +70,38 @@ public class TipoVisitaController {
      * Aggiorna un tipo visita esistente.
      *
      * @param id identificativo del tipo visita da aggiornare
-     * @param tipoVisite nuovi dati da applicare
+     * @param request nuovi dati da applicare
      * @return tipo visita aggiornato
      */
     @PatchMapping("/modifica/{id}")
-    public ResponseEntity<TipoVisita> modifica(@PathVariable Integer id, @RequestBody TipoVisita tipoVisite) {
-        TipoVisita tipoVisiteAggiornato = tipoVisitaService.modificaTipoVisite(id, tipoVisite);
+    public ResponseEntity<TipoVisita> modifica(@PathVariable Integer id, @RequestBody TipoVisitaRequest request) {
+        TipoVisita tipoVisiteAggiornato = tipoVisitaService.modificaTipoVisite(id, toEntity(request));
         return ResponseEntity.ok(tipoVisiteAggiornato);
+    }
+
+    private TipoVisita toEntity(TipoVisitaRequest request) {
+        TipoVisita tipoVisita = new TipoVisita();
+        tipoVisita.setNome(request.nome());
+        if (request.durata() != null) {
+            tipoVisita.setDurata(request.durata());
+        }
+        tipoVisita.setPrezzo(request.prezzo());
+        tipoVisita.setIsDeleted(false);
+        tipoVisita.setAttivo(request.attivo() == null || request.attivo());
+
+        if (request.idCategoria() != null) {
+            CategoriaVisite categoria = new CategoriaVisite();
+            categoria.setId(request.idCategoria());
+            tipoVisita.setCategoria(categoria);
+        }
+
+        if (request.idDottore() != null) {
+            Utente dottore = new Utente();
+            dottore.setId(request.idDottore());
+            tipoVisita.setDottore(dottore);
+        }
+
+        return tipoVisita;
     }
 
     /**
