@@ -40,7 +40,7 @@ public class Visita {
     @Column(name = "ID")
     private Integer id;
 
-    @Column(name = "Data_Visita", nullable = false, updatable = false)
+    @Column(name = "Data_Visita", nullable = false)
     private LocalDateTime dataVisita;
     
     @ManyToOne

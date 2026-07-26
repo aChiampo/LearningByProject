@@ -5,20 +5,45 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import com.WW.entities.Visita;
+import com.WW.enums.VisitaStato;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public record VisitaDto(
-        @Valid @NotNull(message = "L'animale non può essere nullo") AnimaleDto animale,
-        @Valid @NotNull(message = "Il tipo di visita non può essere nullo") TipoVisitaDto tipoVisita,
-        @Valid @NotNull(message = "Il veterinario non può essere nullo") UtenteDto veterinario,
-        @NotNull(message = "La data della visita non può essere nulla") LocalDate data,
-        @NotNull(message = "La fascia oraria non può essere nulla") String fasciaOraria,
+        Integer id,
+        @Valid @NotNull(message = "L'animale non puo essere nullo") AnimaleDto animale,
+        @Valid @NotNull(message = "Il tipo di visita non puo essere nullo") TipoVisitaDto tipoVisita,
+        @Valid @NotNull(message = "Il veterinario non puo essere nullo") UtenteDto veterinario,
+        LocalDate data,
+        String fasciaOraria,
+        LocalDateTime dataVisita,
         @Valid PagamentoDto pagamento,
-        String note) {
-    // Computes the start date and time based on `data` and `fasciaOraria`
+        String note,
+        String notaPrivata,
+        VisitaStato stato) {
+    public VisitaDto(
+            AnimaleDto animale,
+            TipoVisitaDto tipoVisita,
+            UtenteDto veterinario,
+            LocalDate data,
+            String fasciaOraria,
+            PagamentoDto pagamento,
+            String note) {
+        this(null, animale, tipoVisita, veterinario, data, fasciaOraria, null, pagamento, note, null, null);
+    }
+
     public LocalDateTime getStartDateTime() {
+        if (dataVisita != null) {
+            return dataVisita;
+        }
+        if (data == null) {
+            throw new IllegalArgumentException("La data della visita non puo essere nulla.");
+        }
+        if (fasciaOraria == null || fasciaOraria.isBlank()) {
+            throw new IllegalArgumentException("La fascia oraria non puo essere nulla.");
+        }
+
         LocalTime startTime;
         if (fasciaOraria.contains("Mattina")) {
             startTime = LocalTime.of(9, 0);
@@ -31,6 +56,16 @@ public record VisitaDto(
     }
 
     public LocalDateTime getEndDateTime() {
+        if (dataVisita != null) {
+            return dataVisita;
+        }
+        if (data == null) {
+            throw new IllegalArgumentException("La data della visita non puo essere nulla.");
+        }
+        if (fasciaOraria == null || fasciaOraria.isBlank()) {
+            throw new IllegalArgumentException("La fascia oraria non puo essere nulla.");
+        }
+
         LocalTime endTime;
         if (fasciaOraria.contains("Mattina")) {
             endTime = LocalTime.of(12, 30);
@@ -44,13 +79,16 @@ public record VisitaDto(
 
     public static VisitaDto fromEntity(Visita visita) {
         return new VisitaDto(
+                visita.getId(),
                 new AnimaleDto(visita.getAnimale().getId()),
                 new TipoVisitaDto(visita.getTipoVisita().getId()),
                 new UtenteDto(visita.getVeterinario().getId()),
                 visita.getDataVisita().toLocalDate(),
                 visita.getDataVisita().toLocalTime().isBefore(LocalTime.of(12, 30)) ? "Mattina" : "Pomeriggio",
+                visita.getDataVisita(),
                 visita.getPagamento() != null ? new PagamentoDto(visita.getPagamento().getId()) : null,
-                null // Assuming note is not present in the entity
-        );
+                visita.getNote(),
+                visita.getNotaPrivata(),
+                visita.getStato());
     }
 }

@@ -17,6 +17,7 @@ import ClientFaq from '../pages/client/ClientFaq';
 import DoctorDashboard from '../pages/doctor/DoctorDashboard';
 import DoctorProfile from '../pages/doctor/DoctorProfile';
 import DoctorAnimals from '../pages/doctor/DoctorAnimals';
+import CartellaMedica from '../pages/doctor/CartellaMedica';
 import DoctorFaq from '../pages/doctor/DoctorFaq';
 import ManagmentConfiguration from '../pages/doctor/managment/ManagmentConfiguration.jsx'
 import ReceptionistDashboard from '../pages/receptionist/ReceptionistDashboard';
@@ -56,6 +57,7 @@ export default function AppRouter() {
             <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
             <Route path="/doctor/profile" element={<DoctorProfile />} />
             <Route path="/doctor/animals" element={<DoctorAnimals />} />
+            <Route path="/doctor/animals/:animalId/cartella" element={<CartellaMedica />} />
             <Route path="/doctor/faq" element={<DoctorFaq />} />
             <Route path="/doctor/management" element={<ManagmentConfiguration />} />
           </Route>

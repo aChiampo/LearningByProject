@@ -20,7 +20,11 @@ export function normalizeAnimal(animal) {
     nome: animal.nome ?? '',
     specie: getNestedName(animal.specie),
     razza: getNestedName(animal.razza),
+    sesso: animal.sesso ?? '',
     dataNascita: animal.dataNascita,
+    peso: animal.peso ?? '',
+    microchip: animal.microchip ?? '',
+    note: animal.note ?? '',
     proprietario: animal.proprietario ?? animal.utente,
     raw: animal,
   };
@@ -49,6 +53,17 @@ export async function fetchAnimalsByOwner(ownerId) {
   }
 
   return normalizeAnimalList(await response.json());
+}
+
+export async function fetchAnimalById(animalId) {
+  const response = await apiFetch(`${API_BASE_URL}/leggi/${animalId}`);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, "Impossibile recuperare i dati dell'animale.");
+    throw new Error(errorMessage);
+  }
+
+  return normalizeAnimal(await response.json());
 }
 
 export async function fetchAnimalOwners() {
@@ -90,6 +105,19 @@ export async function createAnimal(payload) {
   }
 
   return response.json();
+}
+
+export async function updateAnimal(animalId, payload) {
+  const response = await apiFetchWithPayload(`${API_BASE_URL}/modifica/${animalId}`, [payload], {
+    method: 'PATCH',
+  });
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, "Impossibile salvare i dati dell'animale.");
+    throw new Error(errorMessage);
+  }
+
+  return normalizeAnimal(await response.json());
 }
 
 export async function sendAnimalEvaluationRequest(payload) {
