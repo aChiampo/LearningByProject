@@ -165,6 +165,28 @@ public class VisitaController {
     }
 
     /**
+     * Completa una visita prenotata aggiornando tutti i dati ricevuti nel DTO.
+     *
+     * @param visita dati completi della visita da completare
+     * @return visita aggiornata
+     */
+    @PostMapping("/chiudivisita")
+    public ResponseEntity<Visita> chiudiVisita(@RequestBody VisitaDto visita) {
+        return ResponseEntity.ok(visitaService.chiudiVisita(visita));
+    }
+
+    /**
+     * Riporta una visita completata allo stato prenotata.
+     *
+     * @param id identificativo della visita
+     * @return visita aggiornata
+     */
+    @PatchMapping("/riaprivisita/{id}")
+    public ResponseEntity<Visita> riapriVisita(@PathVariable Integer id) {
+        return ResponseEntity.ok(visitaService.riapriVisita(id));
+    }
+
+    /**
      * Aggiorna le note di una visita.
      *
      * @param id   identificativo della visita

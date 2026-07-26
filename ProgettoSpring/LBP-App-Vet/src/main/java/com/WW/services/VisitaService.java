@@ -1,7 +1,6 @@
 package com.WW.services;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.WW.dto.PagamentoDto;
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Pagamento;
 import com.WW.entities.TipoVisita;
 import com.WW.entities.Utente;
 import com.WW.entities.Visita;
+import com.WW.enums.VisitaStato;
 import com.WW.repositories.VisitaRepository;
 
 /**
@@ -32,8 +31,11 @@ public class VisitaService {
     private final PagamentiService pagamentiService;
 
     public VisitaService(
-            VisitaRepository visitaRepository, TipoVisitaService tipoVisitaService, AnimaleService animaleService,
-            UtenteService utenteService, PagamentiService pagamentiService) {
+            VisitaRepository visitaRepository,
+            TipoVisitaService tipoVisitaService,
+            AnimaleService animaleService,
+            UtenteService utenteService,
+            PagamentiService pagamentiService) {
         this.visitaRepository = visitaRepository;
         this.tipoVisitaService = tipoVisitaService;
         this.animaleService = animaleService;
@@ -58,28 +60,40 @@ public class VisitaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il corpo della visita non puo essere nullo.");
         }
 
-        validaSovrapposizioneOrario(visita.getStartDateTime(), tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
-                utenteService.ottieniPerId(visita.veterinario().id()));
+        validaRiferimentiVisita(visita);
 
-        if (visita.tipoVisita() == null || visita.tipoVisita() == null) {
+        TipoVisita tipoVisita = tipoVisitaService.ottieniPerId(visita.tipoVisita().id());
+        Utente veterinario = utenteService.ottieniPerId(visita.veterinario().id());
+        validaSovrapposizioneOrario(ottieniDataInizio(visita), tipoVisita, veterinario, null);
+    }
+
+    private void validaRiferimentiVisita(VisitaDto visita) {
+        if (visita.tipoVisita() == null || visita.tipoVisita().id() == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Il tipo visita è obbligatorio e deve contenere un id valido.");
+                    "Il tipo visita e obbligatorio e deve contenere un id valido.");
         }
-        if (visita.animale() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'animale e obbligatorio.");
+        if (visita.animale() == null || visita.animale().id() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "L'animale e obbligatorio e deve contenere un id valido.");
         }
-        if (visita.veterinario() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il veterinario e obbligatorio.");
+        if (visita.veterinario() == null || visita.veterinario().id() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Il veterinario e obbligatorio e deve contenere un id valido.");
         }
         if (visita.pagamento() != null && visita.pagamento().id() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il pagamento deve contenere un id valido.");
         }
+    }
 
-        validaSovrapposizioneOrario(
-                visita.getStartDateTime(),
-                tipoVisitaService.ottieniPerId(visita.tipoVisita().id()),
-                utenteService.ottieniPerId(visita.veterinario().id()));
+    private LocalDateTime ottieniDataInizio(VisitaDto visita) {
+        try {
+            return visita.getStartDateTime();
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 
     private Visita toEntity(VisitaDto visita) {
@@ -87,26 +101,26 @@ public class VisitaService {
         entity.setAnimale(animaleService.ottieniPerId(visita.animale().id()));
         entity.setTipoVisita(tipoVisitaService.ottieniPerId(visita.tipoVisita().id()));
         entity.setVeterinario(utenteService.ottieniPerId(visita.veterinario().id()));
-        entity.setDataVisita(visita.getStartDateTime());
+        entity.setDataVisita(ottieniDataInizio(visita));
         if (visita.pagamento() != null) {
             entity.setPagamento(pagamentiService.ottieniPerId(visita.pagamento().id()));
         }
         entity.setNote(visita.note());
+        entity.setNotaPrivata(visita.notaPrivata());
+        entity.setStato(VisitaStato.PRENOTATA);
         entity.setIsDeleted(false);
         return entity;
     }
 
     /**
-     * Verifica che l'orario richiesto per la nuova visita non si sovrapponga
-     * a un'altra visita già prenotata per lo stesso veterinario.
-     *
-     * @param dataVisita    data/ora di inizio della nuova visita
-     * @param tipoVisita    tipo di visita richiesto (fornisce la durata)
-     * @param veterinarioId id del veterinario
-     * @throws ResponseStatusException se l'orario richiesto si sovrappone a una
-     *                                 visita esistente
+     * Verifica che l'orario richiesto non si sovrapponga a un'altra visita per
+     * lo stesso veterinario.
      */
-    private void validaSovrapposizioneOrario(LocalDateTime dataVisita, TipoVisita tipoVisita, Utente veterinario) {
+    private void validaSovrapposizioneOrario(
+            LocalDateTime dataVisita,
+            TipoVisita tipoVisita,
+            Utente veterinario,
+            Integer visitaDaEscludereId) {
         LocalDateTime nuovaInizio = dataVisita;
         LocalDateTime nuovaFine = dataVisita.plusMinutes(tipoVisita.getDurata());
         LocalDateTime windowStart = dataVisita.minusHours(6);
@@ -116,6 +130,10 @@ public class VisitaService {
                 veterinario.getId(), windowStart, windowEnd);
 
         for (Visita esistente : candidate) {
+            if (Objects.equals(esistente.getId(), visitaDaEscludereId)) {
+                continue;
+            }
+
             LocalDateTime esistenteInizio = esistente.getDataVisita();
             LocalDateTime esistenteFine = esistenteInizio.plusMinutes(esistente.getTipoVisita().getDurata());
             boolean sovrapposte = nuovaInizio.isBefore(esistenteFine) && esistenteInizio.isBefore(nuovaFine);
@@ -167,23 +185,13 @@ public class VisitaService {
     }
 
     /**
-     * Converte un'entità Visita in un DTO VisitaDto.
-     * 
-     * @param visita entità Visita da convertire
+     * Converte un'entita Visita in un DTO VisitaDto.
+     *
+     * @param visita entita Visita da convertire
      * @return DTO VisitaDto corrispondente
      */
     public VisitaDto toDto(Visita visita) {
         return VisitaDto.fromEntity(visita);
-    }
-
-    private String toFasciaOraria(LocalDateTime dataVisita) {
-        if (dataVisita == null) {
-            return null;
-        }
-
-        return dataVisita.getHour() < 13
-                ? "Mattina (09:00 - 12:30)"
-                : "Pomeriggio (14:30 - 18:30)";
     }
 
     @Transactional(readOnly = true)
@@ -221,6 +229,60 @@ public class VisitaService {
         Pagamento pagato = pagamentiService.ottieniPerId(pagamentoId);
         visita.setPagamento(pagato);
         return visitaRepository.save(visita);
+    }
+
+    @Transactional
+    public Visita chiudiVisita(VisitaDto visitaDto) {
+        if (visitaDto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il corpo della visita non puo essere nullo.");
+        }
+        if (visitaDto.id() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id della visita e obbligatorio.");
+        }
+
+        Visita visita = getVisitaById(visitaDto.id());
+        if (visita.getStato() != VisitaStato.PRENOTATA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Solo una visita in stato PRENOTATA puo essere completata.");
+        }
+
+        aggiornaDatiVisita(visita, visitaDto);
+        visita.setStato(VisitaStato.COMPLETATA);
+        return visitaRepository.save(visita);
+    }
+
+    @Transactional
+    public Visita riapriVisita(Integer id) {
+        Visita visita = getVisitaById(id);
+        if (visita.getStato() != VisitaStato.COMPLETATA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Solo una visita in stato COMPLETATA puo tornare a PRENOTATA.");
+        }
+
+        visita.setStato(VisitaStato.PRENOTATA);
+        return visitaRepository.save(visita);
+    }
+
+    private void aggiornaDatiVisita(Visita visita, VisitaDto visitaDto) {
+        validaRiferimentiVisita(visitaDto);
+
+        TipoVisita tipoVisita = tipoVisitaService.ottieniPerId(visitaDto.tipoVisita().id());
+        Utente veterinario = utenteService.ottieniPerId(visitaDto.veterinario().id());
+        LocalDateTime dataInizio = ottieniDataInizio(visitaDto);
+
+        validaSovrapposizioneOrario(dataInizio, tipoVisita, veterinario, visita.getId());
+
+        visita.setAnimale(animaleService.ottieniPerId(visitaDto.animale().id()));
+        visita.setTipoVisita(tipoVisita);
+        visita.setVeterinario(veterinario);
+        visita.setDataVisita(dataInizio);
+        visita.setPagamento(visitaDto.pagamento() != null
+                ? pagamentiService.ottieniPerId(visitaDto.pagamento().id())
+                : null);
+        visita.setNote(visitaDto.note());
+        visita.setNotaPrivata(visitaDto.notaPrivata());
     }
 
     @Transactional

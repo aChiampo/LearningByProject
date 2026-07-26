@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import AddAnimalForm from '../../components/animals/AddAnimalForm';
@@ -10,6 +11,7 @@ function getOwnerName(animal) {
 }
 
 export default function DoctorAnimals() {
+  const navigate = useNavigate();
   const [animals, setAnimals] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -112,20 +114,22 @@ export default function DoctorAnimals() {
                 <tr>
                   <th>Paziente</th>
                   <th>Specie / Razza</th>
-                  <th>Ultima Visita</th>
                   <th>Proprietario</th>
                   <th>Azioni</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredAnimals.map((patient, index) => (
-                  <tr key={index}>
+                {filteredAnimals.map((patient) => (
+                  <tr key={patient.id}>
                     <td><strong>{patient.nome}</strong></td>
                     <td>{patient.specie} / {patient.razza}</td>
-                    <td>{patient.ultimaVisita ?? 'N/D'}</td>
                     <td>{getOwnerName(patient)}</td>
                     <td>
-                      <button className="btn btn-outline btn-sm" onClick={() => window.alert(`Mostra Storico Referti di ${patient.nome}`)}>
+                      <button
+                        className="btn btn-outline btn-sm"
+                        type="button"
+                        onClick={() => navigate(`/doctor/animals/${patient.id}/cartella`)}
+                      >
                         Vedi Cartella
                       </button>
                     </td>
