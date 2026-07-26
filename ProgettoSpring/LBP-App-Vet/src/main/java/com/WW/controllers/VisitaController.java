@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.WW.dto.DelayNotificationRequest;
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Visita;
@@ -210,6 +211,18 @@ public class VisitaController {
     @PatchMapping("/aggiornaPagato/{id}")
     public ResponseEntity<Visita> aggiornaPagato( @PathVariable Integer id, @RequestParam("pagamento") Integer pagamentoId) {
         return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamentoId));
+    }
+
+    /**
+     * Invia una notifica email al cliente per avvisare di un ritardo stimato.
+     *
+     * @param request dati della visita e ritardo stimato in minuti
+     * @return risposta senza contenuto
+     */
+    @PostMapping("/notifica-ritardo")
+    public ResponseEntity<Void> notificaRitardo(@Valid @RequestBody DelayNotificationRequest request) {
+        visitaService.inviaNotificaRitardo(request.visitaId(), request.delayMinutes());
+        return ResponseEntity.noContent().build();
     }
 
     /**

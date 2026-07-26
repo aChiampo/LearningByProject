@@ -125,8 +125,8 @@ export default function UnpaidVisitCard({ visit, currentRole, onPaid, onVisitDet
     setSubmitError('');
 
     try {
-      await payVisit(visit, paymentType);
-      onPaid?.(visit);
+      const result = await payVisit(visit, paymentType);
+      onPaid?.(result.visit ?? visit);
       closeDialog();
     } catch (error) {
       setSubmitError(error.message);

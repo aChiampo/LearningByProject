@@ -138,11 +138,11 @@ public class TipoVaccinoController {
     }
 
     /**
-     * Endpoint DELETE per eliminare un tipo di vaccino
+     * Endpoint PATCH per eliminare un tipo di vaccino (soft delete)
      * @param id l'ID del tipo di vaccino da eliminare
      * @return status 204 No Content se eliminato con successo
      */
-    @DeleteMapping("/{id}")
+    @PatchMapping("/{id}/elimina")
     public ResponseEntity<Void> deleteTipoVaccino(@PathVariable Integer id) {
         try {
             tipoVaccinoService.eliminaTipoVaccino(id);

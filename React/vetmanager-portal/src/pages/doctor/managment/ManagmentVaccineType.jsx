@@ -129,8 +129,8 @@ export default function ManagmentVaccineType() {
     }
 
     try {
-      const response = await apiFetch(`/api/tipi-vaccino/${id}`, {
-        method: 'DELETE',
+      const response = await apiFetch(`/api/tipi-vaccino/${id}/elimina`, {
+        method: 'PATCH',
       });
 
       if (!response.ok) throw new Error('Errore nell\'eliminazione del tipo di vaccino');

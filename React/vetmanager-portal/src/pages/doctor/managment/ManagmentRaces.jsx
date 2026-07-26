@@ -149,8 +149,8 @@ export default function ManagmentRaces() {
     }
 
     try {
-      const response = await apiFetch(`/api/razze/${id}`, {
-        method: 'DELETE',
+      const response = await apiFetch(`/api/razze/${id}/elimina`, {
+        method: 'PATCH',
       });
 
       if (!response.ok) throw new Error('Errore nell\'eliminazione della razza');

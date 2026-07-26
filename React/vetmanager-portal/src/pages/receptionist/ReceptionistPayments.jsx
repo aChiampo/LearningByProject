@@ -54,6 +54,10 @@ export default function ReceptionistPayments() {
 
   function handlePaidVisit(paidVisit) {
     setUnpaidVisits((currentVisits) => currentVisits.filter((visit) => visit.id !== paidVisit.id));
+    setPaidVisits((currentVisits) => [
+      paidVisit,
+      ...currentVisits.filter((visit) => visit.id !== paidVisit.id),
+    ]);
   }
 
   function handleVisitDetails(visit) {

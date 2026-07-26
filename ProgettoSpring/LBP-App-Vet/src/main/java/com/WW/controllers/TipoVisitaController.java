@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -105,12 +104,12 @@ public class TipoVisitaController {
     }
 
     /**
-     * Elimina un tipo visita esistente.
+     * Elimina un tipo visita esistente con soft delete.
      *
      * @param id identificativo del tipo visita da eliminare
      * @return risposta senza contenuto
      */
-    @DeleteMapping("/elimina/{id}")
+    @PatchMapping("/elimina/{id}")
     public ResponseEntity<Void> elimina(@PathVariable Integer id) {
         tipoVisitaService.eliminaTipoVisite(id);
         return ResponseEntity.noContent().build();

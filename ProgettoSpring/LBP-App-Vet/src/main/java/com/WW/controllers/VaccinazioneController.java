@@ -1,15 +1,26 @@
 package com.WW.controllers;
 
-import com.WW.entities.Vaccinazione;
+import com.WW.dto.VaccinazioneDto;
+import com.WW.dto.VaccinazioneRequest;
 import com.WW.entities.TipoVaccino;
+import com.WW.entities.Vaccinazione;
 import com.WW.services.VaccinazioneService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/vaccinazioni")
@@ -23,142 +34,100 @@ public class VaccinazioneController {
     }
 
     /**
-     * Endpoint GET per visualizzare tutte le vaccinazioni
-     * @return lista di tutte le vaccinazioni
+     * Endpoint GET per visualizzare tutte le vaccinazioni.
+     * @return lista DTO di tutte le vaccinazioni
      */
     @GetMapping
-    public ResponseEntity<List<Vaccinazione>> getAllVaccinazioni() {
-        try {
-            List<Vaccinazione> vaccinazioni = vaccinazioniService.visualizzaTutteVaccinazioni();
-            return ResponseEntity.ok(vaccinazioni);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<List<VaccinazioneDto>> getAllVaccinazioni() {
+        return ResponseEntity.ok(vaccinazioniService.visualizzaTutteVaccinazioniDto());
     }
 
     /**
-     * Endpoint GET per recuperare una vaccinazione per ID
+     * Endpoint GET per recuperare una vaccinazione per ID.
      * @param id l'ID della vaccinazione
      * @return la vaccinazione se trovata
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Vaccinazione> getVaccinazioneById(@PathVariable Integer id) {
-        try {
-            Optional<Vaccinazione> vaccinazione = vaccinazioniService.getVaccinazioneById(id);
-            return vaccinazione.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<VaccinazioneDto> getVaccinazioneById(@PathVariable Integer id) {
+        return vaccinazioniService.getVaccinazioneDtoById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
-     * Endpoint GET per ricercare vaccinazioni per tipo di vaccino
+     * Endpoint GET per recuperare le vaccinazioni di un animale.
+     * @param idAnimale identificativo dell'animale
+     * @return lista DTO delle vaccinazioni dell'animale
+     */
+    @GetMapping("/animale/{idAnimale}")
+    public ResponseEntity<List<VaccinazioneDto>> getVaccinazioniByAnimale(@PathVariable Integer idAnimale) {
+        return ResponseEntity.ok(vaccinazioniService.findByIdAnimale(idAnimale));
+    }
+
+    /**
+     * Endpoint GET per ricercare vaccinazioni per tipo di vaccino.
      * @param idTipoVaccino l'ID del tipo di vaccino
      * @return lista di vaccinazioni del tipo specificato
      */
     @GetMapping("/cerca/tipo/{idTipoVaccino}")
     public ResponseEntity<List<Vaccinazione>> getVaccinazioniByTipo(@PathVariable Integer idTipoVaccino) {
-        try {
-            TipoVaccino tipoVaccino = new TipoVaccino();
-            tipoVaccino.setId(idTipoVaccino);
-            List<Vaccinazione> vaccinazioni = vaccinazioniService.findByIdTipoVaccino(tipoVaccino);
-            return ResponseEntity.ok(vaccinazioni);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        TipoVaccino tipoVaccino = new TipoVaccino();
+        tipoVaccino.setId(idTipoVaccino);
+        return ResponseEntity.ok(vaccinazioniService.findByIdTipoVaccino(tipoVaccino));
     }
 
     /**
-     * Endpoint GET per ricercare vaccinazioni per data
+     * Endpoint GET per ricercare vaccinazioni per data.
      * @param data la data di vaccinazione (formato: yyyy-MM-ddTHH:mm:ss)
      * @return lista di vaccinazioni della data specificata
      */
     @GetMapping("/cerca/data")
     public ResponseEntity<List<Vaccinazione>> getVaccinazioniByData(@RequestParam LocalDateTime data) {
-        try {
-            List<Vaccinazione> vaccinazioni = vaccinazioniService.findByDataVaccinazione(data);
-            return ResponseEntity.ok(vaccinazioni);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(vaccinazioniService.findByDataVaccinazione(data));
     }
 
     /**
-     * Endpoint GET per ricercare vaccinazioni per lotto
+     * Endpoint GET per ricercare vaccinazioni per lotto.
      * @param lotto il numero di lotto
      * @return lista di vaccinazioni del lotto specificato
      */
     @GetMapping("/cerca/lotto")
     public ResponseEntity<List<Vaccinazione>> getVaccinazioniByLotto(@RequestParam String lotto) {
-        try {
-            List<Vaccinazione> vaccinazioni = vaccinazioniService.findByLotto(lotto);
-            return ResponseEntity.ok(vaccinazioni);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(vaccinazioniService.findByLotto(lotto));
     }
 
     /**
-     * Endpoint POST per creare una nuova vaccinazione
-     * @param vaccinazione i dati della vaccinazione da creare
+     * Endpoint POST per creare una nuova vaccinazione.
+     * @param request i dati della vaccinazione da creare
      * @return la vaccinazione creata
      */
     @PostMapping
-    public ResponseEntity<Vaccinazione> createVaccinazione(@RequestBody Vaccinazione vaccinazione) {
-        try {
-            Vaccinazione vaccinazioneCreata = vaccinazioniService.salvaVaccinazione(vaccinazione);
-            return ResponseEntity.status(HttpStatus.CREATED).body(vaccinazioneCreata);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<VaccinazioneDto> createVaccinazione(@Valid @RequestBody VaccinazioneRequest request) {
+        VaccinazioneDto vaccinazioneCreata = vaccinazioniService.salvaVaccinazione(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(vaccinazioneCreata);
     }
 
     /**
-     * Endpoint PUT per aggiornare una vaccinazione esistente
+     * Endpoint PUT per aggiornare una vaccinazione esistente.
      * @param id l'ID della vaccinazione da aggiornare
-     * @param vaccinazione i nuovi dati della vaccinazione
+     * @param request i nuovi dati della vaccinazione
      * @return la vaccinazione aggiornata
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Vaccinazione> updateVaccinazione(
+    public ResponseEntity<VaccinazioneDto> updateVaccinazione(
             @PathVariable Integer id,
-            @RequestBody Vaccinazione vaccinazione) {
-        try {
-            vaccinazione.setId(id);
-            Vaccinazione vaccinazioneAggiornata = vaccinazioniService.aggiornaVaccinazione(vaccinazione);
-            return ResponseEntity.ok(vaccinazioneAggiornata);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+            @Valid @RequestBody VaccinazioneRequest request) {
+        return ResponseEntity.ok(vaccinazioniService.aggiornaVaccinazione(id, request));
     }
 
     /**
-     * Endpoint DELETE per eliminare una vaccinazione
+     * Endpoint DELETE per eliminare una vaccinazione.
      * @param id l'ID della vaccinazione da eliminare
      * @return status 204 No Content se eliminata con successo
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVaccinazione(@PathVariable Integer id) {
-        try {
-            vaccinazioniService.eliminaVaccinazione(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        vaccinazioniService.eliminaVaccinazione(id);
+        return ResponseEntity.noContent().build();
     }
 }

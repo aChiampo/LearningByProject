@@ -106,7 +106,7 @@ export default function ManagmentVisitCategory() {
 
     try {
       const response = await apiFetch(`/api/categorieVisite/elimina/${id}`, {
-        method: 'DELETE',
+        method: 'PATCH',
       });
 
       if (!response.ok) throw new Error('Errore nell\'eliminazione della categoria di visita');

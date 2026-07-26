@@ -137,5 +137,6 @@ export async function payVisit(visit, paymentType) {
   return {
     payment,
     updatedVisit,
+    visit: normalizeUnpaidVisit(updatedVisit),
   };
 }

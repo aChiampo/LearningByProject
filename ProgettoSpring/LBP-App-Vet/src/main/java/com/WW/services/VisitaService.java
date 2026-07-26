@@ -1,9 +1,14 @@
 package com.WW.services;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +16,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
+import com.WW.entities.FileReferences;
 import com.WW.entities.Pagamento;
 import com.WW.entities.TipoVisita;
 import com.WW.entities.Utente;
 import com.WW.entities.Visita;
 import com.WW.enums.VisitaStato;
+import com.WW.fileManager.PdfFileNameGenerator;
+import com.WW.fileManager.PdfFileService;
+import com.WW.mailManager.EmailSenderService;
 import com.WW.repositories.VisitaRepository;
 
 /**
@@ -24,23 +33,38 @@ import com.WW.repositories.VisitaRepository;
 @Service
 public class VisitaService {
 
+    private static final DateTimeFormatter MAIL_DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     private final VisitaRepository visitaRepository;
     private final TipoVisitaService tipoVisitaService;
     private final AnimaleService animaleService;
     private final UtenteService utenteService;
     private final PagamentiService pagamentiService;
+    private final FileReferencesService fileReferencesService;
+    private final PdfFileService pdfFileService;
+    private final EmailSenderService emailSenderService;
+
+    @Value("${app.clinic.name:Clinica Veterinaria}")
+    private String clinicName;
 
     public VisitaService(
             VisitaRepository visitaRepository,
             TipoVisitaService tipoVisitaService,
             AnimaleService animaleService,
             UtenteService utenteService,
-            PagamentiService pagamentiService) {
+            PagamentiService pagamentiService,
+            FileReferencesService fileReferencesService,
+            PdfFileService pdfFileService,
+            EmailSenderService emailSenderService) {
         this.visitaRepository = visitaRepository;
         this.tipoVisitaService = tipoVisitaService;
         this.animaleService = animaleService;
         this.utenteService = utenteService;
         this.pagamentiService = pagamentiService;
+        this.fileReferencesService = fileReferencesService;
+        this.pdfFileService = pdfFileService;
+        this.emailSenderService = emailSenderService;
     }
 
     /**
@@ -227,8 +251,97 @@ public class VisitaService {
     public Visita updateVisitaPagato(Integer id, Integer pagamentoId) {
         Visita visita = getVisitaById(id);
         Pagamento pagato = pagamentiService.ottieniPerId(pagamentoId);
-        visita.setPagamento(pagato);
+        Pagamento pagamentoConRicevuta = generaRicevutaSeNecessaria(visita, pagato);
+
+        visita.setPagamento(pagamentoConRicevuta);
         return visitaRepository.save(visita);
+    }
+
+    private Pagamento generaRicevutaSeNecessaria(Visita visita, Pagamento pagamento) {
+        if (pagamento.getRiferimentoFile() != null) {
+            return pagamento;
+        }
+
+        Utente proprietario = visita.getAnimale().getUtente();
+
+        if (proprietario == null || proprietario.getId() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Impossibile generare la ricevuta: proprietario non trovato.");
+        }
+
+        if (pagamento.getUtente() == null) {
+            pagamento.setUtente(proprietario);
+        }
+
+        String fileName = PdfFileNameGenerator.receiptFileName(pagamento.getId(), proprietario.getId());
+        Map<String, Object> variabili = Map.of(
+                "pagamento", pagamento,
+                "visita", visita);
+
+        Path receiptPath = proprietario.getAzienda() != null
+                ? pdfFileService.creaFatturaAzienda(fileName, variabili)
+                : pdfFileService.creaFatturaPrivato(fileName, variabili);
+
+        try {
+            FileReferences riferimentoFile = FileReferences.builder()
+                    .originalFileName(fileName)
+                    .storedFileName(receiptPath.getFileName().toString())
+                    .mimeType("application/pdf")
+                    .ssize(Files.size(receiptPath))
+                    .storagePath(receiptPath.getParent().toString())
+                    .owner(proprietario)
+                    .uploadDate(LocalDateTime.now())
+                    .isDeleted(false)
+                    .build();
+
+            pagamento.setRiferimentoFile(fileReferencesService.salvaFileReference(riferimentoFile));
+            return pagamentiService.salvaPagamento(pagamento);
+        } catch (Exception ex) {
+            throw new IllegalStateException("Impossibile salvare il riferimento alla ricevuta.", ex);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void inviaNotificaRitardo(Integer visitaId, Integer delayMinutes) {
+        if (delayMinutes == null || delayMinutes <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il ritardo deve essere maggiore di zero.");
+        }
+
+        Visita visita = getVisitaById(visitaId);
+        Utente cliente = visita.getAnimale().getUtente();
+
+        if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Impossibile inviare la notifica: email cliente non disponibile.");
+        }
+
+        LocalDateTime appointmentTime = visita.getDataVisita();
+        Map<String, Object> variabili = Map.of(
+                "clientName", getFullName(cliente),
+                "animalName", valueOrFallback(visita.getAnimale().getNome(), "il tuo animale"),
+                "appointmentTime", MAIL_DATE_TIME_FORMATTER.format(appointmentTime),
+                "delayMinutes", delayMinutes + " minuti",
+                "estimatedNewTime", MAIL_DATE_TIME_FORMATTER.format(appointmentTime.plusMinutes(delayMinutes)),
+                "clinicName", valueOrFallback(clinicName, "la clinica"));
+
+        emailSenderService.inviaAvvisoRitardoAppuntamento(cliente.getEmail(), variabili);
+    }
+
+    private String getFullName(Utente utente) {
+        String fullName = (valueOrFallback(utente.getNome(), "") + " " + valueOrFallback(utente.getCognome(), ""))
+                .trim();
+
+        if (!fullName.isBlank()) {
+            return fullName;
+        }
+
+        return utente.getEmail() != null ? utente.getEmail() : "Cliente";
+    }
+
+    private String valueOrFallback(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
     }
 
     @Transactional
