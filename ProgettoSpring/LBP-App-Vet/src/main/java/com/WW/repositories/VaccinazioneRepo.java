@@ -13,6 +13,7 @@ public interface VaccinazioneRepo extends JpaRepository<Vaccinazione, Integer> {
 
     List<Vaccinazione> findByIdTipoVaccino(TipoVaccino idTipoVaccino);
     List<Vaccinazione> findByIdTipoVaccinoAndIsDeletedFalse(TipoVaccino idTipoVaccino);
+    List<Vaccinazione> findByIdAnimaleIdAndIsDeletedFalse(Integer idAnimale);
 
     List<Vaccinazione> findByDataVaccinazione(LocalDateTime dataVaccinazione);
     List<Vaccinazione> findByDataVaccinazioneAndIsDeletedFalse(LocalDateTime dataVaccinazione);

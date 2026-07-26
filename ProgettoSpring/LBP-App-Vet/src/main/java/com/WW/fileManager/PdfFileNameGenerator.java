@@ -24,6 +24,19 @@ public final class PdfFileNameGenerator {
                 + ".pdf";
     }
 
+    public static String receiptFileName(Integer paymentId, Integer customerId) {
+        validateId(paymentId, "Payment ID");
+        validateId(customerId, "Customer ID");
+
+        return "receipt_"
+                + paymentId
+                + "_C"
+                + customerId
+                + "_"
+                + LocalDateTime.now().format(FILE_NAME_DATE_FORMATTER)
+                + ".pdf";
+    }
+
     public static String recipeFileName(Integer recipeId, Integer animalId) {
         validateId(recipeId, "Recipe ID");
         validateId(animalId, "Animal ID");

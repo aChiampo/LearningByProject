@@ -2,8 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import PageTitle from '../../components/common/PageTitle';
+import AnimalVaccinationCard from '../../components/vaccinations/AnimalVaccinationCard';
 import { fetchAnimalById, updateAnimal } from '../../services/animalApi';
 import { fetchVisitById, fetchVisitsByAnimal, updateVisitNotes } from '../../services/visitApi';
+import {
+  createVaccination,
+  fetchVaccinationsByAnimal,
+  fetchVaccineTypes,
+  getTodayDateValue,
+  renewVaccination,
+} from '../../services/vaccinationApi';
 import './CartellaMedica.css';
 
 const initialAnimalForm = {
@@ -15,6 +23,12 @@ const initialAnimalForm = {
   peso: '',
   microchip: '',
   note: '',
+};
+
+const initialVaccinationForm = {
+  tipoVaccinoId: '',
+  dataVaccinazione: getTodayDateValue(),
+  lotto: '',
 };
 
 function formatDateTime(value) {
@@ -70,12 +84,28 @@ function sortVisitsByMostRecent(visits) {
   });
 }
 
-export default function CartellaMedica() {
+function sortVaccinationsByExpiration(vaccinations) {
+  return [...vaccinations].sort((firstVaccination, secondVaccination) => {
+    const firstDate = new Date(firstVaccination.dataScadenza).getTime();
+    const secondDate = new Date(secondVaccination.dataScadenza).getTime();
+
+    return (Number.isNaN(firstDate) ? Number.MAX_SAFE_INTEGER : firstDate)
+      - (Number.isNaN(secondDate) ? Number.MAX_SAFE_INTEGER : secondDate);
+  });
+}
+
+export default function CartellaMedica({ readOnly = false }) {
   const { animalId } = useParams();
   const navigate = useNavigate();
   const [animal, setAnimal] = useState(null);
   const [animalForm, setAnimalForm] = useState(initialAnimalForm);
   const [visits, setVisits] = useState([]);
+  const [vaccinations, setVaccinations] = useState([]);
+  const [vaccineTypes, setVaccineTypes] = useState([]);
+  const [vaccinationForm, setVaccinationForm] = useState(initialVaccinationForm);
+  const [isVaccinationFormOpen, setIsVaccinationFormOpen] = useState(false);
+  const [isSavingVaccination, setIsSavingVaccination] = useState(false);
+  const [renewingVaccinationId, setRenewingVaccinationId] = useState(null);
   const [selectedVisit, setSelectedVisit] = useState(null);
   const [reportVisit, setReportVisit] = useState(null);
   const [reportForm, setReportForm] = useState({ note: '' });
@@ -87,6 +117,7 @@ export default function CartellaMedica() {
   const [statusMessage, setStatusMessage] = useState('');
 
   const orderedVisits = useMemo(() => sortVisitsByMostRecent(visits), [visits]);
+  const orderedVaccinations = useMemo(() => sortVaccinationsByExpiration(vaccinations), [vaccinations]);
 
   useEffect(() => {
     let isMounted = true;
@@ -97,9 +128,11 @@ export default function CartellaMedica() {
       setStatusMessage('');
 
       try {
-        const [animalData, visitList] = await Promise.all([
+        const [animalData, visitList, vaccinationList, vaccineTypeList] = await Promise.all([
           fetchAnimalById(animalId),
           fetchVisitsByAnimal(animalId),
+          fetchVaccinationsByAnimal(animalId),
+          fetchVaccineTypes(),
         ]);
 
         if (!isMounted) {
@@ -109,11 +142,15 @@ export default function CartellaMedica() {
         setAnimal(animalData);
         setAnimalForm(buildAnimalForm(animalData));
         setVisits(visitList);
+        setVaccinations(vaccinationList);
+        setVaccineTypes(vaccineTypeList);
       } catch (error) {
         if (isMounted) {
           setErrorMessage(error.message);
           setAnimal(null);
           setVisits([]);
+          setVaccinations([]);
+          setVaccineTypes([]);
         }
       } finally {
         if (isMounted) {
@@ -136,8 +173,83 @@ export default function CartellaMedica() {
     }));
   }
 
+  function updateVaccinationField(fieldName, value) {
+    setVaccinationForm((currentForm) => ({
+      ...currentForm,
+      [fieldName]: value,
+    }));
+  }
+
+  function handleOpenVaccinationForm() {
+    setVaccinationForm({
+      ...initialVaccinationForm,
+      tipoVaccinoId: vaccineTypes[0]?.id ? String(vaccineTypes[0].id) : '',
+      dataVaccinazione: getTodayDateValue(),
+    });
+    setIsVaccinationFormOpen(true);
+    setStatusMessage('');
+    setErrorMessage('');
+  }
+
+  async function handleSaveVaccination(event) {
+    event.preventDefault();
+
+    if (readOnly) {
+      return;
+    }
+
+    setIsSavingVaccination(true);
+    setErrorMessage('');
+    setStatusMessage('');
+
+    try {
+      const createdVaccination = await createVaccination({
+        animaleId: animalId,
+        ...vaccinationForm,
+      });
+      setVaccinations((currentVaccinations) => [...currentVaccinations, createdVaccination]);
+      setVaccinationForm({
+        ...initialVaccinationForm,
+        dataVaccinazione: getTodayDateValue(),
+      });
+      setIsVaccinationFormOpen(false);
+      setStatusMessage('Vaccinazione aggiunta correttamente.');
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSavingVaccination(false);
+    }
+  }
+
+  async function handleRenewVaccination(vaccination) {
+    if (readOnly) {
+      return;
+    }
+
+    setRenewingVaccinationId(vaccination.id);
+    setErrorMessage('');
+    setStatusMessage('');
+
+    try {
+      const renewedVaccination = await renewVaccination(vaccination, getTodayDateValue());
+      setVaccinations((currentVaccinations) => currentVaccinations.map((currentVaccination) => (
+        currentVaccination.id === renewedVaccination.id ? renewedVaccination : currentVaccination
+      )));
+      setStatusMessage('Periodo vaccinazione rinnovato correttamente.');
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setRenewingVaccinationId(null);
+    }
+  }
+
   async function handleSaveAnimal(event) {
     event.preventDefault();
+
+    if (readOnly) {
+      return;
+    }
+
     setIsSavingAnimal(true);
     setErrorMessage('');
     setStatusMessage('');
@@ -185,6 +297,10 @@ export default function CartellaMedica() {
   }
 
   function handleOpenReportForm(visit) {
+    if (readOnly) {
+      return;
+    }
+
     setSelectedVisit(null);
     setReportVisit(visit);
     setReportForm({
@@ -196,6 +312,11 @@ export default function CartellaMedica() {
 
   async function handleSaveReport(event) {
     event.preventDefault();
+
+    if (readOnly) {
+      return;
+    }
+
     setIsSavingReport(true);
     setErrorMessage('');
     setStatusMessage('');
@@ -221,9 +342,9 @@ export default function CartellaMedica() {
       <button
         className="btn btn-outline btn-sm cartella-medica__back"
         type="button"
-        onClick={() => navigate('/doctor/animals')}
+        onClick={() => navigate(readOnly ? '/client/dashboard' : '/doctor/animals')}
       >
-        Torna al registro
+        {readOnly ? 'Torna ai miei animali' : 'Torna al registro'}
       </button>
 
       {isLoading && <p className="muted-text">Caricamento cartella medica...</p>}
@@ -260,6 +381,7 @@ export default function CartellaMedica() {
                   value={animalForm.nome}
                   onChange={(event) => updateAnimalField('nome', event.target.value)}
                   maxLength="30"
+                  readOnly={readOnly}
                   required
                 />
               </label>
@@ -272,6 +394,7 @@ export default function CartellaMedica() {
                   type="date"
                   value={animalForm.dataNascita}
                   onChange={(event) => updateAnimalField('dataNascita', event.target.value)}
+                  readOnly={readOnly}
                   required
                 />
               </label>
@@ -286,6 +409,7 @@ export default function CartellaMedica() {
                   type="text"
                   value={animalForm.specie}
                   onChange={(event) => updateAnimalField('specie', event.target.value)}
+                  readOnly={readOnly}
                 />
               </label>
 
@@ -297,6 +421,7 @@ export default function CartellaMedica() {
                   type="text"
                   value={animalForm.razza}
                   onChange={(event) => updateAnimalField('razza', event.target.value)}
+                  readOnly={readOnly}
                 />
               </label>
             </div>
@@ -310,6 +435,7 @@ export default function CartellaMedica() {
                   value="Maschio"
                   checked={animalForm.sesso === 'Maschio'}
                   onChange={(event) => updateAnimalField('sesso', event.target.value)}
+                  disabled={readOnly}
                 />
                 <span>Maschio</span>
               </label>
@@ -320,6 +446,7 @@ export default function CartellaMedica() {
                   value="Femmina"
                   checked={animalForm.sesso === 'Femmina'}
                   onChange={(event) => updateAnimalField('sesso', event.target.value)}
+                  disabled={readOnly}
                 />
                 <span>Femmina</span>
               </label>
@@ -336,6 +463,7 @@ export default function CartellaMedica() {
                   step="0.01"
                   value={animalForm.peso}
                   onChange={(event) => updateAnimalField('peso', event.target.value)}
+                  readOnly={readOnly}
                 />
               </label>
 
@@ -348,6 +476,7 @@ export default function CartellaMedica() {
                   value={animalForm.microchip}
                   onChange={(event) => updateAnimalField('microchip', event.target.value)}
                   maxLength="15"
+                  readOnly={readOnly}
                 />
               </label>
             </div>
@@ -360,13 +489,119 @@ export default function CartellaMedica() {
                 value={animalForm.note}
                 onChange={(event) => updateAnimalField('note', event.target.value)}
                 rows="4"
+                readOnly={readOnly}
               />
             </label>
 
-            <button className="btn btn-primary cartella-medica__save" type="submit" disabled={isSavingAnimal}>
-              {isSavingAnimal ? 'Salvataggio...' : 'Salva'}
-            </button>
+            {!readOnly && (
+              <button className="btn btn-primary cartella-medica__save" type="submit" disabled={isSavingAnimal}>
+                {isSavingAnimal ? 'Salvataggio...' : 'Salva'}
+              </button>
+            )}
           </form>
+
+          <section className="panel cartella-medica__section">
+            <div className="cartella-medica__heading">
+              <div>
+                <p className="eyebrow">Profilassi</p>
+                <h2>Vaccinazioni</h2>
+              </div>
+              <div className="cartella-medica__heading-actions">
+                <span className="badge">{orderedVaccinations.length} vaccinazioni</span>
+                {!readOnly && (
+                  <button
+                    className="btn btn-primary btn-sm"
+                    type="button"
+                    onClick={handleOpenVaccinationForm}
+                    disabled={vaccineTypes.length === 0}
+                  >
+                    Aggiungi vaccinazione
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {!readOnly && vaccineTypes.length === 0 && (
+              <p className="muted-text">Configura almeno un tipo di vaccino prima di registrare una vaccinazione.</p>
+            )}
+
+            {isVaccinationFormOpen && (
+              <form className="cartella-medica__vaccination-form" onSubmit={handleSaveVaccination}>
+                <div className="cartella-medica__form-grid">
+                  <label htmlFor="medical-record-vaccine-type">
+                    Vaccino
+                    <select
+                      id="medical-record-vaccine-type"
+                      name="tipoVaccinoId"
+                      value={vaccinationForm.tipoVaccinoId}
+                      onChange={(event) => updateVaccinationField('tipoVaccinoId', event.target.value)}
+                      required
+                    >
+                      <option value="">Seleziona vaccino</option>
+                      {vaccineTypes.map((vaccineType) => (
+                        <option key={vaccineType.id} value={vaccineType.id}>
+                          {vaccineType.nome} - {vaccineType.durataMesi} mesi
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label htmlFor="medical-record-vaccination-date">
+                    Data vaccinazione
+                    <input
+                      id="medical-record-vaccination-date"
+                      name="dataVaccinazione"
+                      type="date"
+                      value={vaccinationForm.dataVaccinazione}
+                      onChange={(event) => updateVaccinationField('dataVaccinazione', event.target.value)}
+                      required
+                    />
+                  </label>
+                </div>
+
+                <label htmlFor="medical-record-vaccination-lot">
+                  Lotto
+                  <input
+                    id="medical-record-vaccination-lot"
+                    name="lotto"
+                    type="text"
+                    value={vaccinationForm.lotto}
+                    onChange={(event) => updateVaccinationField('lotto', event.target.value)}
+                    maxLength="80"
+                  />
+                </label>
+
+                <div className="cartella-medica__actions">
+                  <button className="btn btn-primary" type="submit" disabled={isSavingVaccination}>
+                    {isSavingVaccination ? 'Salvataggio...' : 'Salva vaccinazione'}
+                  </button>
+                  <button
+                    className="btn btn-outline"
+                    type="button"
+                    onClick={() => setIsVaccinationFormOpen(false)}
+                  >
+                    Annulla
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {orderedVaccinations.length > 0 ? (
+              <div className="cartella-medica__vaccination-list">
+                {orderedVaccinations.map((vaccination) => (
+                  <AnimalVaccinationCard
+                    key={vaccination.id}
+                    vaccination={vaccination}
+                    readOnly={readOnly}
+                    isRenewing={renewingVaccinationId === vaccination.id}
+                    onRenew={handleRenewVaccination}
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyMessage>Nessuna vaccinazione registrata per questo animale.</EmptyMessage>
+            )}
+          </section>
 
           <section className="panel cartella-medica__section">
             <div className="cartella-medica__heading">
@@ -395,7 +630,7 @@ export default function CartellaMedica() {
                     </p>
 
                     <div className="cartella-medica__visit-actions">
-                      {visit.stato === 'COMPLETATA' ? (
+                      {readOnly || visit.stato === 'COMPLETATA' ? (
                         <button
                           className="btn btn-outline btn-sm"
                           type="button"
@@ -445,10 +680,12 @@ export default function CartellaMedica() {
                   <dt>Pagamento</dt>
                   <dd>{selectedVisit.pagamento ? 'Associato' : 'Non associato'}</dd>
                 </div>
-                <div>
-                  <dt>Nota privata</dt>
-                  <dd>{selectedVisit.notaPrivata || 'N/D'}</dd>
-                </div>
+                {!readOnly && (
+                  <div>
+                    <dt>Nota privata</dt>
+                    <dd>{selectedVisit.notaPrivata || 'N/D'}</dd>
+                  </div>
+                )}
               </dl>
 
               <div className="cartella-medica__note-panel">

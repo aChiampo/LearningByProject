@@ -2,12 +2,17 @@ import { useEffect, useState } from 'react';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
-import { fetchAppointments } from '../../services/appointmentApi';
+import { fetchAppointments, sendDelayNotification } from '../../services/appointmentApi';
 
 export default function ReceptionistAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [delayDialogVisit, setDelayDialogVisit] = useState(null);
+  const [delayMinutes, setDelayMinutes] = useState('15');
+  const [delayError, setDelayError] = useState('');
+  const [delayStatus, setDelayStatus] = useState('');
+  const [isSendingDelay, setIsSendingDelay] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -49,8 +54,44 @@ export default function ReceptionistAppointments() {
     window.alert('Appuntamento eliminato');
   }
 
-  function handleDelayNotification() {
-    window.alert('Invio notifica di ritardo');
+  function handleDelayNotification(appointment) {
+    setDelayDialogVisit(appointment);
+    setDelayMinutes('15');
+    setDelayError('');
+    setDelayStatus('');
+  }
+
+  function closeDelayDialog() {
+    if (isSendingDelay) {
+      return;
+    }
+
+    setDelayDialogVisit(null);
+    setDelayError('');
+  }
+
+  async function handleDelaySubmit(event) {
+    event.preventDefault();
+    const parsedDelay = Number(delayMinutes);
+
+    if (!Number.isInteger(parsedDelay) || parsedDelay <= 0) {
+      setDelayError('Inserisci un ritardo valido in minuti.');
+      return;
+    }
+
+    setIsSendingDelay(true);
+    setDelayError('');
+    setDelayStatus('');
+
+    try {
+      await sendDelayNotification(delayDialogVisit.id, parsedDelay);
+      setDelayStatus(`Notifica di ritardo inviata per ${delayDialogVisit.animalName || 'la visita'}.`);
+      setDelayDialogVisit(null);
+    } catch (error) {
+      setDelayError(error.message);
+    } finally {
+      setIsSendingDelay(false);
+    }
   }
 
   return (
@@ -73,6 +114,12 @@ export default function ReceptionistAppointments() {
           </p>
         )}
 
+        {delayStatus && (
+          <p className="form-status form-status--success">
+            {delayStatus}
+          </p>
+        )}
+
         {!isLoading && appointments.length > 0 ? (
           <AppointmentCardList
             appointments={appointments}
@@ -84,6 +131,53 @@ export default function ReceptionistAppointments() {
           <EmptyMessage>Nessun appuntamento registrato a sistema.</EmptyMessage>
         )}
       </div>
+
+      {delayDialogVisit && (
+        <div className="profile-dialog" role="presentation">
+          <div className="profile-dialog__backdrop" onClick={closeDelayDialog} aria-hidden="true"></div>
+          <section className="profile-dialog__window" role="dialog" aria-modal="true" aria-labelledby="delay-dialog-title">
+            <div className="card-header">
+              <h2 id="delay-dialog-title">Notifica ritardo</h2>
+              <button type="button" className="btn btn-outline btn-sm" onClick={closeDelayDialog} disabled={isSendingDelay}>
+                Chiudi
+              </button>
+            </div>
+
+            <p className="muted-text">
+              {delayDialogVisit.animalName || 'Visita'} - {delayDialogVisit.appointmentDate || delayDialogVisit.appointmentHour}
+            </p>
+
+            <form className="stack-form" onSubmit={handleDelaySubmit}>
+              <label htmlFor="delay-minutes">
+                Ritardo stimato in minuti
+                <input
+                  id="delay-minutes"
+                  name="delayMinutes"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={delayMinutes}
+                  onChange={(event) => setDelayMinutes(event.target.value)}
+                  required
+                />
+              </label>
+
+              {delayError && (
+                <p className="form-status form-status--error">{delayError}</p>
+              )}
+
+              <div className="actions-row">
+                <button type="submit" className="btn btn-primary" disabled={isSendingDelay}>
+                  {isSendingDelay ? 'Invio...' : 'Invia notifica'}
+                </button>
+                <button type="button" className="btn btn-outline" onClick={closeDelayDialog} disabled={isSendingDelay}>
+                  Annulla
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
     </div>
   );
 }

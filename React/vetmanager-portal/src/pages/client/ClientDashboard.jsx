@@ -88,7 +88,13 @@ export default function ClientDashboard() {
                   <button className="btn btn-primary btn-sm" onClick={() => navigate('/client/booking')}>
                     Prenota Visita
                   </button>
-                  <button className="btn btn-outline btn-sm">Apri Cartella</button>
+                  <button
+                    className="btn btn-outline btn-sm"
+                    type="button"
+                    onClick={() => navigate(`/client/animals/${animale.id}/cartella`)}
+                  >
+                    Apri Cartella
+                  </button>
                 </div>
               </article>
             ))}

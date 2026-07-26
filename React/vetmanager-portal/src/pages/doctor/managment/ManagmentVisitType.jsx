@@ -158,7 +158,7 @@ export default function ManagmentVisitType() {
 
     try {
       const response = await apiFetch(`/api/tipiVisite/elimina/${id}`, {
-        method: 'DELETE',
+        method: 'PATCH',
       });
 
       if (!response.ok) throw new Error('Errore nell\'eliminazione del tipo di visita');

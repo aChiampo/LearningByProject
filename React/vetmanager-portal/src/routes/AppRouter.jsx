@@ -48,6 +48,7 @@ export default function AppRouter() {
             <Route path="/client/profile" element={<ClientProfile />} />
             <Route path="/client/booking" element={<ClientBooking />} />
             <Route path="/client/add-animal" element={<ClientAddAnimal />} />
+            <Route path="/client/animals/:animalId/cartella" element={<CartellaMedica readOnly />} />
             <Route path="/client/billing" element={<ClientBilling />} />
             <Route path="/client/faq" element={<ClientFaq />} />
           </Route>

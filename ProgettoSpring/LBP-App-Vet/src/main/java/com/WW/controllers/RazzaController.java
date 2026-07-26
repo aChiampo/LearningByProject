@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -156,11 +157,11 @@ public class RazzaController {
     }
 
     /**
-     * Endpoint DELETE per eliminare una razza (soft delete)
+     * Endpoint PATCH per eliminare una razza (soft delete)
      * @param id l'ID della razza da eliminare
      * @return status 204 No Content se eliminata con successo
      */
-    @DeleteMapping("/{id}")
+    @PatchMapping("/{id}/elimina")
     public ResponseEntity<Void> deleteRazza(@PathVariable Integer id) {
         try {
             razzaService.eliminaRazza(id);

@@ -112,8 +112,8 @@ export default function ManagmentSpecies() {
     }
 
     try {
-      const response = await apiFetch(`/api/specie/${id}`, {
-        method: 'DELETE',
+      const response = await apiFetch(`/api/specie/${id}/elimina`, {
+        method: 'PATCH',
       });
 
       if (!response.ok) throw new Error('Errore nell\'eliminazione della specie');

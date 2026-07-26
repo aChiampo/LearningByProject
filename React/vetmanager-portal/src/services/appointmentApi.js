@@ -75,3 +75,15 @@ export async function fetchAppointments(params = {}) {
 
   return visitList.map(normalizeVisitToAppointment);
 }
+
+export async function sendDelayNotification(visitId, delayMinutes) {
+  const response = await apiFetchWithPayload(`${VISITS_API_BASE}/notifica-ritardo`, [{
+    visitaId: visitId,
+    delayMinutes,
+  }]);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile inviare la notifica di ritardo.');
+    throw new Error(errorMessage || 'Impossibile inviare la notifica di ritardo.');
+  }
+}

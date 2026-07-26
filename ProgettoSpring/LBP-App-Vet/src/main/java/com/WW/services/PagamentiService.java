@@ -41,6 +41,11 @@ public class PagamentiService {
         return pagamentoRepository.save(esistente);
     }
 
+    @Transactional
+    public Pagamento salvaPagamento(Pagamento pagamento) {
+        return pagamentoRepository.save(pagamento);
+    }
+
     @Transactional(readOnly = true)
     public List<Pagamento> ottieniTutti() {
         return pagamentoRepository.findByIsDeletedFalse();

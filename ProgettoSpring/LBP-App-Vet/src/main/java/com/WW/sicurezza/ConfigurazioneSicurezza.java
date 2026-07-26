@@ -52,6 +52,14 @@ public class ConfigurazioneSicurezza {
                                 "/api/autenticazione/login",
                                 "/api/autenticazione/signin"
                         ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/api/specie/*/elimina",
+                                "/api/razze/*/elimina",
+                                "/api/tipi-vaccino/*/elimina",
+                                "/api/categorieVisite/elimina/*",
+                                "/api/tipiVisite/elimina/*"
+                        ).hasAnyRole("ADMIN", "VETERINARIO")
                         .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

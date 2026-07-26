@@ -29,8 +29,8 @@ public class PdfFileService {
     @Value("${app.files.ricette-folder}")
     private String ricetteFolder;
 
-    public void creaFatturaAzienda(String fileName, Map<String, Object> variabili) {
-        creaPdfFromTemplate(
+    public Path creaFatturaAzienda(String fileName, Map<String, Object> variabili) {
+        return creaPdfFromTemplate(
                 TEMPLATE_FATTURA_AZIENDA,
                 variabili,
                 fileName,
@@ -38,8 +38,8 @@ public class PdfFileService {
         );
     }
 
-    public void creaFatturaPrivato(String fileName, Map<String, Object> variabili) {
-        creaPdfFromTemplate(
+    public Path creaFatturaPrivato(String fileName, Map<String, Object> variabili) {
+        return creaPdfFromTemplate(
                 TEMPLATE_FATTURA_PRIVATO,
                 variabili,
                 fileName,
@@ -47,8 +47,8 @@ public class PdfFileService {
         );
     }
 
-    public void creaRicettaMedica(String fileName, Map<String, Object> variabili) {
-        creaPdfFromTemplate(
+    public Path creaRicettaMedica(String fileName, Map<String, Object> variabili) {
+        return creaPdfFromTemplate(
                 TEMPLATE_RICETTA_MEDICA,
                 variabili,
                 fileName,
