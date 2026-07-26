@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,7 +31,6 @@ public class AnimaleController {
     // 1. LEGGI TUTTI GLI ANIMALI -> GET
     // http://localhost:8080/api/animali/leggiTutti
     
-    @PreAuthorize("hasAnyRole('ADMIN','VET','REC')") 
     @GetMapping("/leggiTutti")
     public ResponseEntity<List<Animale>> leggiTutti() {
         return ResponseEntity.ok(animaleService.ottieniTutti());
@@ -39,15 +38,23 @@ public class AnimaleController {
 
     // 2. LEGGI SINGOLO ANIMALE -> GET http://localhost:8080/api/animali/leggi/12
     @GetMapping("/leggi/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','VET','REC','CLIENTE')") 
     public ResponseEntity<Animale> leggi(@PathVariable Integer id, Authentication Autenticazione) {
         int userId = Integer.parseInt(Autenticazione.getName());
-        //DA RIVEDRE ASSOLUTAMENTE
-        if (!(animaleService.ottieniPerUtente(userId).stream().anyMatch( a -> a.getId()==id))) {
+
+        boolean isOwner = animaleService.ottieniPerUtente(userId).stream()
+                .anyMatch(animale -> animale.getId().equals(id));
+
+        if (!isOwner && !isVeterinario(Autenticazione)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        
         }
+
         return ResponseEntity.ok(animaleService.ottieniPerId(id));
+    }
+
+    private boolean isVeterinario(Authentication autenticazione) {
+        return autenticazione.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(authority -> authority.equals("ROLE_VETERINARIO"));
     }
 
     // 3. LEGGI GLI ANIMALI DI UN UTENTE -> GET

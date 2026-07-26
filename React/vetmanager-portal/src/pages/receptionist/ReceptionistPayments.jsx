@@ -1,7 +1,6 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
-import { ROLE_CONFIG } from '../../data/roleConfig';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { UnpaidVisitCardList } from '../../components/payments/UnpaidVisitCard';
@@ -11,9 +10,7 @@ import { fetchPaidVisits, fetchUnpaidVisits } from '../../services/paymentApi';
 export default function ReceptionistPayments() {
   const navigate = useNavigate();
   const { currentRole } = useContext(AppContext);
-  const config = ROLE_CONFIG[currentRole];
-  const fallbackPayments = useMemo(() => config?.pendingPayments ?? [], [config?.pendingPayments]);
-  const [unpaidVisits, setUnpaidVisits] = useState(fallbackPayments);
+  const [unpaidVisits, setUnpaidVisits] = useState([]);
   const [paidVisits, setPaidVisits] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
@@ -38,7 +35,7 @@ export default function ReceptionistPayments() {
       } catch (error) {
         if (isMounted) {
           setLoadError(error.message);
-          setUnpaidVisits(fallbackPayments);
+          setUnpaidVisits([]);
           setPaidVisits([]);
         }
       } finally {
@@ -53,7 +50,7 @@ export default function ReceptionistPayments() {
     return () => {
       isMounted = false;
     };
-  }, [fallbackPayments]);
+  }, []);
 
   function handlePaidVisit(paidVisit) {
     setUnpaidVisits((currentVisits) => currentVisits.filter((visit) => visit.id !== paidVisit.id));

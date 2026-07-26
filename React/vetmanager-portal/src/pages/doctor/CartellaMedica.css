@@ -1,0 +1,218 @@
+.cartella-medica {
+  display: grid;
+  gap: 20px;
+}
+
+.cartella-medica__back {
+  justify-self: start;
+}
+
+.cartella-medica__section {
+  display: grid;
+  gap: 18px;
+}
+
+.cartella-medica__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cartella-medica__heading h2,
+.cartella-medica__visit-main h3 {
+  margin-bottom: 0;
+  color: var(--primary-dark);
+}
+
+.cartella-medica__owner {
+  display: grid;
+  gap: 4px;
+  min-width: 180px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--primary-soft);
+}
+
+.cartella-medica__owner span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cartella-medica__form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cartella-medica label {
+  margin-bottom: 0;
+}
+
+.cartella-medica input,
+.cartella-medica textarea {
+  margin-top: 6px;
+}
+
+.cartella-medica__sex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.cartella-medica__sex label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.cartella-medica__sex input {
+  position: static;
+  width: 18px;
+  min-height: 18px;
+  margin: 0;
+  opacity: 1;
+  pointer-events: auto;
+  accent-color: var(--primary);
+}
+
+.cartella-medica__save {
+  justify-self: start;
+  min-width: 150px;
+}
+
+.cartella-medica__visit-list {
+  display: grid;
+  gap: 12px;
+}
+
+.cartella-medica__visit-card {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.8fr) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--muted);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.cartella-medica__visit-card--completata {
+  border-left-color: #17643a;
+  background: color-mix(in srgb, #dff3e6 42%, white);
+}
+
+.cartella-medica__visit-card--prenotata {
+  border-left-color: var(--secondary);
+  background: color-mix(in srgb, var(--secondary-soft) 58%, white);
+}
+
+.cartella-medica__status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin-bottom: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cartella-medica__visit-main p,
+.cartella-medica__visit-note {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.cartella-medica__visit-note {
+  overflow-wrap: anywhere;
+}
+
+.cartella-medica__visit-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cartella-medica__details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.cartella-medica__details div,
+.cartella-medica__note-panel {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.cartella-medica__details dd {
+  overflow-wrap: anywhere;
+}
+
+.cartella-medica__note-panel h3 {
+  color: var(--primary-dark);
+}
+
+.cartella-medica__note-panel p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.cartella-medica__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cartella-medica button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+@media (max-width: 980px) {
+  .cartella-medica__visit-card {
+    grid-template-columns: 1fr;
+  }
+
+  .cartella-medica__visit-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .cartella-medica__heading,
+  .cartella-medica__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cartella-medica__form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cartella-medica__sex {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cartella-medica__save,
+  .cartella-medica__visit-actions .btn {
+    width: 100%;
+  }
+}

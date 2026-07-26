@@ -24,18 +24,40 @@ function formatAppointmentHour(dateTime) {
   }).format(date);
 }
 
+function formatAppointmentDate(dateTime) {
+  if (!dateTime) {
+    return '';
+  }
+
+  const date = new Date(dateTime);
+
+  if (Number.isNaN(date.getTime())) {
+    return dateTime;
+  }
+
+  return new Intl.DateTimeFormat('it-IT', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }).format(date);
+}
+
 function normalizeVisitToAppointment(visit) {
   const client = visit.cliente ?? visit.client ?? visit.proprietario ?? visit.animale?.utente ?? {};
   const doctor = visit.veterinario ?? visit.doctor ?? visit.tipoVisita?.dottore ?? {};
+  const visitDate = visit.dataVisita ?? visit.date ?? visit.data ?? '';
 
   return {
     id: visit.id,
     animalName: visit.animalName ?? visit.animaleNome ?? visit.animale?.nome ?? '',
+    animalBreed: visit.animalBreed ?? visit.animaleRazza ?? visit.animale?.razza?.nome ?? visit.animale?.razza ?? '',
     nome: visit.nome ?? client.nome ?? '',
     cognome: visit.cognome ?? client.cognome ?? '',
+    ownerName: visit.ownerName ?? getFullName(client),
     visitType: visit.visitType ?? visit.tipoVisitaNome ?? visit.tipoVisita?.nome ?? '',
-    appointmentHour: visit.appointmentHour ?? formatAppointmentHour(visit.dataVisita ?? visit.date),
+    appointmentDate: visit.appointmentDate ?? formatAppointmentDate(visitDate),
+    appointmentHour: visit.appointmentHour ?? formatAppointmentHour(visitDate),
     doctorName: visit.doctorName ?? getFullName(doctor),
+    status: visit.status ?? visit.stato ?? 'Programmato',
     raw: visit
   };
 }

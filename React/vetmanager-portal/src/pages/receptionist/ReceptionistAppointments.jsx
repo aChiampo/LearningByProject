@@ -1,16 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { AppContext } from '../../context/AppContext';
-import { ROLE_CONFIG } from '../../data/roleConfig';
+import { useEffect, useState } from 'react';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
 import { fetchAppointments } from '../../services/appointmentApi';
 
 export default function ReceptionistAppointments() {
-  const { currentRole } = useContext(AppContext);
-  const config = ROLE_CONFIG[currentRole];
-  const fallbackAppointments = useMemo(() => config?.allAppointments ?? [], [config?.allAppointments]);
-  const [appointments, setAppointments] = useState(fallbackAppointments);
+  const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
 
@@ -30,7 +25,7 @@ export default function ReceptionistAppointments() {
       } catch (error) {
         if (isMounted) {
           setLoadError(error.message);
-          setAppointments(fallbackAppointments);
+          setAppointments([]);
         }
       } finally {
         if (isMounted) {
@@ -44,7 +39,7 @@ export default function ReceptionistAppointments() {
     return () => {
       isMounted = false;
     };
-  }, [fallbackAppointments]);
+  }, []);
 
   function handleEditAppointment() {
     window.alert('Modifica appuntamento');
