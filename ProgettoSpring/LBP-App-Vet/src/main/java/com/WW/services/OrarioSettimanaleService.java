@@ -1,6 +1,7 @@
 package com.WW.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -71,6 +72,18 @@ public class OrarioSettimanaleService {
 	 */
 	public List<OrarioSettimanale> ottieniTutti() {
 		return orariosettimanaleRepository.findAll();
+	}
+
+	public Optional<OrarioSettimanale> ottieniPerUtenteEGiorno(Integer utenteId, int giornoSettimana) {
+		return orariosettimanaleRepository.findByUtenteIdAndGiornoSettimana(utenteId, giornoSettimana);
+	}
+
+	public List<OrarioSettimanale> ottieniPerUtente(Integer utenteId) {
+		return orariosettimanaleRepository.findByUtenteId(utenteId);
+	}
+
+	public OrarioSettimanale salva(OrarioSettimanale orarioSettimanale) {
+		return orariosettimanaleRepository.save(orarioSettimanale);
 	}
 
 	/**

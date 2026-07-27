@@ -1,5 +1,8 @@
 package com.WW.repositories;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.WW.entities.OrarioSettimanale;
@@ -11,4 +14,7 @@ import com.WW.entities.OrarioSettimanale;
  */
 public interface OrariosettimanaleRepository extends JpaRepository<OrarioSettimanale, Integer> {
 
+    Optional<OrarioSettimanale> findByUtenteIdAndGiornoSettimana(Integer utenteId, int giornoSettimana);
+
+    List<OrarioSettimanale> findByUtenteId(Integer utenteId);
 }

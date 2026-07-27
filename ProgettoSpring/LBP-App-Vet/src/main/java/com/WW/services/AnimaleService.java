@@ -106,6 +106,14 @@ public class AnimaleService {
                         "Animale non trovato."));
     }
 
+    @Transactional
+    public Animale bloccaPerPrenotazione(Integer id) {
+        return animaleRepository.lockByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Animale non trovato."));
+    }
+
     // 6. CANCELLA UN ANIMALE
     @Transactional
     public void eliminaAnimale(Integer id) {

@@ -2,6 +2,8 @@ import { apiFetchWithPayload, readApiError } from './apiClient';
 
 const VISITS_API_BASE = '/api/visite';
 const VISIT_PARAMS_ENDPOINT = `${VISITS_API_BASE}/params`;
+const AVAILABLE_SLOTS_ENDPOINT = `${VISITS_API_BASE}/slot-disponibili`;
+const BOOK_APPOINTMENT_ENDPOINT = `${VISITS_API_BASE}/prenota`;
 
 function getFullName(person) {
   return [person?.nome, person?.cognome].filter(Boolean).join(' ');
@@ -74,6 +76,29 @@ export async function fetchAppointments(params = {}) {
   const visitList = Array.isArray(visits) ? visits : [visits];
 
   return visitList.map(normalizeVisitToAppointment);
+}
+
+export async function fetchAvailableSlots(payload) {
+  const response = await apiFetchWithPayload(AVAILABLE_SLOTS_ENDPOINT, [payload]);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile recuperare gli slot disponibili.');
+    throw new Error(errorMessage || 'Impossibile recuperare gli slot disponibili.');
+  }
+
+  const slots = await response.json();
+  return Array.isArray(slots) ? slots : [slots];
+}
+
+export async function bookAppointment(payload) {
+  const response = await apiFetchWithPayload(BOOK_APPOINTMENT_ENDPOINT, [payload]);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile prenotare la visita.');
+    throw new Error(errorMessage || 'Impossibile prenotare la visita.');
+  }
+
+  return response.json();
 }
 
 export async function sendDelayNotification(visitId, delayMinutes) {
