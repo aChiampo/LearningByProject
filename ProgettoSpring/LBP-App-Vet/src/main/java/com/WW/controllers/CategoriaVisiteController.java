@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,6 +37,7 @@ public class CategoriaVisiteController {
      * @return elenco delle categorie
      */
     @GetMapping("/ottieniTutte")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<CategoriaVisite>> ottieniTutte() {
         return ResponseEntity.ok(categoriaVisiteService.ottieniTutte());
     }
@@ -47,6 +49,7 @@ public class CategoriaVisiteController {
      * @return categoria trovata
      */
     @GetMapping("/ottieni/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<CategoriaVisite> ottieni(@PathVariable Integer id) {
         return ResponseEntity.ok(categoriaVisiteService.ottieniPerId(id));
     }
@@ -58,6 +61,7 @@ public class CategoriaVisiteController {
      * @return categoria creata
      */
     @PostMapping("/aggiungi")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<CategoriaVisite> aggiungi(@RequestBody CategoriaVisiteRequest request) {
         CategoriaVisite nuovaCategoriaVisite = categoriaVisiteService.aggiungiCategoriaVisite(toEntity(request));
         return new ResponseEntity<>(nuovaCategoriaVisite, HttpStatus.CREATED);
@@ -71,6 +75,7 @@ public class CategoriaVisiteController {
      * @return categoria aggiornata
      */
     @PatchMapping("/modifica/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<CategoriaVisite> modifica(
             @PathVariable Integer id,
             @RequestBody CategoriaVisiteRequest request) {
@@ -92,6 +97,7 @@ public class CategoriaVisiteController {
      * @return risposta senza contenuto
      */
     @PatchMapping("/elimina/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Void> elimina(@PathVariable Integer id) {
         categoriaVisiteService.eliminaCategoriaVisite(id);
         return ResponseEntity.noContent().build();

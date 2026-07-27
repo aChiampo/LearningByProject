@@ -1,9 +1,11 @@
 package com.WW.controllers;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -45,6 +47,7 @@ public class VisitaController {
      * @return elenco delle visite
      */
     @GetMapping("/ottieniTutte")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Visita>> ottieniTutte(Authentication authentication) {
         return ResponseEntity.ok(visitaService.getAllVisita(getClienteIdIfCliente(authentication)));
     }
@@ -56,8 +59,14 @@ public class VisitaController {
      * @return visita trovata
      */
     @GetMapping("/ottieni/{id}")
-    public ResponseEntity<Visita> ottieni(@PathVariable Integer id) {
-        return ResponseEntity.ok(visitaService.getVisitaById(id));
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<Visita> ottieni(@PathVariable Integer id, Authentication authentication) {
+        Visita visita = visitaService.getVisitaById(id);
+        if (!canAccessVisit(visita, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(visita);
     }
 
     /**
@@ -67,6 +76,7 @@ public class VisitaController {
      * @return visite filtrate per tipo
      */
     @GetMapping("/ottieniPerTipo/{idTipoVisita}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
     public ResponseEntity<List<Visita>> ottieniPerTipo(@PathVariable Integer idTipoVisita) {
         return ResponseEntity.ok(visitaService.getVisiteByTipoVisita(idTipoVisita));
     }
@@ -78,6 +88,7 @@ public class VisitaController {
      * @return visite filtrate per veterinario
      */
     @GetMapping("/ottieniPerVeterinario/{idVeterinario}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
     public ResponseEntity<List<Visita>> ottieniPerVeterinario(@PathVariable Integer idVeterinario) {
         return ResponseEntity.ok(visitaService.getVisiteByVeterinario(idVeterinario));
     }
@@ -89,8 +100,9 @@ public class VisitaController {
      * @return visite filtrate per animale
      */
     @GetMapping("/ottieniPerAnimale/{idAnimale}")
-    public ResponseEntity<List<Visita>> ottieniPerAnimale(@PathVariable Integer idAnimale) {
-        return ResponseEntity.ok(visitaService.getVisiteByAnimale(idAnimale));
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<List<Visita>> ottieniPerAnimale(@PathVariable Integer idAnimale, Authentication authentication) {
+        return ResponseEntity.ok(filterAccessibleVisits(visitaService.getVisiteByAnimale(idAnimale), authentication));
     }
 
     /**
@@ -100,6 +112,7 @@ public class VisitaController {
      * @return visita trovata
      */
     @GetMapping("/ottieniPerPagamento/{idPagamento}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Visita> ottieniPerPagamento(@PathVariable Integer idPagamento) {
         return ResponseEntity.ok(visitaService.getVisitaByPagamento(idPagamento));
     }
@@ -110,6 +123,7 @@ public class VisitaController {
      * @return visite pagate
      */
     @GetMapping("/ottieniPagate")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Visita>> ottieniPagate(Authentication authentication) {
         return ResponseEntity.ok(visitaService.OttieniVisitePagate(getClienteIdIfCliente(authentication)));
     }
@@ -120,6 +134,7 @@ public class VisitaController {
      * @return visite non pagate
      */
     @GetMapping("/ottieniNonPagate")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Visita>> ottieniNonPagate(Authentication authentication) {
         return ResponseEntity.ok(visitaService.OttieniVisiteNonPagate(getClienteIdIfCliente(authentication)));
     }
@@ -131,8 +146,9 @@ public class VisitaController {
      * @return visite pagate dell'animale
      */
     @GetMapping("/ottieniPagatePerAnimale/{idAnimale}")
-    public ResponseEntity<List<Visita>> ottieniPagatePerAnimale(@PathVariable int idAnimale) {
-        return ResponseEntity.ok(visitaService.OttieniVisitePagatebyAnimale(idAnimale));
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<List<Visita>> ottieniPagatePerAnimale(@PathVariable int idAnimale, Authentication authentication) {
+        return ResponseEntity.ok(filterAccessibleVisits(visitaService.OttieniVisitePagatebyAnimale(idAnimale), authentication));
     }
 
     /**
@@ -142,8 +158,9 @@ public class VisitaController {
      * @return visite non pagate dell'animale
      */
     @GetMapping("/ottieniNonPagatePerAnimale/{idAnimale}")
-    public ResponseEntity<List<Visita>> ottieniNonPagatePerAnimale(@PathVariable int idAnimale) {
-        return ResponseEntity.ok(visitaService.OttieniVisiteNonPagateByAnimale(idAnimale));
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<List<Visita>> ottieniNonPagatePerAnimale(@PathVariable int idAnimale, Authentication authentication) {
+        return ResponseEntity.ok(filterAccessibleVisits(visitaService.OttieniVisiteNonPagateByAnimale(idAnimale), authentication));
     }
 
     /**
@@ -153,11 +170,15 @@ public class VisitaController {
      * @return visite filtrate
      */
     @PostMapping("/params")
-    public ResponseEntity<List<VisitaDto>> ottieniPerParametri(@RequestBody(required = false) VisitParamDTO params) {
-        return ResponseEntity.ok(visitaService.getVisiteByParams(params));
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<List<VisitaDto>> ottieniPerParametri(
+            @RequestBody(required = false) VisitParamDTO params,
+            Authentication authentication) {
+        return ResponseEntity.ok(visitaService.getVisiteByParams(applyRoleFilters(params, authentication)));
     }
 
     @PostMapping("/slot-disponibili")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<SlotDisponibileDto>> ottieniSlotDisponibili(
             @Valid @RequestBody RichiestaSlotDisponibiliDto richiesta,
             Authentication authentication) {
@@ -171,12 +192,14 @@ public class VisitaController {
      * @return visita creata
      */
     @PostMapping("/prenotazione")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Visita> prenota(@Valid @RequestBody VisitaDto visita) {
         Visita nuovaVisita = visitaService.createVisita(visita);
         return new ResponseEntity<Visita>(nuovaVisita, HttpStatus.CREATED);
     }
 
     @PostMapping("/prenota")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<Visita> prenotaSlot(
             @Valid @RequestBody PrenotazioneVisitaRequest richiesta,
             Authentication authentication) {
@@ -191,6 +214,7 @@ public class VisitaController {
      * @return visita aggiornata
      */
     @PostMapping("/chiudivisita")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Visita> chiudiVisita(@RequestBody VisitaDto visita) {
         return ResponseEntity.ok(visitaService.chiudiVisita(visita));
     }
@@ -202,6 +226,7 @@ public class VisitaController {
      * @return visita aggiornata
      */
     @PatchMapping("/riaprivisita/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Visita> riapriVisita(@PathVariable Integer id) {
         return ResponseEntity.ok(visitaService.riapriVisita(id));
     }
@@ -214,6 +239,7 @@ public class VisitaController {
      * @return visita aggiornata
      */
     @PatchMapping("/aggiornaNote/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Visita> aggiornaNote(
             @PathVariable Integer id,
             @RequestParam String note) {
@@ -228,11 +254,13 @@ public class VisitaController {
      * @return visita aggiornata
      */
     @PatchMapping("/aggiornaPagato/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Visita> aggiornaPagato( @PathVariable Integer id, @RequestParam("pagamento") Integer pagamentoId) {
         return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamentoId));
     }
 
     @PatchMapping("/riprogramma/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<VisitaDto> riprogramma(
             @PathVariable Integer id,
             @Valid @RequestBody RiprogrammazioneVisitaRequest request,
@@ -247,6 +275,7 @@ public class VisitaController {
      * @return risposta senza contenuto
      */
     @PostMapping("/notifica-ritardo")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Void> notificaRitardo(@Valid @RequestBody DelayNotificationRequest request) {
         visitaService.inviaNotificaRitardo(request.visitaId(), request.delayMinutes());
         return ResponseEntity.noContent().build();
@@ -259,6 +288,7 @@ public class VisitaController {
      * @return risposta senza contenuto
      */
     @DeleteMapping("/elimina/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<Void> elimina(@PathVariable Integer id, Authentication authentication) {
         visitaService.deleteVisita(id, authentication);
         return ResponseEntity.noContent().build();
@@ -286,5 +316,85 @@ public class VisitaController {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(authority -> authority.equals("ROLE_CLIENTE"));
+    }
+
+    private boolean isVeterinario(Authentication authentication) {
+        return hasRole(authentication, "ROLE_VETERINARIO");
+    }
+
+    private boolean isReceptionist(Authentication authentication) {
+        return hasRole(authentication, "ROLE_RECEPTIONIST");
+    }
+
+    private boolean isAdmin(Authentication authentication) {
+        return hasRole(authentication, "ROLE_ADMIN");
+    }
+
+    private boolean hasRole(Authentication authentication, String role) {
+        return authentication != null && authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role::equals);
+    }
+
+    private boolean canAccessVisit(Visita visita, Authentication authentication) {
+        if (isAdmin(authentication) || isReceptionist(authentication) || isVeterinario(authentication)) {
+            return true;
+        }
+
+        return isCliente(authentication)
+                && visita.getAnimale() != null
+                && visita.getAnimale().getUtente() != null
+                && Objects.equals(visita.getAnimale().getUtente().getId(), getAuthenticatedUserId(authentication));
+    }
+
+    private List<Visita> filterAccessibleVisits(List<Visita> visite, Authentication authentication) {
+        if (!isCliente(authentication)) {
+            return visite;
+        }
+
+        Integer userId = getAuthenticatedUserId(authentication);
+        return visite.stream()
+                .filter(visita -> visita.getAnimale() != null
+                        && visita.getAnimale().getUtente() != null
+                        && Objects.equals(visita.getAnimale().getUtente().getId(), userId))
+                .toList();
+    }
+
+    private VisitParamDTO applyRoleFilters(VisitParamDTO params, Authentication authentication) {
+        if (isCliente(authentication)) {
+            return new VisitParamDTO(
+                    params == null ? null : params.date(),
+                    params == null ? null : params.doctorID(),
+                    getAuthenticatedUserId(authentication),
+                    params == null ? null : params.animalID(),
+                    params == null ? null : params.tipoVisitaID(),
+                    params == null ? null : params.pagamentoID(),
+                    params == null ? null : params.stato(),
+                    params == null ? null : params.pagata());
+        }
+
+        if (isVeterinario(authentication)) {
+            return new VisitParamDTO(
+                    params == null ? null : params.date(),
+                    getAuthenticatedUserId(authentication),
+                    params == null ? null : params.clientID(),
+                    params == null ? null : params.animalID(),
+                    params == null ? null : params.tipoVisitaID(),
+                    params == null ? null : params.pagamentoID(),
+                    params == null ? null : params.stato(),
+                    params == null ? null : params.pagata());
+        }
+
+        return params;
+    }
+
+    private Integer getAuthenticatedUserId(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UtenteAutenticato utenteAutenticato) {
+            return utenteAutenticato.id();
+        }
+
+        return Integer.valueOf(authentication.getName());
     }
 }

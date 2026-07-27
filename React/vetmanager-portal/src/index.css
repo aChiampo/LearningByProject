@@ -5,11 +5,11 @@
   --paper: #f7f9f5;
   --surface: #ffffff;
   --soft: #edf4f1;
-  --primary: #1f7a70;
-  --primary-dark: #16574f;
-  --primary-soft: #dff2ee;
-  --secondary: #f47c5c;
-  --secondary-soft: #fff0eb;
+  --primary: #405463;
+  --primary-dark: #2c3a44;
+  --primary-soft: #e7edf0;
+  --secondary: #3ca6b8;
+  --secondary-soft: #eaf8fb;
   --danger: #b53d43;
   --shadow: 0 18px 50px rgba(24, 32, 31, 0.1);
 }
@@ -126,7 +126,7 @@ textarea {
   top: 0;
   z-index: 10;
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) auto minmax(330px, 1.2fr);
+  grid-template-columns: minmax(210px, 1fr) auto;
   gap: 18px;
   align-items: center;
   min-height: 82px;
@@ -220,11 +220,6 @@ legend {
   box-shadow: 0 10px 26px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
-.theme-switches {
-  display: block;
-  min-width: 0;
-}
-
 fieldset {
   display: flex;
   flex-wrap: wrap;
@@ -257,49 +252,6 @@ legend {
   border-radius: 50%;
   color: transparent;
   cursor: pointer;
-}
-
-.palette-picker {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(90px, 1fr));
-}
-
-.palette-option {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: 7px;
-  align-items: center;
-  min-height: 34px;
-  margin: 0;
-  padding: 4px 7px;
-  overflow: hidden;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--ink);
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.palette-option span {
-  width: 28px;
-  height: 22px;
-  border: 2px solid white;
-  border-radius: 6px;
-  background: linear-gradient(90deg, var(--palette-a) 0 50%, var(--palette-b) 50%);
-  box-shadow: 0 0 0 1px rgba(24, 32, 31, 0.22);
-}
-
-.palette-option.aurora { --palette-a: #1f7a70; --palette-b: #f47c5c; }
-.palette-option.lago { --palette-a: #2f6fb7; --palette-b: #64bf98; }
-.palette-option.energia { --palette-a: #b6424b; --palette-b: #e2b13c; }
-.palette-option.iris { --palette-a: #7353b6; --palette-b: #a98cdf; }
-.palette-option.cielo { --palette-a: #405463; --palette-b: #3ca6b8; }
-.palette-option.rosa { --palette-a: #b87512; --palette-b: #dc6f92; }
-
-fieldset input:checked + .palette-option {
-  border-color: var(--ink);
-  background: white;
-  box-shadow: 0 4px 12px rgba(24, 32, 31, 0.12);
 }
 
 .screen {
@@ -1423,10 +1375,6 @@ dd {
     justify-content: center;
   }
 
-  .palette-picker {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .help-action {
     right: 16px;
     bottom: 16px;
@@ -1569,12 +1517,6 @@ label {
 
 .logout-button:hover {
   opacity: 1;
-}
-
-.palette-option:has(input:checked) {
-  border-color: var(--ink);
-  background: white;
-  box-shadow: 0 4px 12px rgba(24, 32, 31, 0.12);
 }
 
 .page-actions {

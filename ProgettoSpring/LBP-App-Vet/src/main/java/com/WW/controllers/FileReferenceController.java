@@ -9,6 +9,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Files;
@@ -30,6 +33,7 @@ public class FileReferenceController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<List<FileReferences>> getAllFileReferences() {
         try {
             List<FileReferences> list = fileReferencesService.visualizzaTuttiFileReferences();
@@ -40,10 +44,17 @@ public class FileReferenceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FileReferences> getById(@PathVariable Integer id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<FileReferences> getById(@PathVariable Integer id, Authentication authentication) {
         try {
             Optional<FileReferences> fr = fileReferencesService.getFileReferenceById(id);
-            return fr.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+            if (fr.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            if (!canAccessFile(fr.get(), authentication)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            return ResponseEntity.ok(fr.get());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
@@ -52,7 +63,8 @@ public class FileReferenceController {
     }
 
     @GetMapping("/{id}/download")
-    public ResponseEntity<Resource> downloadById(@PathVariable Integer id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<Resource> downloadById(@PathVariable Integer id, Authentication authentication) {
         try {
             Optional<FileReferences> fileReference = fileReferencesService.getFileReferenceById(id);
 
@@ -61,6 +73,10 @@ public class FileReferenceController {
             }
 
             FileReferences file = fileReference.get();
+            if (!canAccessFile(file, authentication)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             Path storagePath = Paths.get(file.getStoragePath()).toAbsolutePath().normalize();
             Path filePath = Files.isDirectory(storagePath)
                     ? storagePath.resolve(file.getStoredFileName()).normalize()
@@ -86,8 +102,13 @@ public class FileReferenceController {
     }
 
     @GetMapping("/owner/{ownerId}")
-    public ResponseEntity<List<FileReferences>> getByOwner(@PathVariable Integer ownerId) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<List<FileReferences>> getByOwner(@PathVariable Integer ownerId, Authentication authentication) {
         try {
+            if (!canAccessOwner(ownerId, authentication)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             Utente owner = new Utente();
             owner.setId(ownerId);
             List<FileReferences> list = fileReferencesService.findByOwner(owner);
@@ -100,6 +121,7 @@ public class FileReferenceController {
     }
 
     @GetMapping("/before")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<List<FileReferences>> getBefore(@RequestParam LocalDateTime date) {
         try {
             List<FileReferences> list = fileReferencesService.findByUploadDateBefore(date);
@@ -112,6 +134,7 @@ public class FileReferenceController {
     }
 
     @GetMapping("/after")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<List<FileReferences>> getAfter(@RequestParam LocalDateTime date) {
         try {
             List<FileReferences> list = fileReferencesService.findByUploadDateAfter(date);
@@ -124,6 +147,7 @@ public class FileReferenceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FileReferences> createFileReference(@RequestBody FileReferences fileReferences) {
         try {
             FileReferences created = fileReferencesService.salvaFileReference(fileReferences);
@@ -136,6 +160,7 @@ public class FileReferenceController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FileReferences> updateFileReference(@PathVariable Integer id, @RequestBody FileReferences fileReferences) {
         try {
             fileReferences.setId(id);
@@ -149,6 +174,7 @@ public class FileReferenceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteFileReference(@PathVariable Integer id) {
         try {
             fileReferencesService.eliminaFileReference(id);
@@ -158,5 +184,28 @@ public class FileReferenceController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private boolean canAccessFile(FileReferences fileReference, Authentication authentication) {
+        if (hasAnyRole(authentication, "ROLE_ADMIN", "ROLE_RECEPTIONIST", "ROLE_VETERINARIO")) {
+            return true;
+        }
+
+        return fileReference.getOwner() != null && canAccessOwner(fileReference.getOwner().getId(), authentication);
+    }
+
+    private boolean canAccessOwner(Integer ownerId, Authentication authentication) {
+        if (hasAnyRole(authentication, "ROLE_ADMIN", "ROLE_RECEPTIONIST", "ROLE_VETERINARIO")) {
+            return true;
+        }
+
+        return hasAnyRole(authentication, "ROLE_CLIENTE") && Integer.valueOf(authentication.getName()).equals(ownerId);
+    }
+
+    private boolean hasAnyRole(Authentication authentication, String... roles) {
+        List<String> requestedRoles = List.of(roles);
+        return authentication != null && authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(requestedRoles::contains);
     }
 }

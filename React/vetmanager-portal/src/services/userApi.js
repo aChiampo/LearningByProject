@@ -29,8 +29,15 @@ export async function fetchClients() {
 }
 
 export async function fetchDoctors() {
-  const users = await fetchUsers();
-  return users.filter((user) => user.role === 'doctor' || getUserRole(user) === 'VETERINARIO');
+  const response = await apiFetch(`${USERS_API_BASE}/ottieniVeterinari`);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile recuperare i veterinari.');
+    throw new Error(errorMessage || 'Impossibile recuperare i veterinari.');
+  }
+
+  return normalizeUserList(await response.json())
+    .filter((user) => user.role === 'doctor' || getUserRole(user) === 'VETERINARIO');
 }
 
 export async function updateUserProfile(userId, payload) {
