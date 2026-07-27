@@ -118,6 +118,10 @@ public class UtenteService {
         return utenteRepo.findByIsDeletedFalse();
     }
 
+    public List<Utente> ottieniVeterinariAttivi() {
+        return utenteRepo.findByRuoloRuoloAndIsDeletedFalse("VETERINARIO");
+    }
+
     /**
      * Restituisce un utente dato l'id.
      *
@@ -126,6 +130,14 @@ public class UtenteService {
      */
     public Utente ottieniPerId(Integer id) {
         return utenteRepo.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Utente non trovato."));
+    }
+
+    @Transactional
+    public Utente bloccaPerPrenotazione(Integer id) {
+        return utenteRepo.lockByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Utente non trovato."));
