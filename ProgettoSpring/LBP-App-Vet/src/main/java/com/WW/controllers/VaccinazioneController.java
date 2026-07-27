@@ -8,6 +8,7 @@ import com.WW.services.VaccinazioneService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,7 @@ public class VaccinazioneController {
      * @return lista DTO di tutte le vaccinazioni
      */
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
     public ResponseEntity<List<VaccinazioneDto>> getAllVaccinazioni() {
         return ResponseEntity.ok(vaccinazioniService.visualizzaTutteVaccinazioniDto());
     }
@@ -48,6 +50,7 @@ public class VaccinazioneController {
      * @return la vaccinazione se trovata
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<VaccinazioneDto> getVaccinazioneById(@PathVariable Integer id) {
         return vaccinazioniService.getVaccinazioneDtoById(id)
                 .map(ResponseEntity::ok)
@@ -60,6 +63,7 @@ public class VaccinazioneController {
      * @return lista DTO delle vaccinazioni dell'animale
      */
     @GetMapping("/animale/{idAnimale}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<VaccinazioneDto>> getVaccinazioniByAnimale(@PathVariable Integer idAnimale) {
         return ResponseEntity.ok(vaccinazioniService.findByIdAnimale(idAnimale));
     }
@@ -70,6 +74,7 @@ public class VaccinazioneController {
      * @return lista di vaccinazioni del tipo specificato
      */
     @GetMapping("/cerca/tipo/{idTipoVaccino}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
     public ResponseEntity<List<Vaccinazione>> getVaccinazioniByTipo(@PathVariable Integer idTipoVaccino) {
         TipoVaccino tipoVaccino = new TipoVaccino();
         tipoVaccino.setId(idTipoVaccino);
@@ -82,6 +87,7 @@ public class VaccinazioneController {
      * @return lista di vaccinazioni della data specificata
      */
     @GetMapping("/cerca/data")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
     public ResponseEntity<List<Vaccinazione>> getVaccinazioniByData(@RequestParam LocalDateTime data) {
         return ResponseEntity.ok(vaccinazioniService.findByDataVaccinazione(data));
     }
@@ -92,6 +98,7 @@ public class VaccinazioneController {
      * @return lista di vaccinazioni del lotto specificato
      */
     @GetMapping("/cerca/lotto")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
     public ResponseEntity<List<Vaccinazione>> getVaccinazioniByLotto(@RequestParam String lotto) {
         return ResponseEntity.ok(vaccinazioniService.findByLotto(lotto));
     }
@@ -102,6 +109,7 @@ public class VaccinazioneController {
      * @return la vaccinazione creata
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<VaccinazioneDto> createVaccinazione(@Valid @RequestBody VaccinazioneRequest request) {
         VaccinazioneDto vaccinazioneCreata = vaccinazioniService.salvaVaccinazione(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(vaccinazioneCreata);
@@ -114,6 +122,7 @@ public class VaccinazioneController {
      * @return la vaccinazione aggiornata
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<VaccinazioneDto> updateVaccinazione(
             @PathVariable Integer id,
             @Valid @RequestBody VaccinazioneRequest request) {
@@ -126,6 +135,7 @@ public class VaccinazioneController {
      * @return status 204 No Content se eliminata con successo
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Void> deleteVaccinazione(@PathVariable Integer id) {
         vaccinazioniService.eliminaVaccinazione(id);
         return ResponseEntity.noContent().build();

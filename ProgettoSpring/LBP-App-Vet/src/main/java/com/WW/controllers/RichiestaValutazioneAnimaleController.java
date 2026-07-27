@@ -49,11 +49,13 @@ public class RichiestaValutazioneAnimaleController {
     }
 
     @GetMapping("/aperte")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<List<RichiestaValutazioneAnimaleDettaglioDto>> ottieniAperte() {
         return ResponseEntity.ok(richiestaValutazioneAnimaleService.ottieniRichiesteAperte());
     }
 
     @PatchMapping("/{id}/chiudi")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Void> chiudi(@PathVariable Integer id) {
         richiestaValutazioneAnimaleService.chiudiRichiesta(id);
         return ResponseEntity.noContent().build();

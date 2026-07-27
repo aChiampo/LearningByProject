@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,7 @@ public class RuoloController {
      * @return lista di tutti i ruoli
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Ruolo>> getAllRuoli() {
         try {
             List<Ruolo> ruoli = ruoloService.visualizzaTuttiRuoli();
@@ -50,6 +52,7 @@ public class RuoloController {
      * @return il ruolo se trovato
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ruolo> getRuoloById(@PathVariable Integer id) {
         try {
             Ruolo ruolo = ruoloService.ottieniPerId(id);
@@ -69,6 +72,7 @@ public class RuoloController {
      * @return lista di ruoli corrispondenti
      */
     @GetMapping("/cerca/nome")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ruolo> findByRuolo(@RequestParam String ruolo) {
         try {
             Optional<Ruolo> ruoloOptional = ruoloService.ottieniPerRuolo(ruolo);
@@ -87,6 +91,7 @@ public class RuoloController {
      * @return il ruolo creato
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ruolo> createRuolo(@RequestBody Ruolo ruolo) {
         try {
             Ruolo ruoloCreato = ruoloService.salvaRuolo(ruolo);
@@ -105,6 +110,7 @@ public class RuoloController {
      * @return il ruolo aggiornato
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Ruolo> updateRuolo(
             @PathVariable Integer id,
             @RequestBody Ruolo ruolo) {
@@ -125,6 +131,7 @@ public class RuoloController {
      * @return status 204 No Content se eliminato con successo
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteRuolo(@PathVariable Integer id) {
         try {
             ruoloService.eliminaRuolo(id);

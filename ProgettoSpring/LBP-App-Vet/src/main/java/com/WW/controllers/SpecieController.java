@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,6 +36,7 @@ public class SpecieController {
      * @return lista di tutte le specie
      */
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Specie>> getAllSpecie() {
         try {
             List<Specie> specie = specieService.visualizzaTutteSpecie();
@@ -50,6 +52,7 @@ public class SpecieController {
      * @return la specie se trovata
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<Specie> getSpecieById(@PathVariable Integer id) {
         try {
             Optional<Specie> specie = specieService.getSpecieById(id);
@@ -68,6 +71,7 @@ public class SpecieController {
      * @return lista di specie corrispondenti
      */
     @GetMapping("/cerca/nome")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Specie>> findByNome(@RequestParam String nome) {
         try {
             List<Specie> specie = specieService.findByNome(nome);
@@ -85,6 +89,7 @@ public class SpecieController {
      * @return la specie creata
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<?> createSpecie(@RequestBody SpecieRequest request) {
         try {
             Specie specie = new Specie();
@@ -107,6 +112,7 @@ public class SpecieController {
      * @return la specie aggiornata
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<?> updateSpecie(
             @PathVariable Integer id,
             @RequestBody SpecieRequest request) {
@@ -131,6 +137,7 @@ public class SpecieController {
      * @return status 204 No Content se eliminata con successo
      */
     @PatchMapping("/{id}/elimina")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Void> deleteSpecie(@PathVariable Integer id) {
         try {
             specieService.eliminaSpecie(id);
@@ -148,6 +155,7 @@ public class SpecieController {
      * @return status 204 No Content se eliminata con successo
      */
     @DeleteMapping("/{id}/fisico")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSpecieFisica(@PathVariable Integer id) {
         try {
             specieService.eliminaSpecieFisica(id);
