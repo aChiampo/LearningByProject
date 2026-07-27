@@ -12,6 +12,7 @@ export function normalizeVisitType(visitType) {
     nome: visitType.nome ?? visitType.tipologia ?? visitType.descrizione ?? '',
     durata: visitType.durata,
     prezzo: visitType.prezzo,
+    attivo: visitType.attivo !== false,
     dottore: visitType.dottore,
     raw: visitType,
   };
@@ -28,5 +29,5 @@ export async function fetchVisitTypes() {
   const visitTypes = await response.json();
   const visitTypeList = Array.isArray(visitTypes) ? visitTypes : [visitTypes];
 
-  return visitTypeList.map(normalizeVisitType).filter(Boolean);
+  return visitTypeList.map(normalizeVisitType).filter((visitType) => visitType?.attivo);
 }

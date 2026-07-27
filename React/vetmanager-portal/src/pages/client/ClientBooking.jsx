@@ -1,37 +1,66 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useMemo, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import PageTitle from '../../components/common/PageTitle';
-import { apiFetchWithPayload, readApiError } from '../../services/apiClient';
-import { fetchAnimalsByOwner } from '../../services/animalApi';
+import { fetchAllAnimals, fetchAnimalsByOwner } from '../../services/animalApi';
 import { fetchDoctors } from '../../services/userApi';
 import { fetchVisitTypes } from '../../services/visitTypeApi';
+import { bookAppointment, fetchAvailableSlots } from '../../services/appointmentApi';
+import './ClientBooking.css';
+
+function getTomorrowDate() {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().slice(0, 10);
+}
+
+function formatSlotDateTime(value) {
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('it-IT', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
 
 export default function ClientBooking() {
   const navigate = useNavigate();
-  const { currentUser } = useContext(AppContext);
+  const { currentUser, currentRole } = useContext(AppContext);
   const ownerId = currentUser?.id;
+  const isReceptionist = currentRole === 'receptionist' || currentUser?.backendRole === 'RECEPTIONIST';
+  const backPath = isReceptionist ? '/receptionist/appointments' : '/client/dashboard';
+  const minDate = useMemo(getTomorrowDate, []);
 
   const [formData, setFormData] = useState({
-    animale: '',
-    tipoVisita: '',
-    veterinario: '',
+    animaleId: '',
+    tipoVisitaId: '',
+    veterinarioId: '',
     data: '',
-    fasciaOraria: '',
-    pagamento: null,
+    dataVisita: '',
     note: '',
   });
 
   const [animals, setAnimals] = useState([]);
   const [visitTypes, setVisitTypes] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
   const [isOptionsLoading, setIsOptionsLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSlotsLoading, setIsSlotsLoading] = useState(false);
+  const [isBookingLoading, setIsBookingLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [slotMessage, setSlotMessage] = useState('');
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!ownerId) return;
+    if (!ownerId && !isReceptionist) return;
 
     let isMounted = true;
 
@@ -41,7 +70,7 @@ export default function ClientBooking() {
 
       try {
         const [animalList, visitTypeList, doctorList] = await Promise.all([
-          fetchAnimalsByOwner(ownerId),
+          isReceptionist ? fetchAllAnimals() : fetchAnimalsByOwner(ownerId),
           fetchVisitTypes(),
           fetchDoctors(),
         ]);
@@ -70,93 +99,146 @@ export default function ClientBooking() {
     return () => {
       isMounted = false;
     };
-  }, [ownerId]);
+  }, [ownerId, isReceptionist]);
+
+  useEffect(() => {
+    const { animaleId, tipoVisitaId, veterinarioId, data } = formData;
+
+    setAvailableSlots([]);
+    setSlotMessage('');
+    setFormData((currentData) => (
+      currentData.dataVisita ? { ...currentData, dataVisita: '' } : currentData
+    ));
+
+    if (!animaleId || !tipoVisitaId || !veterinarioId || !data) {
+      return undefined;
+    }
+
+    if (data < minDate) {
+      setSlotMessage('Seleziona una data futura per cercare gli slot disponibili.');
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    async function loadSlots() {
+      setIsSlotsLoading(true);
+      setError(null);
+
+      try {
+        const slots = await fetchAvailableSlots({
+          animaleId: parseInt(animaleId, 10),
+          tipoVisitaId: parseInt(tipoVisitaId, 10),
+          veterinarioId: parseInt(veterinarioId, 10),
+          data,
+        });
+
+        if (isMounted) {
+          setAvailableSlots(slots);
+          setSlotMessage(slots.length ? '' : "Nessuno slot disponibile. Seleziona un'altra data.");
+        }
+      } catch (slotError) {
+        if (isMounted) {
+          setAvailableSlots([]);
+          setSlotMessage(slotError.message || "Nessuno slot disponibile. Seleziona un'altra data.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsSlotsLoading(false);
+        }
+      }
+    }
+
+    loadSlots();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [formData.animaleId, formData.tipoVisitaId, formData.veterinarioId, formData.data, minDate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setSuccess(false);
+    setFormData((currentData) => ({
+      ...currentData,
       [name]: value,
-    });
+    }));
   };
 
-  // Handle form submission
+  const handleSlotSelect = (slotStart) => {
+    setSuccess(false);
+    setFormData((currentData) => ({
+      ...currentData,
+      dataVisita: slotStart,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
 
-    const animaleId = parseInt(formData.animale, 10);
-    const tipoVisitaId = parseInt(formData.tipoVisita, 10);
-    const veterinarioId = parseInt(formData.veterinario, 10);
+    const animaleId = parseInt(formData.animaleId, 10);
+    const tipoVisitaId = parseInt(formData.tipoVisitaId, 10);
+    const veterinarioId = parseInt(formData.veterinarioId, 10);
 
     if (Number.isNaN(animaleId)) {
       setError('Seleziona un animale valido prima di continuare.');
       return;
     }
     if (Number.isNaN(tipoVisitaId)) {
-      setError('Seleziona un tipo di prestazione valido.');
+      setError('Seleziona un tipo di visita valido.');
       return;
     }
     if (Number.isNaN(veterinarioId)) {
       setError('Seleziona un veterinario valido.');
       return;
     }
-    if (!formData.data) {
-      setError('Seleziona una data per la visita.');
+    if (!formData.data || formData.data < minDate) {
+      setError('Seleziona una data futura per la visita.');
       return;
     }
-    if (!formData.fasciaOraria) {
-      setError('Seleziona una fascia oraria.');
+    if (!formData.dataVisita) {
+      setError('Seleziona uno slot disponibile.');
       return;
     }
 
-    setIsLoading(true);
+    setIsBookingLoading(true);
 
     try {
-      const requestBody = {
-        animale: { id: animaleId },
-        tipoVisita: { id: tipoVisitaId },
-        veterinario: { id: veterinarioId },
-        data: formData.data,
-        fasciaOraria: formData.fasciaOraria,
-        pagamento: formData.pagamento ? { id: parseInt(formData.pagamento, 10) } : null,
+      await bookAppointment({
+        animaleId,
+        tipoVisitaId,
+        veterinarioId,
+        dataVisita: formData.dataVisita,
         note: formData.note,
-      };
+      });
 
-      const response = await apiFetchWithPayload('/api/visite/prenotazione', [requestBody]);
-
-      if (!response.ok) {
-        const errorMessage = await readApiError(response, 'Failed to submit booking request');
-        throw new Error(errorMessage);
-      }
-
-      await response.json();
       setSuccess(true);
       setTimeout(() => {
-        navigate('/client/dashboard');
+        navigate(backPath);
       }, 1500);
     } catch (err) {
-      setError(err.message || 'An error occurred while submitting the request.');
+      setError(err.message || 'Si e verificato un errore durante la prenotazione.');
     } finally {
-      setIsLoading(false);
+      setIsBookingLoading(false);
     }
   };
 
   return (
     <div>
-      <PageTitle eyebrow="Nuova Richiesta" title="Prenota Appuntamento" />
-      <div className="panel panel-narrow">
-        <form className="stack-form" onSubmit={handleSubmit}>
+      <PageTitle eyebrow="Nuova prenotazione" title="Prenota appuntamento" />
+      <div className="panel panel-narrow booking-panel">
+        <form className="stack-form booking-form" onSubmit={handleSubmit}>
           {isOptionsLoading && <p className="muted-text">Caricamento opzioni...</p>}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>Richiesta inviata con successo!</p>}
+          {error && <p className="form-status form-status--error">{error}</p>}
+          {success && <p className="form-status form-status--success">Appuntamento prenotato con successo.</p>}
 
           <label>
-            Seleziona l'animale
+            Animale
             <select
-              name="animale"
-              value={formData.animale}
+              name="animaleId"
+              value={formData.animaleId}
               onChange={handleChange}
               required
             >
@@ -164,22 +246,22 @@ export default function ClientBooking() {
               {animals.length > 0 ? (
                 animals.map((animale) => (
                   <option key={animale.id} value={animale.id}>
-                    {animale.nome} ({animale.specie})
+                    {animale.nome} ({animale.specie || 'Specie non indicata'})
                   </option>
                 ))
               ) : (
                 <option value="" disabled>
-                  Nessun animale salvato - contatta la clinica
+                  Nessun animale disponibile
                 </option>
               )}
             </select>
           </label>
 
           <label>
-            Tipo di prestazione
+            Tipo di visita
             <select
-              name="tipoVisita"
-              value={formData.tipoVisita}
+              name="tipoVisitaId"
+              value={formData.tipoVisitaId}
               onChange={handleChange}
               required
             >
@@ -193,10 +275,10 @@ export default function ClientBooking() {
           </label>
 
           <label>
-            Veterinario preferito
+            Veterinario
             <select
-              name="veterinario"
-              value={formData.veterinario}
+              name="veterinarioId"
+              value={formData.veterinarioId}
               onChange={handleChange}
               required
             >
@@ -210,38 +292,67 @@ export default function ClientBooking() {
           </label>
 
           <label>
-            Data e Fascia Oraria
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <input
-                type="date"
-                name="data"
-                value={formData.data}
-                onChange={handleChange}
-                required
-              />
-              <select
-                name="fasciaOraria"
-                value={formData.fasciaOraria}
-                onChange={handleChange}
-                className="field-gap"
-                required
-              >
-                <option value="">Seleziona fascia oraria</option>
-                <option value="Mattina (09:00 - 12:30)">Mattina (09:00 - 12:30)</option>
-                <option value="Pomeriggio (14:30 - 18:30)">Pomeriggio (14:30 - 18:30)</option>
-              </select>
+            Data
+            <input
+              type="date"
+              name="data"
+              value={formData.data}
+              min={minDate}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <div className="booking-slots" aria-live="polite">
+            <div className="booking-slots__header">
+              <strong>Slot disponibili</strong>
+              {isSlotsLoading && <span>Ricerca in corso...</span>}
             </div>
+
+            {!isSlotsLoading && slotMessage && (
+              <p className="booking-slots__message">{slotMessage}</p>
+            )}
+
+            {!isSlotsLoading && availableSlots.length > 0 && (
+              <div className="booking-slots__grid">
+                {availableSlots.map((slot) => (
+                  <button
+                    key={slot.inizio}
+                    type="button"
+                    className={`booking-slot${formData.dataVisita === slot.inizio ? ' booking-slot--selected' : ''}`}
+                    onClick={() => handleSlotSelect(slot.inizio)}
+                  >
+                    {slot.label || formatSlotDateTime(slot.inizio)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <label>
+            Note
+            <textarea
+              name="note"
+              value={formData.note}
+              onChange={handleChange}
+              rows="4"
+              placeholder="Inserisci eventuali note per la visita"
+            />
           </label>
 
           <div className="actions-row">
-            <button type="submit" className="btn btn-primary" disabled={isLoading || isOptionsLoading}>
-              {isLoading ? 'Invio in corso...' : 'Invia Richiesta'}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isBookingLoading || isOptionsLoading || isSlotsLoading}
+            >
+              {isBookingLoading ? 'Prenotazione in corso...' : 'Prenota visita'}
             </button>
             <button
               type="button"
               className="btn btn-outline"
-              onClick={() => navigate('/client/dashboard')}
-              disabled={isLoading}
+              onClick={() => navigate(backPath)}
+              disabled={isBookingLoading}
             >
               Annulla
             </button>

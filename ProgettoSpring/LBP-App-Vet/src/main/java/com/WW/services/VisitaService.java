@@ -1,22 +1,36 @@
 package com.WW.services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.WW.dto.PrenotazioneVisitaRequest;
+import com.WW.dto.RichiestaSlotDisponibiliDto;
+import com.WW.dto.SlotDisponibileDto;
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
+import com.WW.entities.Animale;
 import com.WW.entities.FileReferences;
+import com.WW.entities.OrarioSettimanale;
 import com.WW.entities.Pagamento;
 import com.WW.entities.TipoVisita;
 import com.WW.entities.Utente;
@@ -33,6 +47,8 @@ import com.WW.repositories.VisitaRepository;
 @Service
 public class VisitaService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(VisitaService.class);
+
     private static final DateTimeFormatter MAIL_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -40,6 +56,7 @@ public class VisitaService {
     private final TipoVisitaService tipoVisitaService;
     private final AnimaleService animaleService;
     private final UtenteService utenteService;
+    private final OrarioSettimanaleService orarioSettimanaleService;
     private final PagamentiService pagamentiService;
     private final FileReferencesService fileReferencesService;
     private final PdfFileService pdfFileService;
@@ -53,6 +70,7 @@ public class VisitaService {
             TipoVisitaService tipoVisitaService,
             AnimaleService animaleService,
             UtenteService utenteService,
+            OrarioSettimanaleService orarioSettimanaleService,
             PagamentiService pagamentiService,
             FileReferencesService fileReferencesService,
             PdfFileService pdfFileService,
@@ -61,6 +79,7 @@ public class VisitaService {
         this.tipoVisitaService = tipoVisitaService;
         this.animaleService = animaleService;
         this.utenteService = utenteService;
+        this.orarioSettimanaleService = orarioSettimanaleService;
         this.pagamentiService = pagamentiService;
         this.fileReferencesService = fileReferencesService;
         this.pdfFileService = pdfFileService;
@@ -79,6 +98,77 @@ public class VisitaService {
         return visitaRepository.save(toEntity(visita));
     }
 
+    @Transactional(readOnly = true)
+    public List<SlotDisponibileDto> ottieniSlotDisponibili(
+            RichiestaSlotDisponibiliDto richiesta,
+            Authentication authentication) {
+        if (richiesta == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La richiesta degli slot non puo essere nulla.");
+        }
+
+        Animale animale = animaleService.ottieniPerId(richiesta.animaleId());
+        validaAccessoPrenotazione(animale, authentication);
+
+        TipoVisita tipoVisita = tipoVisitaService.ottieniPerId(richiesta.tipoVisitaId());
+        validaTipoVisitaAttivo(tipoVisita);
+
+        Utente veterinario = utenteService.ottieniPerId(richiesta.veterinarioId());
+        validaVeterinario(veterinario);
+
+        List<SlotDisponibileDto> slotDisponibili = calcolaSlotDisponibili(
+                animale,
+                veterinario,
+                tipoVisita,
+                richiesta.data());
+
+        if (slotDisponibili.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Nessuno slot disponibile. Seleziona un'altra data.");
+        }
+
+        return slotDisponibili;
+    }
+
+    @Transactional
+    public Visita prenotaVisita(PrenotazioneVisitaRequest richiesta, Authentication authentication) {
+        if (richiesta == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La richiesta di prenotazione non puo essere nulla.");
+        }
+
+        Animale animale = animaleService.bloccaPerPrenotazione(richiesta.animaleId());
+        validaAccessoPrenotazione(animale, authentication);
+
+        TipoVisita tipoVisita = tipoVisitaService.ottieniPerId(richiesta.tipoVisitaId());
+        validaTipoVisitaAttivo(tipoVisita);
+
+        Utente veterinario = utenteService.bloccaPerPrenotazione(richiesta.veterinarioId());
+        validaVeterinario(veterinario);
+
+        LocalDateTime inizio = richiesta.dataVisita();
+        if (inizio == null || !inizio.isAfter(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lo slot selezionato deve essere futuro.");
+        }
+
+        LocalDateTime fine = inizio.plusMinutes(tipoVisita.getDurata());
+        validaDisponibilitaCompleta(animale, veterinario, tipoVisita, inizio, fine, null);
+
+        Visita visita = new Visita();
+        visita.setAnimale(animale);
+        visita.setTipoVisita(tipoVisita);
+        visita.setVeterinario(veterinario);
+        visita.setDataVisita(inizio);
+        visita.setPagamento(null);
+        visita.setNote(richiesta.note());
+        visita.setNotaPrivata(null);
+        visita.setStato(VisitaStato.PRENOTATA);
+        visita.setIsDeleted(false);
+
+        Visita salvata = visitaRepository.save(visita);
+        inviaEmailConfermaPrenotazioneDopoCommit(salvata);
+        return salvata;
+    }
+
     private void validaVisitaPerCreazione(VisitaDto visita) {
         if (visita == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il corpo della visita non puo essere nullo.");
@@ -87,8 +177,18 @@ public class VisitaService {
         validaRiferimentiVisita(visita);
 
         TipoVisita tipoVisita = tipoVisitaService.ottieniPerId(visita.tipoVisita().id());
+        validaTipoVisitaAttivo(tipoVisita);
         Utente veterinario = utenteService.ottieniPerId(visita.veterinario().id());
-        validaSovrapposizioneOrario(ottieniDataInizio(visita), tipoVisita, veterinario, null);
+        validaVeterinario(veterinario);
+        LocalDateTime inizio = ottieniDataInizio(visita);
+        LocalDateTime fine = inizio.plusMinutes(tipoVisita.getDurata());
+        validaDisponibilitaCompleta(
+                animaleService.ottieniPerId(visita.animale().id()),
+                veterinario,
+                tipoVisita,
+                inizio,
+                fine,
+                null);
     }
 
     private void validaRiferimentiVisita(VisitaDto visita) {
@@ -136,38 +236,210 @@ public class VisitaService {
         return entity;
     }
 
-    /**
-     * Verifica che l'orario richiesto non si sovrapponga a un'altra visita per
-     * lo stesso veterinario.
-     */
-    private void validaSovrapposizioneOrario(
-            LocalDateTime dataVisita,
-            TipoVisita tipoVisita,
+    private List<SlotDisponibileDto> calcolaSlotDisponibili(
+            Animale animale,
             Utente veterinario,
-            Integer visitaDaEscludereId) {
-        LocalDateTime nuovaInizio = dataVisita;
-        LocalDateTime nuovaFine = dataVisita.plusMinutes(tipoVisita.getDurata());
-        LocalDateTime windowStart = dataVisita.minusHours(6);
-        LocalDateTime windowEnd = nuovaFine.plusHours(6);
+            TipoVisita tipoVisita,
+            LocalDate data) {
+        OrarioSettimanale orario = orarioSettimanaleService
+                .ottieniPerUtenteEGiorno(veterinario.getId(), data.getDayOfWeek().getValue())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Il veterinario non ha disponibilita per la data selezionata."));
 
-        List<Visita> candidate = visitaRepository.findVisiteVeterinarioNelPeriodo(
-                veterinario.getId(), windowStart, windowEnd);
+        List<SlotDisponibileDto> slots = new ArrayList<>();
+        aggiungiSlotIntervallo(slots, animale, veterinario, tipoVisita, data, orario.getMattinaInizio(), orario.getMattinaFine());
+        aggiungiSlotIntervallo(slots, animale, veterinario, tipoVisita, data, orario.getPomeriggioInizio(), orario.getPomeriggioFine());
+        return slots;
+    }
 
-        for (Visita esistente : candidate) {
-            if (Objects.equals(esistente.getId(), visitaDaEscludereId)) {
-                continue;
-            }
-
-            LocalDateTime esistenteInizio = esistente.getDataVisita();
-            LocalDateTime esistenteFine = esistenteInizio.plusMinutes(esistente.getTipoVisita().getDurata());
-            boolean sovrapposte = nuovaInizio.isBefore(esistenteFine) && esistenteInizio.isBefore(nuovaFine);
-
-            if (sovrapposte) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Il veterinario ha gia una visita prenotata in questo intervallo orario.");
-            }
+    private void aggiungiSlotIntervallo(
+            List<SlotDisponibileDto> slots,
+            Animale animale,
+            Utente veterinario,
+            TipoVisita tipoVisita,
+            LocalDate data,
+            int intervalloInizio,
+            int intervalloFine) {
+        if (intervalloInizio <= 0 || intervalloFine <= 0 || intervalloFine <= intervalloInizio) {
+            return;
         }
+
+        LocalDateTime slotInizio = LocalDateTime.of(data, toLocalTime(intervalloInizio));
+        LocalDateTime limiteFine = LocalDateTime.of(data, toLocalTime(intervalloFine));
+
+        while (!slotInizio.plusMinutes(tipoVisita.getDurata()).isAfter(limiteFine)) {
+            LocalDateTime slotFine = slotInizio.plusMinutes(tipoVisita.getDurata());
+
+            if (slotInizio.isAfter(LocalDateTime.now())
+                    && isDisponibileCompleto(animale, veterinario, tipoVisita, slotInizio, slotFine, null)) {
+                slots.add(new SlotDisponibileDto(
+                        slotInizio,
+                        slotFine,
+                        formattaOra(slotInizio) + " - " + formattaOra(slotFine)));
+            }
+
+            slotInizio = slotInizio.plusMinutes(10);
+        }
+    }
+
+    private boolean isDisponibileCompleto(
+            Animale animale,
+            Utente veterinario,
+            TipoVisita tipoVisita,
+            LocalDateTime inizio,
+            LocalDateTime fine,
+            Integer visitaDaEscludereId) {
+        return isDentroOrarioVeterinario(veterinario, inizio, fine)
+                && !haSovrapposizioneVeterinario(veterinario, inizio, fine, visitaDaEscludereId)
+                && !haSovrapposizioneAnimale(animale, inizio, fine, visitaDaEscludereId);
+    }
+
+    private void validaDisponibilitaCompleta(
+            Animale animale,
+            Utente veterinario,
+            TipoVisita tipoVisita,
+            LocalDateTime inizio,
+            LocalDateTime fine,
+            Integer visitaDaEscludereId) {
+        if (!isDentroOrarioVeterinario(veterinario, inizio, fine)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "L'appuntamento deve iniziare e terminare negli orari di disponibilita del veterinario.");
+        }
+        if (haSovrapposizioneVeterinario(veterinario, inizio, fine, visitaDaEscludereId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Il veterinario ha gia una visita prenotata in questo intervallo orario.");
+        }
+        if (haSovrapposizioneAnimale(animale, inizio, fine, visitaDaEscludereId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "L'animale ha gia una visita prenotata in questo intervallo orario.");
+        }
+    }
+
+    private boolean isDentroOrarioVeterinario(Utente veterinario, LocalDateTime inizio, LocalDateTime fine) {
+        return orarioSettimanaleService
+                .ottieniPerUtenteEGiorno(veterinario.getId(), inizio.getDayOfWeek().getValue())
+                .map(orario -> isDentroIntervallo(orario.getMattinaInizio(), orario.getMattinaFine(), inizio, fine)
+                        || isDentroIntervallo(orario.getPomeriggioInizio(), orario.getPomeriggioFine(), inizio, fine))
+                .orElse(false);
+    }
+
+    private boolean isDentroIntervallo(int intervalloInizio, int intervalloFine, LocalDateTime inizio, LocalDateTime fine) {
+        if (intervalloInizio <= 0 || intervalloFine <= 0 || intervalloFine <= intervalloInizio) {
+            return false;
+        }
+
+        LocalDateTime apertura = LocalDateTime.of(inizio.toLocalDate(), toLocalTime(intervalloInizio));
+        LocalDateTime chiusura = LocalDateTime.of(inizio.toLocalDate(), toLocalTime(intervalloFine));
+        return !inizio.isBefore(apertura) && !fine.isAfter(chiusura);
+    }
+
+    private boolean haSovrapposizioneVeterinario(
+            Utente veterinario,
+            LocalDateTime inizio,
+            LocalDateTime fine,
+            Integer visitaDaEscludereId) {
+        return visitaRepository.findVisiteVeterinarioNelPeriodo(
+                        veterinario.getId(), inizio.minusDays(1), fine.plusDays(1))
+                .stream()
+                .filter(visita -> !Objects.equals(visita.getId(), visitaDaEscludereId))
+                .filter(this::visitaBloccaSlot)
+                .anyMatch(visita -> appuntamentiSovrapposti(inizio, fine, visita));
+    }
+
+    private boolean haSovrapposizioneAnimale(
+            Animale animale,
+            LocalDateTime inizio,
+            LocalDateTime fine,
+            Integer visitaDaEscludereId) {
+        return visitaRepository.findVisiteAnimaleNelPeriodo(
+                        animale.getId(), inizio.minusDays(1), fine.plusDays(1))
+                .stream()
+                .filter(visita -> !Objects.equals(visita.getId(), visitaDaEscludereId))
+                .filter(this::visitaBloccaSlot)
+                .anyMatch(visita -> appuntamentiSovrapposti(inizio, fine, visita));
+    }
+
+    private boolean appuntamentiSovrapposti(LocalDateTime inizio, LocalDateTime fine, Visita visita) {
+        LocalDateTime esistenteInizio = visita.getDataVisita();
+        LocalDateTime esistenteFine = esistenteInizio.plusMinutes(visita.getTipoVisita().getDurata());
+        return inizio.isBefore(esistenteFine) && esistenteInizio.isBefore(fine);
+    }
+
+    private boolean visitaBloccaSlot(Visita visita) {
+        if (visita.getStato() == null) {
+            return true;
+        }
+
+        String stato = visita.getStato().name();
+        return !stato.equals("CANCELLATA") && !stato.equals("ANNULLATA");
+    }
+
+    private void validaAccessoPrenotazione(Animale animale, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Autenticazione richiesta.");
+        }
+
+        if (haRuolo(authentication, "ROLE_CLIENTE")) {
+            Integer utenteId = getAuthenticatedUserId(authentication);
+            if (animale.getUtente() == null || !Objects.equals(animale.getUtente().getId(), utenteId)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Non puoi prenotare una visita per un animale di un altro cliente.");
+            }
+            return;
+        }
+
+        if (haRuolo(authentication, "ROLE_RECEPTIONIST") || haRuolo(authentication, "ROLE_ADMIN")) {
+            return;
+        }
+
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Non hai i permessi per prenotare una visita.");
+    }
+
+    private void validaTipoVisitaAttivo(TipoVisita tipoVisita) {
+        if (!tipoVisita.isAttivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il tipo di visita selezionato non e attivo.");
+        }
+    }
+
+    private void validaVeterinario(Utente veterinario) {
+        if (veterinario.getRuolo() == null || !"VETERINARIO".equals(veterinario.getRuolo().getRuolo())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il veterinario selezionato non e valido.");
+        }
+    }
+
+    private boolean haRuolo(Authentication authentication, String ruolo) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(ruolo::equals);
+    }
+
+    private Integer getAuthenticatedUserId(Authentication authentication) {
+        try {
+            return Integer.valueOf(authentication.getName());
+        } catch (NumberFormatException ex) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utente autenticato non valido.");
+        }
+    }
+
+    private LocalTime toLocalTime(int valoreOrario) {
+        if (valoreOrario < 24) {
+            return LocalTime.of(valoreOrario, 0);
+        }
+
+        int ore = valoreOrario / 100;
+        int minuti = valoreOrario % 100;
+        return LocalTime.of(ore, minuti);
+    }
+
+    private String formattaOra(LocalDateTime dataOra) {
+        return dataOra.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     @Transactional(readOnly = true)
@@ -382,10 +654,19 @@ public class VisitaService {
         validaRiferimentiVisita(visitaDto);
 
         TipoVisita tipoVisita = tipoVisitaService.ottieniPerId(visitaDto.tipoVisita().id());
+        validaTipoVisitaAttivo(tipoVisita);
         Utente veterinario = utenteService.ottieniPerId(visitaDto.veterinario().id());
+        validaVeterinario(veterinario);
         LocalDateTime dataInizio = ottieniDataInizio(visitaDto);
+        LocalDateTime dataFine = dataInizio.plusMinutes(tipoVisita.getDurata());
 
-        validaSovrapposizioneOrario(dataInizio, tipoVisita, veterinario, visita.getId());
+        validaDisponibilitaCompleta(
+                animaleService.ottieniPerId(visitaDto.animale().id()),
+                veterinario,
+                tipoVisita,
+                dataInizio,
+                dataFine,
+                visita.getId());
 
         visita.setAnimale(animaleService.ottieniPerId(visitaDto.animale().id()));
         visita.setTipoVisita(tipoVisita);
@@ -462,5 +743,50 @@ public class VisitaService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Visita non trovata per la data specificata."));
+    }
+
+    private void inviaEmailConfermaPrenotazione(Visita visita) {
+        Utente cliente = visita.getAnimale().getUtente();
+
+        if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Impossibile inviare la conferma: email cliente non disponibile.");
+        }
+
+        Map<String, Object> variabili = Map.of(
+                "clientName", getFullName(cliente),
+                "animalName", valueOrFallback(visita.getAnimale().getNome(), "il tuo animale"),
+                "appointmentDateTime", MAIL_DATE_TIME_FORMATTER.format(visita.getDataVisita()),
+                "visitType", valueOrFallback(visita.getTipoVisita().getNome(), "Visita"),
+                "doctorName", getFullName(visita.getVeterinario()),
+                "clinicName", valueOrFallback(clinicName, "la clinica"));
+
+        emailSenderService.inviaConfermaAppuntamento(cliente.getEmail(), variabili);
+    }
+
+    private void inviaEmailConfermaPrenotazioneDopoCommit(Visita visita) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            inviaEmailConfermaPrenotazioneSenzaBloccarePrenotazione(visita);
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                inviaEmailConfermaPrenotazioneSenzaBloccarePrenotazione(visita);
+            }
+        });
+    }
+
+    private void inviaEmailConfermaPrenotazioneSenzaBloccarePrenotazione(Visita visita) {
+        try {
+            inviaEmailConfermaPrenotazione(visita);
+        } catch (RuntimeException ex) {
+            LOGGER.warn(
+                    "Prenotazione {} salvata, ma invio email di conferma non riuscito.",
+                    visita.getId(),
+                    ex);
+        }
     }
 }

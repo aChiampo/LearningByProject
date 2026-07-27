@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.WW.dto.DelayNotificationRequest;
+import com.WW.dto.PrenotazioneVisitaRequest;
+import com.WW.dto.RichiestaSlotDisponibiliDto;
+import com.WW.dto.SlotDisponibileDto;
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Visita;
@@ -153,6 +156,13 @@ public class VisitaController {
         return ResponseEntity.ok(visitaService.getVisiteByParams(params));
     }
 
+    @PostMapping("/slot-disponibili")
+    public ResponseEntity<List<SlotDisponibileDto>> ottieniSlotDisponibili(
+            @Valid @RequestBody RichiestaSlotDisponibiliDto richiesta,
+            Authentication authentication) {
+        return ResponseEntity.ok(visitaService.ottieniSlotDisponibili(richiesta, authentication));
+    }
+
     /**
      * Crea una nuova visita.
      *
@@ -163,6 +173,14 @@ public class VisitaController {
     public ResponseEntity<Visita> prenota(@Valid @RequestBody VisitaDto visita) {
         Visita nuovaVisita = visitaService.createVisita(visita);
         return new ResponseEntity<Visita>(nuovaVisita, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/prenota")
+    public ResponseEntity<Visita> prenotaSlot(
+            @Valid @RequestBody PrenotazioneVisitaRequest richiesta,
+            Authentication authentication) {
+        Visita nuovaVisita = visitaService.prenotaVisita(richiesta, authentication);
+        return new ResponseEntity<>(nuovaVisita, HttpStatus.CREATED);
     }
 
     /**
