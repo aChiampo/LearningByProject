@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.WW.entities.Razza;
 import com.WW.repositories.RazzaRepo;
+/**
+ * Servizio per gestire le razze animali e le ricerche per specie.
+ */
 
 @Service
 public class RazzaService {

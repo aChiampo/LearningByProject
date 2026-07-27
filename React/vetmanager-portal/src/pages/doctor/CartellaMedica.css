@@ -266,6 +266,47 @@
   gap: 10px;
 }
 
+.cartella-medica__dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.cartella-medica__dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(24, 32, 31, 0.52);
+  cursor: pointer;
+}
+
+.cartella-medica__dialog-backdrop:disabled {
+  cursor: not-allowed;
+}
+
+.cartella-medica__dialog-window {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 18px;
+  width: min(100%, 720px);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: clamp(20px, 4vw, 28px);
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--line));
+  border-top: 4px solid var(--primary);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 24px 70px rgba(24, 32, 31, 0.24);
+}
+
 .cartella-medica button:disabled {
   cursor: not-allowed;
   opacity: 0.68;
@@ -305,5 +346,13 @@
   .cartella-medica__vaccination-card .btn,
   .cartella-medica__visit-actions .btn {
     width: 100%;
+  }
+
+  .cartella-medica__dialog {
+    padding: 16px;
+  }
+
+  .cartella-medica__dialog-window {
+    max-height: calc(100vh - 32px);
   }
 }

@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.WW.dto.SpecieRequest;
 import com.WW.entities.Specie;
 import com.WW.services.SpecieService;
+/**
+ * Controller REST per la gestione delle specie animali.
+ */
 
 @RestController
 @RequestMapping("/api/specie")

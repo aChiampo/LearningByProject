@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.WW.entities.Ruolo;
 import com.WW.services.RuoloService;
+/**
+ * Controller REST per la gestione dei ruoli applicativi.
+ */
 
 @RestController
 @RequestMapping("/api/ruoli")

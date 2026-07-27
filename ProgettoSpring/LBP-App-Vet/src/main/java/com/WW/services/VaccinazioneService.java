@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+/**
+ * Servizio per gestire vaccinazioni e relative risposte DTO.
+ */
 
 @Service
 public class VaccinazioneService {

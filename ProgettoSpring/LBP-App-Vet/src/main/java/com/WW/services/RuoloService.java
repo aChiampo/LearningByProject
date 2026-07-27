@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.WW.entities.Ruolo;
 import com.WW.repositories.RuoloRepo;
+/**
+ * Servizio per gestire ruoli applicativi e normalizzazione dei nomi ruolo.
+ */
 
 @Service
 public class RuoloService {
@@ -24,6 +27,12 @@ public class RuoloService {
     public List<Ruolo> visualizzaTuttiRuoli() {
         return ruoloRepo.findAll();
     }
+    /**
+     * Esegue la logica applicativa per ottieniPerRuolo.
+     *
+     * @param ruolo parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     public Optional<Ruolo> ottieniPerRuolo(String ruolo) {
         if (ruolo == null || ruolo.trim().isEmpty()) {
@@ -99,6 +108,12 @@ public class RuoloService {
         }
         ruoloRepo.deleteById(id);
     }
+    /**
+     * Esegue la logica applicativa per ottieniPerId.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     public Ruolo ottieniPerId(Integer id) {
         if (id == null || id <= 0) {

@@ -73,14 +73,33 @@ public class OrarioSettimanaleService {
 	public List<OrarioSettimanale> ottieniTutti() {
 		return orariosettimanaleRepository.findAll();
 	}
+/**
+ * Esegue la logica applicativa per ottieniPerUtenteEGiorno.
+ *
+ * @param utenteId parametro richiesto dall'operazione
+ * @param giornoSettimana parametro richiesto dall'operazione
+ * @return risultato dell'operazione
+ */
 
 	public Optional<OrarioSettimanale> ottieniPerUtenteEGiorno(Integer utenteId, int giornoSettimana) {
 		return orariosettimanaleRepository.findByUtenteIdAndGiornoSettimana(utenteId, giornoSettimana);
 	}
+/**
+ * Esegue la logica applicativa per ottieniPerUtente.
+ *
+ * @param utenteId parametro richiesto dall'operazione
+ * @return risultato dell'operazione
+ */
 
 	public List<OrarioSettimanale> ottieniPerUtente(Integer utenteId) {
 		return orariosettimanaleRepository.findByUtenteId(utenteId);
 	}
+/**
+ * Esegue la logica applicativa per salva.
+ *
+ * @param orarioSettimanale parametro richiesto dall'operazione
+ * @return risultato dell'operazione
+ */
 
 	public OrarioSettimanale salva(OrarioSettimanale orarioSettimanale) {
 		return orariosettimanaleRepository.save(orarioSettimanale);

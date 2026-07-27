@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+/**
+ * Servizio per gestire tipi vaccino, durata e soft delete.
+ */
 
 @Service
 public class TipoVaccinoService {

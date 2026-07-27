@@ -23,13 +23,13 @@ public class CategoriaVisiteService {
 
     private final CategoriaVisiteRepo categoriaVisiteRepo;
 
-    @Transactional
     /**
      * Salva una nuova categoria visita.
      *
      * @param categoriaVisite dati della categoria da salvare
      * @return categoria creata
      */
+    @Transactional
     public CategoriaVisite aggiungiCategoriaVisite(CategoriaVisite categoriaVisite) {
         if (categoriaVisite.getIsDeleted() == null) {
             categoriaVisite.setIsDeleted(false);
@@ -37,7 +37,6 @@ public class CategoriaVisiteService {
         return categoriaVisiteRepo.save(categoriaVisite);
     }
 
-    @Transactional
     /**
      * Aggiorna una categoria visita esistente.
      *
@@ -45,6 +44,7 @@ public class CategoriaVisiteService {
      * @param modificato nuovi dati da applicare
      * @return categoria aggiornata
      */
+    @Transactional
     public CategoriaVisite modificaCategoriaVisite(Integer id, CategoriaVisite modificato) {
         CategoriaVisite originale = ottieniPerId(id);
 
@@ -63,7 +63,12 @@ public class CategoriaVisiteService {
     public List<CategoriaVisite> ottieniTutte() {
         return categoriaVisiteRepo.findByIsDeletedFalse();
     }
-
+    /**
+     * Restituisce una categoria visita non eliminata dato il suo id.
+     *
+     * @param id identificativo della categoria
+     * @return categoria trovata
+     */
     public CategoriaVisite ottieniPerId(Integer id) {
         return categoriaVisiteRepo.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -71,12 +76,12 @@ public class CategoriaVisiteService {
                         "Categoria visite non trovata."));
     }
 
-    @Transactional
     /**
      * Elimina una categoria visita esistente.
      *
      * @param id identificativo della categoria da eliminare
      */
+    @Transactional
     public void eliminaCategoriaVisite(Integer id) {
         CategoriaVisite categoriaVisite = categoriaVisiteRepo.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(

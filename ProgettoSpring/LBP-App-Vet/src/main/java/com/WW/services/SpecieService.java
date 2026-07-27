@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+/**
+ * Servizio per gestire specie animali e controlli di unicita del nome.
+ */
 
 @Service
 public class SpecieService {

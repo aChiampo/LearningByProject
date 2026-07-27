@@ -7,6 +7,23 @@ import { AppointmentCardList } from '../../components/appointments/AppointmentCa
 import AppointmentRescheduleDialog from '../../components/appointments/AppointmentRescheduleDialog';
 import { fetchAnimalsByOwner } from '../../services/animalApi';
 import { deleteAppointment, fetchAppointments, getLocalStartOfToday } from '../../services/appointmentApi';
+import { fetchVisitTypes } from '../../services/visitTypeApi';
+
+function createAnimalLookup(animals) {
+  return new Map(
+    animals
+      .map((animal) => [animal.id, animal])
+      .filter(([id]) => id !== null && id !== undefined)
+  );
+}
+
+function createVisitTypeLookup(visitTypes) {
+  return new Map(
+    visitTypes
+      .map((visitType) => [visitType.id, visitType])
+      .filter(([id]) => id !== null && id !== undefined)
+  );
+}
 
 export default function ClientDashboard() {
   const navigate = useNavigate();
@@ -29,13 +46,20 @@ export default function ClientDashboard() {
       setLoadError('');
 
       try {
-        const [animalList, appointmentList] = await Promise.all([
+        const [animalList, visitTypeList] = await Promise.all([
           fetchAnimalsByOwner(ownerId),
-          fetchAppointments({
+          fetchVisitTypes(),
+        ]);
+        const appointmentList = await fetchAppointments({
             clientID: ownerId,
             date: getLocalStartOfToday(),
-          }),
-        ]);
+          }, {
+            loadLookups: false,
+            lookups: {
+              animalsById: createAnimalLookup(animalList),
+              visitTypesById: createVisitTypeLookup(visitTypeList),
+            },
+          });
 
         if (isMounted) {
           setAnimals(animalList);
@@ -66,9 +90,16 @@ export default function ClientDashboard() {
       return;
     }
 
+    const visitTypeList = await fetchVisitTypes();
     const appointmentList = await fetchAppointments({
       clientID: ownerId,
       date: getLocalStartOfToday(),
+    }, {
+      loadLookups: false,
+      lookups: {
+        animalsById: createAnimalLookup(animals),
+        visitTypesById: createVisitTypeLookup(visitTypeList),
+      },
     });
 
     setAppointments(appointmentList);

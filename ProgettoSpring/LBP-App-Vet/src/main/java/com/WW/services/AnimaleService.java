@@ -11,6 +11,9 @@ import com.WW.entities.Animale;
 import com.WW.repositories.AnimaleRepository;
 
 import lombok.RequiredArgsConstructor;
+/**
+ * Servizio per gestire anagrafiche animali, proprietari e soft delete.
+ */
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,12 @@ public class AnimaleService {
     private final UtenteService utenteService;
 
     // 1. REGISTRA UN NUOVO ANIMALE
+    /**
+     * Esegue la logica applicativa per creaAnimale.
+     *
+     * @param animale parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @Transactional
     public Animale creaAnimale(Animale animale) {
         if (animale.getUtente() == null || animale.getUtente().getId() == null
@@ -43,6 +52,13 @@ public class AnimaleService {
     }
 
     // 2. AGGIORNA UN ANIMALE ESISTENTE
+    /**
+     * Esegue la logica applicativa per aggiornaAnimale.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param datiAggiornati parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @Transactional
     public Animale aggiornaAnimale(Integer id, Animale datiAggiornati) {
         Animale esistente = ottieniPerId(id);
@@ -86,18 +102,35 @@ public class AnimaleService {
     }
 
     // 3. RECUPERA TUTTI I PAZIENTI/ANIMALISTI DEL SISTEMA
+    /**
+     * Esegue la logica applicativa per ottieniTutti.
+     *
+     * @return risultato dell'operazione
+     */
     @Transactional(readOnly = true)
     public List<Animale> ottieniTutti() {
         return animaleRepository.findByIsDeletedFalse();
     }
 
     // 4. RECUPERA GLI ANIMALI DI UN SINGOLO UTENTE
+    /**
+     * Esegue la logica applicativa per ottieniPerUtente.
+     *
+     * @param utenteId parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @Transactional(readOnly = true)
     public List<Animale> ottieniPerUtente(Integer utenteId) {
         return animaleRepository.findByUtenteIdAndIsDeletedFalse(utenteId);
     }
 
     // 5. RECUPERA SCHEDA SINGOLO ANIMALE
+    /**
+     * Esegue la logica applicativa per ottieniPerId.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @Transactional(readOnly = true)
     public Animale ottieniPerId(Integer id) {
         return animaleRepository.findByIdAndIsDeletedFalse(id)
@@ -105,6 +138,12 @@ public class AnimaleService {
                         HttpStatus.NOT_FOUND,
                         "Animale non trovato."));
     }
+    /**
+     * Esegue la logica applicativa per bloccaPerPrenotazione.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @Transactional
     public Animale bloccaPerPrenotazione(Integer id) {
@@ -115,6 +154,11 @@ public class AnimaleService {
     }
 
     // 6. CANCELLA UN ANIMALE
+    /**
+     * Esegue la logica applicativa per eliminaAnimale.
+     *
+     * @param id parametro richiesto dall'operazione
+     */
     @Transactional
     public void eliminaAnimale(Integer id) {
         Animale animale = animaleRepository.findByIdAndIsDeletedFalse(id)

@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+/**
+ * Controller REST per la gestione dei tipi vaccino.
+ */
 
 @RestController
 @RequestMapping("/api/tipi-vaccino")

@@ -143,7 +143,8 @@ async function loadAppointmentLookups() {
   };
 }
 
-export async function fetchAppointments(params = {}) {
+export async function fetchAppointments(params = {}, options = {}) {
+  const { loadLookups = true, lookups: providedLookups = {} } = options;
   const response = await apiFetchWithPayload(VISIT_PARAMS_ENDPOINT, [params]);
 
   if (!response.ok) {
@@ -153,7 +154,11 @@ export async function fetchAppointments(params = {}) {
 
   const visits = await response.json();
   const visitList = Array.isArray(visits) ? visits : [visits];
-  const lookups = await loadAppointmentLookups();
+  const loadedLookups = loadLookups ? await loadAppointmentLookups() : {};
+  const lookups = {
+    ...loadedLookups,
+    ...providedLookups,
+  };
 
   return visitList.map((visit) => normalizeVisitToAppointment(visit, lookups));
 }

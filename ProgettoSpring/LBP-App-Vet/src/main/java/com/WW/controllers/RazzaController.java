@@ -22,6 +22,9 @@ import com.WW.dto.RazzaRequest;
 import com.WW.entities.Razza;
 import com.WW.entities.Specie;
 import com.WW.services.RazzaService;
+/**
+ * Controller REST per la gestione delle razze animali.
+ */
 
 @RestController
 @RequestMapping("/api/razze")

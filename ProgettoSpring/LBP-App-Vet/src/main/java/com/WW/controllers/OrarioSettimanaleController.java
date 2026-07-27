@@ -19,6 +19,9 @@ import com.WW.entities.OrarioSettimanale;
 import com.WW.services.OrarioSettimanaleService;
 
 import lombok.RequiredArgsConstructor;
+/**
+ * Controller REST per la gestione degli orari settimanali dei veterinari.
+ */
 
 @RestController
 @RequestMapping("/api/orariSettimanali")

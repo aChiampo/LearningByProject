@@ -26,12 +26,20 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/animali")
 @RequiredArgsConstructor
 //TODO: Aggiungere le validazioni (neccessario il DTO)
+/**
+ * Controller REST per la gestione degli animali e dei controlli di accesso sui proprietari.
+ */
 public class AnimaleController {
 
     private final AnimaleService animaleService;
 
     // 1. LEGGI TUTTI GLI ANIMALI -> GET
     // http://localhost:8080/api/animali/leggiTutti
+    /**
+     * Gestisce la richiesta HTTP per leggiTutti.
+     *
+     * @return risultato dell'operazione
+     */
     
     @GetMapping("/leggiTutti")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
@@ -40,6 +48,13 @@ public class AnimaleController {
     }
 
     // 2. LEGGI SINGOLO ANIMALE -> GET http://localhost:8080/api/animali/leggi/12
+    /**
+     * Gestisce la richiesta HTTP per leggi.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param autenticazione parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @GetMapping("/leggi/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<Animale> leggi(@PathVariable Integer id, Authentication autenticazione) {
@@ -71,6 +86,13 @@ public class AnimaleController {
 
     // 3. LEGGI GLI ANIMALI DI UN UTENTE -> GET
     // http://localhost:8080/api/animali/leggiPerUtente/5
+    /**
+     * Gestisce la richiesta HTTP per leggiPerUtente.
+     *
+     * @param utenteId parametro richiesto dall'operazione
+     * @param autenticazione parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @GetMapping("/leggiPerUtente/{utenteId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Animale>> leggiPerUtente(@PathVariable Integer utenteId, Authentication autenticazione) {
@@ -82,6 +104,13 @@ public class AnimaleController {
     }
 
     // 4. REGISTRA UN NUOVO ANIMALE -> POST http://localhost:8080/api/animali/crea
+    /**
+     * Gestisce la richiesta HTTP per crea.
+     *
+     * @param animale parametro richiesto dall'operazione
+     * @param autenticazione parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @PostMapping("/crea")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<Animale> crea(@RequestBody Animale animale, Authentication autenticazione) {
@@ -102,6 +131,13 @@ public class AnimaleController {
     }
 
     // 5. MODIFICA UN ANIMALE -> PATCH http://localhost:8080/api/animali/modifica/12
+    /**
+     * Gestisce la richiesta HTTP per modifica.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param animale parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @PatchMapping("/modifica/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Animale> modifica(@PathVariable Integer id, @RequestBody Animale animale) {
@@ -110,6 +146,12 @@ public class AnimaleController {
     }
 
     // 6. ELIMINA UN ANIMALE -> DELETE http://localhost:8080/api/animali/elimina/12
+    /**
+     * Gestisce la richiesta HTTP per elimina.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @DeleteMapping("/elimina/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> elimina(@PathVariable Integer id) {

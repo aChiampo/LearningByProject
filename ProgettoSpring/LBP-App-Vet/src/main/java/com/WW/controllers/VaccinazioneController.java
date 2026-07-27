@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+/**
+ * Controller REST per la gestione delle vaccinazioni.
+ */
 
 @RestController
 @RequestMapping("/api/vaccinazioni")

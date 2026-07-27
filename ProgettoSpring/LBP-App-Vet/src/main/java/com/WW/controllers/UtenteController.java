@@ -44,6 +44,11 @@ public class UtenteController {
     public ResponseEntity<List<Utente>> ottieniTutti() {
         return ResponseEntity.ok(utenteService.ottieniTutti());
     }
+    /**
+     * Gestisce la richiesta HTTP per ottieniVeterinari.
+     *
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/ottieniVeterinari")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")

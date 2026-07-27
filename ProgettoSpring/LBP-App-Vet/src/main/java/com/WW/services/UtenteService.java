@@ -46,7 +46,6 @@ public class UtenteService {
         return utenteRepo.save(utente);
     }
 
-    @Transactional
     /**
      * Aggiorna un utente esistente.
      *
@@ -54,6 +53,7 @@ public class UtenteService {
      * @param modificato nuovi dati da applicare
      * @return utente aggiornato
      */
+    @Transactional
     public Utente modificaUtente(Integer id, Utente modificato) {
         Utente originale = ottieniPerId(id);
 
@@ -83,7 +83,13 @@ public class UtenteService {
         }
         return utenteRepo.save(originale);
     }
-
+    /**
+     * Aggiorna i dati modificabili da un DTO pubblico senza esporre password o ruolo.
+     *
+     * @param id identificativo dell'utente da aggiornare
+     * @param modificato dati pubblici da applicare
+     * @return utente aggiornato
+     */
     @Transactional
     public Utente modificaUtente(Integer id, UtenteDto modificato) {
         Utente originale = ottieniPerId(id);
@@ -117,7 +123,11 @@ public class UtenteService {
     public List<Utente> ottieniTutti() {
         return utenteRepo.findByIsDeletedFalse();
     }
-
+    /**
+     * Restituisce gli utenti attivi con ruolo veterinario.
+     *
+     * @return elenco dei veterinari attivi
+     */
     public List<Utente> ottieniVeterinariAttivi() {
         return utenteRepo.findByRuoloRuoloAndIsDeletedFalse("VETERINARIO");
     }
@@ -134,7 +144,12 @@ public class UtenteService {
                         HttpStatus.NOT_FOUND,
                         "Utente non trovato."));
     }
-
+    /**
+     * Recupera e blocca pessimisticamente un utente durante la prenotazione.
+     *
+     * @param id identificativo dell'utente da bloccare
+     * @return utente bloccato per la transazione corrente
+     */
     @Transactional
     public Utente bloccaPerPrenotazione(Integer id) {
         return utenteRepo.lockByIdAndIsDeletedFalse(id)
@@ -143,12 +158,12 @@ public class UtenteService {
                         "Utente non trovato."));
     }
 
-    @Transactional
     /**
      * Elimina un utente esistente.
      *
      * @param id identificativo dell'utente da eliminare
      */
+    @Transactional
     public void eliminaUtente(Integer id) {
         Utente utente = utenteRepo.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -157,7 +172,12 @@ public class UtenteService {
         utente.setIsDeleted(true);
         utenteRepo.save(utente);
     }
-
+    /**
+     * Cerca un utente attivo tramite indirizzo email.
+     *
+     * @param email email da cercare
+     * @return utente trovato, se presente
+     */
     public Optional<Utente> ottieniPerEmail(String email) {
         return utenteRepo.findByEmailAndIsDeletedFalse(email);
     }

@@ -15,11 +15,19 @@ import java.util.List;
 @CrossOrigin(origins = "*") //Da cambiare in produzione per limitare l'accesso solo al dominio del frontend
 @RequiredArgsConstructor
 //TODO: Aggiungere le validazioni (neccessario il DTO)
+/**
+ * Controller REST per la gestione delle aziende clienti.
+ */
 public class AziendaController {
 
     private final AziendaService aziendaService;
 
     // 1. LEGGI TUTTE LE AZIENDE -> GET http://localhost:8080/api/aziende/leggiTutti
+    /**
+     * Gestisce la richiesta HTTP per leggiTutti.
+     *
+     * @return risultato dell'operazione
+     */
     @GetMapping("/leggiTutti")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<List<Azienda>> leggiTutti() {
@@ -27,6 +35,12 @@ public class AziendaController {
     }
 
     // 2. LEGGI SINGOLA AZIENDA -> GET http://localhost:8080/api/aziende/leggi/12
+    /**
+     * Gestisce la richiesta HTTP per leggi.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @GetMapping("/leggi/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     public ResponseEntity<Azienda> leggi(@PathVariable Integer id) {
@@ -34,6 +48,12 @@ public class AziendaController {
     }
 
     // 3. CREA UNA NUOVA AZIENDA -> POST http://localhost:8080/api/aziende/crea
+    /**
+     * Gestisce la richiesta HTTP per crea.
+     *
+     * @param azienda parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @PostMapping("/crea")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Azienda> crea(@RequestBody Azienda azienda) {
@@ -42,6 +62,13 @@ public class AziendaController {
     }
 
     // 4. MODIFICA UN'AZIENDA -> PATCH http://localhost:8080/api/aziende/modifica/12
+    /**
+     * Gestisce la richiesta HTTP per modifica.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param azienda parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @PatchMapping("/modifica/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Azienda> modifica(@PathVariable Integer id, @RequestBody Azienda azienda) {
@@ -50,6 +77,12 @@ public class AziendaController {
     }
 
     // 5. ELIMINA UN'AZIENDA -> DELETE http://localhost:8080/api/aziende/elimina/12
+    /**
+     * Gestisce la richiesta HTTP per elimina.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
     @DeleteMapping("/elimina/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> elimina(@PathVariable Integer id) {

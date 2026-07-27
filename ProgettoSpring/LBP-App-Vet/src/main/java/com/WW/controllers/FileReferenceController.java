@@ -20,6 +20,9 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+/**
+ * Controller REST per consultare, scaricare e amministrare i file salvati.
+ */
 
 @RestController
 @RequestMapping("/api/file-reference")
@@ -31,6 +34,11 @@ public class FileReferenceController {
     public FileReferenceController(FileReferencesService fileReferencesService) {
         this.fileReferencesService = fileReferencesService;
     }
+    /**
+     * Gestisce la richiesta HTTP per getAllFileReferences.
+     *
+     * @return risultato dell'operazione
+     */
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
@@ -42,6 +50,13 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per getById.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param authentication parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
@@ -61,6 +76,13 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per downloadById.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param authentication parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/{id}/download")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
@@ -100,6 +122,13 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per getByOwner.
+     *
+     * @param ownerId parametro richiesto dall'operazione
+     * @param authentication parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/owner/{ownerId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
@@ -119,6 +148,12 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per getBefore.
+     *
+     * @param date parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/before")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
@@ -132,6 +167,12 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per getAfter.
+     *
+     * @param date parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/after")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
@@ -145,6 +186,12 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per createFileReference.
+     *
+     * @param fileReferences parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -158,6 +205,13 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per updateFileReference.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param fileReferences parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -172,6 +226,12 @@ public class FileReferenceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    /**
+     * Gestisce la richiesta HTTP per deleteFileReference.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

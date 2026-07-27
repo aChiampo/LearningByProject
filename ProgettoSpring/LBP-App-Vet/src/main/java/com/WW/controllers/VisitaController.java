@@ -32,6 +32,9 @@ import com.WW.services.VisitaService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+/**
+ * Controller REST per visite, prenotazioni, riprogrammazioni e pagamenti collegati.
+ */
 
 @RestController
 @RequestMapping("/api/visite")
@@ -176,6 +179,13 @@ public class VisitaController {
             Authentication authentication) {
         return ResponseEntity.ok(visitaService.getVisiteByParams(applyRoleFilters(params, authentication)));
     }
+    /**
+     * Gestisce la richiesta HTTP per ottieniSlotDisponibili.
+     *
+     * @param richiesta parametro richiesto dall'operazione
+     * @param authentication parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PostMapping("/slot-disponibili")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")
@@ -197,6 +207,13 @@ public class VisitaController {
         Visita nuovaVisita = visitaService.createVisita(visita);
         return new ResponseEntity<Visita>(nuovaVisita, HttpStatus.CREATED);
     }
+    /**
+     * Gestisce la richiesta HTTP per prenotaSlot.
+     *
+     * @param richiesta parametro richiesto dall'operazione
+     * @param authentication parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PostMapping("/prenota")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")
@@ -258,6 +275,14 @@ public class VisitaController {
     public ResponseEntity<Visita> aggiornaPagato( @PathVariable Integer id, @RequestParam("pagamento") Integer pagamentoId) {
         return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamentoId));
     }
+    /**
+     * Gestisce la richiesta HTTP per riprogramma.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param request parametro richiesto dall'operazione
+     * @param authentication parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PatchMapping("/riprogramma/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")

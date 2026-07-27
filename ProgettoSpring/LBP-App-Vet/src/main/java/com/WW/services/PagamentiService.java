@@ -11,18 +11,34 @@ import com.WW.entities.Pagamento;
 import com.WW.repositories.PagamentoRepository;
 
 import lombok.RequiredArgsConstructor;
+/**
+ * Servizio per creare, aggiornare e soft-eliminare pagamenti.
+ */
 
 @Service
 @RequiredArgsConstructor
 public class PagamentiService {
 
     private final PagamentoRepository pagamentoRepository;
+    /**
+     * Esegue la logica applicativa per creaPagamento.
+     *
+     * @param pagamento parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @Transactional
     public Pagamento creaPagamento(Pagamento pagamento) {
         pagamento.setDeleted(false);
         return pagamentoRepository.save(pagamento);
     }
+    /**
+     * Esegue la logica applicativa per aggiornaPagamento.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @param datiAggiornati parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @Transactional
     public Pagamento aggiornaPagamento(Integer id, Pagamento datiAggiornati) {
@@ -40,16 +56,33 @@ public class PagamentiService {
 
         return pagamentoRepository.save(esistente);
     }
+    /**
+     * Esegue la logica applicativa per salvaPagamento.
+     *
+     * @param pagamento parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @Transactional
     public Pagamento salvaPagamento(Pagamento pagamento) {
         return pagamentoRepository.save(pagamento);
     }
+    /**
+     * Esegue la logica applicativa per ottieniTutti.
+     *
+     * @return risultato dell'operazione
+     */
 
     @Transactional(readOnly = true)
     public List<Pagamento> ottieniTutti() {
         return pagamentoRepository.findByIsDeletedFalse();
     }
+    /**
+     * Esegue la logica applicativa per ottieniPerId.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @Transactional(readOnly = true)
     public Pagamento ottieniPerId(Integer id) {
@@ -58,6 +91,11 @@ public class PagamentiService {
                         HttpStatus.NOT_FOUND,
                         "Pagamento non trovato."));
     }
+    /**
+     * Esegue la logica applicativa per eliminaPagamento.
+     *
+     * @param id parametro richiesto dall'operazione
+     */
 
     @Transactional
     public void eliminaPagamento(Integer id) {
