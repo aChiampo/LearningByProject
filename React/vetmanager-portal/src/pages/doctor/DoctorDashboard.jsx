@@ -217,11 +217,19 @@ export default function DoctorDashboard() {
         {!isLoading && todayAppointments.length > 0 ? (
           <AppointmentCardList
             appointments={todayAppointments}
+            variant="doctor"
             actions={[
               {
-                label: 'Visita',
+                label: 'Vedi Cartella',
                 className: 'btn btn-primary btn-sm',
-                onClick: (visit) => window.alert(`Apertura cartella clinica di ${visit.animalName}`),
+                onClick: (visit) => {
+                  if (!visit.animalId) {
+                    window.alert('Cartella medica non disponibile per questo animale.');
+                    return;
+                  }
+
+                  navigate(`/doctor/animals/${visit.animalId}/cartella`);
+                },
               },
             ]}
           />

@@ -1,4 +1,4 @@
-import { apiFetchWithPayload, readApiError } from './apiClient';
+import { apiFetch, apiFetchWithPayload, readApiError } from './apiClient';
 import { fetchAllAnimals } from './animalApi';
 import { fetchUsers } from './userApi';
 import { fetchVisitTypes } from './visitTypeApi';
@@ -106,6 +106,10 @@ function normalizeVisitToAppointment(visit, lookups = {}) {
 
   return {
     id: visit.id,
+    animalId: getReferenceId(visit.animale ?? visit.animal ?? visit.animalId ?? visit.animaleId),
+    visitTypeId: getReferenceId(visit.tipoVisita ?? visit.type ?? visit.visitTypeId ?? visit.tipoVisitaId),
+    doctorId: getReferenceId(visit.veterinario ?? visit.doctor ?? visitType.dottore ?? visit.doctorId ?? visit.veterinarioId),
+    dataVisita: visitDate,
     animalName: firstTextValue(visit.animalName, visit.animaleNome, animal.nome, referenceLabel('Animale', visit.animale)),
     animalBreed: firstTextValue(visit.animalBreed, visit.animaleRazza, animal.razza?.nome, animal.razza),
     nome: firstTextValue(visit.nome, client.nome),
@@ -116,6 +120,7 @@ function normalizeVisitToAppointment(visit, lookups = {}) {
     appointmentHour: visit.appointmentHour ?? formatAppointmentHour(visitDate),
     doctorName: firstTextValue(visit.doctorName, getFullName(doctor), referenceLabel('Medico', doctor)),
     status: visit.status ?? visit.stato ?? 'Programmato',
+    note: visit.note ?? '',
     raw: visit
   };
 }
@@ -174,6 +179,30 @@ export async function bookAppointment(payload) {
   }
 
   return response.json();
+}
+
+export async function rescheduleAppointment(appointmentId, dataVisita) {
+  const response = await apiFetchWithPayload(`${VISITS_API_BASE}/riprogramma/${appointmentId}`, [{ dataVisita }], {
+    method: 'PATCH',
+  });
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile modificare l\'appuntamento.');
+    throw new Error(errorMessage || 'Impossibile modificare l\'appuntamento.');
+  }
+
+  return response.json();
+}
+
+export async function deleteAppointment(appointmentId) {
+  const response = await apiFetch(`${VISITS_API_BASE}/elimina/${appointmentId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile cancellare l\'appuntamento.');
+    throw new Error(errorMessage || 'Impossibile cancellare l\'appuntamento.');
+  }
 }
 
 export async function sendDelayNotification(visitId, delayMinutes) {

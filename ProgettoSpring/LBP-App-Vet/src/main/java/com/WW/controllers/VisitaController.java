@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.WW.dto.DelayNotificationRequest;
 import com.WW.dto.PrenotazioneVisitaRequest;
+import com.WW.dto.RiprogrammazioneVisitaRequest;
 import com.WW.dto.RichiestaSlotDisponibiliDto;
 import com.WW.dto.SlotDisponibileDto;
 import com.WW.dto.VisitParamDTO;
@@ -231,6 +232,14 @@ public class VisitaController {
         return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamentoId));
     }
 
+    @PatchMapping("/riprogramma/{id}")
+    public ResponseEntity<VisitaDto> riprogramma(
+            @PathVariable Integer id,
+            @Valid @RequestBody RiprogrammazioneVisitaRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(VisitaDto.fromEntity(visitaService.riprogrammaVisita(id, request, authentication)));
+    }
+
     /**
      * Invia una notifica email al cliente per avvisare di un ritardo stimato.
      *
@@ -250,8 +259,8 @@ public class VisitaController {
      * @return risposta senza contenuto
      */
     @DeleteMapping("/elimina/{id}")
-    public ResponseEntity<Void> elimina(@PathVariable Integer id) {
-        visitaService.deleteVisita(id);
+    public ResponseEntity<Void> elimina(@PathVariable Integer id, Authentication authentication) {
+        visitaService.deleteVisita(id, authentication);
         return ResponseEntity.noContent().build();
     }
 

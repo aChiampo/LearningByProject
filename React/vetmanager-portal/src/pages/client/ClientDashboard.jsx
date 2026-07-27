@@ -4,8 +4,9 @@ import { AppContext } from '../../context/AppContext';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
+import AppointmentRescheduleDialog from '../../components/appointments/AppointmentRescheduleDialog';
 import { fetchAnimalsByOwner } from '../../services/animalApi';
-import { fetchAppointments, getLocalStartOfToday } from '../../services/appointmentApi';
+import { deleteAppointment, fetchAppointments, getLocalStartOfToday } from '../../services/appointmentApi';
 
 export default function ClientDashboard() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ export default function ClientDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [appointmentToEdit, setAppointmentToEdit] = useState(null);
+  const [appointmentStatus, setAppointmentStatus] = useState('');
 
   useEffect(() => {
     if (!ownerId) return;
@@ -58,6 +61,49 @@ export default function ClientDashboard() {
     };
   }, [ownerId]);
 
+  async function reloadAppointments() {
+    if (!ownerId) {
+      return;
+    }
+
+    const appointmentList = await fetchAppointments({
+      clientID: ownerId,
+      date: getLocalStartOfToday(),
+    });
+
+    setAppointments(appointmentList);
+  }
+
+  function handleEditAppointment(appointment) {
+    setAppointmentToEdit(appointment);
+    setAppointmentStatus('');
+  }
+
+  async function handleDeleteAppointment(appointment) {
+    const confirmed = window.confirm(`Cancellare l'appuntamento di ${appointment.animalName}?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteAppointment(appointment.id);
+      setAppointments((currentAppointments) => (
+        currentAppointments.filter((currentAppointment) => currentAppointment.id !== appointment.id)
+      ));
+      setAppointmentStatus('Appuntamento cancellato. Il cliente ricevera una notifica email.');
+      setLoadError('');
+    } catch (error) {
+      setLoadError(error.message);
+    }
+  }
+
+  async function handleAppointmentSaved() {
+    await reloadAppointments();
+    setAppointmentToEdit(null);
+    setAppointmentStatus('Appuntamento modificato. Il cliente ricevera una notifica email.');
+  }
+
   return (
     <div>
       <PageTitle eyebrow="Area Riservata" title="Dashboard Cliente" />
@@ -75,6 +121,12 @@ export default function ClientDashboard() {
         {loadError && (
           <p className="form-status form-status--error">
             {loadError}
+          </p>
+        )}
+
+        {appointmentStatus && (
+          <p className="form-status form-status--success">
+            {appointmentStatus}
           </p>
         )}
 
@@ -119,11 +171,24 @@ export default function ClientDashboard() {
         <h2>Prossimi Appuntamenti</h2>
 
         {appointments.length > 0 ? (
-          <AppointmentCardList appointments={appointments} />
+          <AppointmentCardList
+            appointments={appointments}
+            variant="client"
+            onEdit={handleEditAppointment}
+            onDelete={handleDeleteAppointment}
+          />
         ) : (
           <EmptyMessage>Non ci sono appuntamenti in programma.</EmptyMessage>
         )}
       </section>
+
+      {appointmentToEdit && (
+        <AppointmentRescheduleDialog
+          appointment={appointmentToEdit}
+          onClose={() => setAppointmentToEdit(null)}
+          onSaved={handleAppointmentSaved}
+        />
+      )}
     </div>
   );
 }
