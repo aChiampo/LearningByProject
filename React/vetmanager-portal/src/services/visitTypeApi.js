@@ -12,6 +12,7 @@ export function normalizeVisitType(visitType) {
     nome: visitType.nome ?? visitType.tipologia ?? visitType.descrizione ?? '',
     durata: visitType.durata,
     prezzo: visitType.prezzo,
+    dottore: visitType.dottore,
     raw: visitType,
   };
 }

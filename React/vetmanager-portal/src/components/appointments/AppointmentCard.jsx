@@ -7,13 +7,16 @@ import './AppointmentCard.css';
  * @property {string} animalName
  * @property {string} nome
  * @property {string} cognome
+ * @property {string} ownerName
  * @property {string} visitType
+ * @property {string} appointmentDate
  * @property {string} appointmentHour
  * @property {string} doctorName
+ * @property {string} status
  */
 
 function getClientFullName(appointment) {
-  return [appointment.nome, appointment.cognome].filter(Boolean).join(' ');
+  return appointment.ownerName || [appointment.nome, appointment.cognome].filter(Boolean).join(' ');
 }
 
 /**
@@ -21,17 +24,25 @@ function getClientFullName(appointment) {
  *   appointment: Appointment,
  *   onEdit?: (appointment: Appointment) => void,
  *   onDelete?: (appointment: Appointment) => void,
- *   onDelayNotification?: (appointment: Appointment) => void
+ *   onDelayNotification?: (appointment: Appointment) => void,
+ *   actions?: Array<{ label: string, className?: string, onClick?: (appointment: Appointment) => void }>
  * }} props
  */
 export function AppointmentCard({
   appointment,
   onEdit,
   onDelete,
-  onDelayNotification
+  onDelayNotification,
+  actions = []
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const clientFullName = getClientFullName(appointment);
+  const cardActions = [
+    onEdit && { label: 'Modifica', className: 'btn btn-outline btn-sm', onClick: onEdit },
+    onDelete && { label: 'Cancella', className: 'btn btn-danger btn-sm', onClick: onDelete },
+    onDelayNotification && { label: 'Not. Ritardo', className: 'btn btn-secondary btn-sm', onClick: onDelayNotification },
+    ...actions,
+  ].filter(Boolean);
 
   function toggleDetails() {
     setIsExpanded((currentValue) => !currentValue);
@@ -53,6 +64,11 @@ export function AppointmentCard({
         <div className="appointment-card__client">
           <h3 className="appointment-card__title">{clientFullName}</h3>
           <span className="appointment-card__hint">Clicca per vedere i dettagli</span>
+        </div>
+
+        <div className="appointment-card__field">
+          <span>Data</span>
+          <strong>{appointment.appointmentDate}</strong>
         </div>
 
         <div className="appointment-card__field">
@@ -88,6 +104,11 @@ export function AppointmentCard({
           </div>
 
           <div className="appointment-card__field">
+            <span>Data</span>
+            <strong>{appointment.appointmentDate}</strong>
+          </div>
+
+          <div className="appointment-card__field">
             <span>Orario</span>
             <strong>{appointment.appointmentHour}</strong>
           </div>
@@ -96,34 +117,28 @@ export function AppointmentCard({
             <span>Medico</span>
             <strong>{appointment.doctorName}</strong>
           </div>
+
+          <div className="appointment-card__field">
+            <span>Stato</span>
+            <strong>{appointment.status}</strong>
+          </div>
         </div>
       )}
 
-      <div className="appointment-card__actions" aria-label="Azioni appuntamento">
-        <button
-          type="button"
-          className="btn btn-outline btn-sm"
-          onClick={(event) => handleActionClick(event, onEdit)}
-        >
-          Modifica
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-danger btn-sm"
-          onClick={(event) => handleActionClick(event, onDelete)}
-        >
-          Cancella
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary btn-sm"
-          onClick={(event) => handleActionClick(event, onDelayNotification)}
-        >
-          Not. Ritardo
-        </button>
-      </div>
+      {cardActions.length > 0 && (
+        <div className="appointment-card__actions" aria-label="Azioni appuntamento">
+          {cardActions.map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              className={action.className ?? 'btn btn-outline btn-sm'}
+              onClick={(event) => handleActionClick(event, action.onClick)}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
@@ -133,14 +148,16 @@ export function AppointmentCard({
  *   appointments: Appointment[],
  *   onEdit?: (appointment: Appointment) => void,
  *   onDelete?: (appointment: Appointment) => void,
- *   onDelayNotification?: (appointment: Appointment) => void
+ *   onDelayNotification?: (appointment: Appointment) => void,
+ *   actions?: Array<{ label: string, className?: string, onClick?: (appointment: Appointment) => void }>
  * }} props
  */
 export function AppointmentCardList({
   appointments,
   onEdit,
   onDelete,
-  onDelayNotification
+  onDelayNotification,
+  actions = []
 }) {
   return (
     <div className="appointment-card-list">
@@ -151,6 +168,7 @@ export function AppointmentCardList({
           onEdit={onEdit}
           onDelete={onDelete}
           onDelayNotification={onDelayNotification}
+          actions={actions}
         />
       ))}
     </div>

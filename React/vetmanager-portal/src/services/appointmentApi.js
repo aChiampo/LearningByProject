@@ -1,10 +1,61 @@
 import { apiFetchWithPayload, readApiError } from './apiClient';
+import { fetchAllAnimals } from './animalApi';
+import { fetchUsers } from './userApi';
+import { fetchVisitTypes } from './visitTypeApi';
 
 const VISITS_API_BASE = '/api/visite';
 const VISIT_PARAMS_ENDPOINT = `${VISITS_API_BASE}/params`;
 
+export function getLocalStartOfToday() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}T00:00:00`;
+}
+
 function getFullName(person) {
   return [person?.nome, person?.cognome].filter(Boolean).join(' ');
+}
+
+function getReferenceId(value) {
+  if (!value || typeof value !== 'object') {
+    return value ?? null;
+  }
+
+  return value.id ?? value.ID ?? value.userId ?? value.idUtente ?? null;
+}
+
+function createLookup(items) {
+  return new Map(
+    items
+      .map((item) => [getReferenceId(item), item])
+      .filter(([id]) => id !== null && id !== undefined)
+  );
+}
+
+function resolveReference(value, lookup) {
+  const id = getReferenceId(value);
+  const matchedValue = lookup?.get(id);
+
+  if (!value || typeof value !== 'object') {
+    return matchedValue ?? {};
+  }
+
+  return {
+    ...matchedValue,
+    ...value,
+  };
+}
+
+function firstTextValue(...values) {
+  return values.find((value) => typeof value === 'string' && value.trim()) ?? '';
+}
+
+function referenceLabel(label, value) {
+  const id = getReferenceId(value);
+  return id !== null && id !== undefined ? `${label} #${id}` : '';
 }
 
 function formatAppointmentHour(dateTime) {
@@ -36,29 +87,52 @@ function formatAppointmentDate(dateTime) {
   }
 
   return new Intl.DateTimeFormat('it-IT', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
+    dateStyle: 'medium'
   }).format(date);
 }
 
-function normalizeVisitToAppointment(visit) {
-  const client = visit.cliente ?? visit.client ?? visit.proprietario ?? visit.animale?.utente ?? {};
-  const doctor = visit.veterinario ?? visit.doctor ?? visit.tipoVisita?.dottore ?? {};
+function normalizeVisitToAppointment(visit, lookups = {}) {
+  const animal = resolveReference(visit.animale ?? visit.animal, lookups.animalsById);
+  const visitType = resolveReference(visit.tipoVisita ?? visit.type, lookups.visitTypesById);
+  const client = resolveReference(
+    visit.cliente ?? visit.client ?? visit.proprietario ?? animal.proprietario ?? animal.utente,
+    lookups.usersById
+  );
+  const doctor = resolveReference(visit.veterinario ?? visit.doctor ?? visitType.dottore, lookups.usersById);
   const visitDate = visit.dataVisita ?? visit.date ?? visit.data ?? '';
+  const ownerName = firstTextValue(visit.ownerName, getFullName(client));
 
   return {
     id: visit.id,
-    animalName: visit.animalName ?? visit.animaleNome ?? visit.animale?.nome ?? '',
-    animalBreed: visit.animalBreed ?? visit.animaleRazza ?? visit.animale?.razza?.nome ?? visit.animale?.razza ?? '',
-    nome: visit.nome ?? client.nome ?? '',
-    cognome: visit.cognome ?? client.cognome ?? '',
-    ownerName: visit.ownerName ?? getFullName(client),
-    visitType: visit.visitType ?? visit.tipoVisitaNome ?? visit.tipoVisita?.nome ?? '',
+    animalName: firstTextValue(visit.animalName, visit.animaleNome, animal.nome, referenceLabel('Animale', visit.animale)),
+    animalBreed: firstTextValue(visit.animalBreed, visit.animaleRazza, animal.razza?.nome, animal.razza),
+    nome: firstTextValue(visit.nome, client.nome),
+    cognome: firstTextValue(visit.cognome, client.cognome),
+    ownerName: firstTextValue(ownerName, referenceLabel('Cliente', client)),
+    visitType: firstTextValue(visit.visitType, visit.tipoVisitaNome, visitType.nome, referenceLabel('Tipo visita', visit.tipoVisita)),
     appointmentDate: visit.appointmentDate ?? formatAppointmentDate(visitDate),
     appointmentHour: visit.appointmentHour ?? formatAppointmentHour(visitDate),
-    doctorName: visit.doctorName ?? getFullName(doctor),
+    doctorName: firstTextValue(visit.doctorName, getFullName(doctor), referenceLabel('Medico', doctor)),
     status: visit.status ?? visit.stato ?? 'Programmato',
     raw: visit
+  };
+}
+
+async function loadAppointmentLookups() {
+  const [animalsResult, visitTypesResult, usersResult] = await Promise.allSettled([
+    fetchAllAnimals(),
+    fetchVisitTypes(),
+    fetchUsers(),
+  ]);
+
+  const animals = animalsResult.status === 'fulfilled' ? animalsResult.value : [];
+  const visitTypes = visitTypesResult.status === 'fulfilled' ? visitTypesResult.value : [];
+  const users = usersResult.status === 'fulfilled' ? usersResult.value : [];
+
+  return {
+    animalsById: createLookup(animals),
+    visitTypesById: createLookup(visitTypes),
+    usersById: createLookup(users),
   };
 }
 
@@ -72,8 +146,9 @@ export async function fetchAppointments(params = {}) {
 
   const visits = await response.json();
   const visitList = Array.isArray(visits) ? visits : [visits];
+  const lookups = await loadAppointmentLookups();
 
-  return visitList.map(normalizeVisitToAppointment);
+  return visitList.map((visit) => normalizeVisitToAppointment(visit, lookups));
 }
 
 export async function sendDelayNotification(visitId, delayMinutes) {

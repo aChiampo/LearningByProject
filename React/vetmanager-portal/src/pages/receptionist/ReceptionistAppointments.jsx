@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
-import { fetchAppointments, sendDelayNotification } from '../../services/appointmentApi';
+import { fetchAppointments, getLocalStartOfToday, sendDelayNotification } from '../../services/appointmentApi';
 
 export default function ReceptionistAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -22,7 +22,9 @@ export default function ReceptionistAppointments() {
       setLoadError('');
 
       try {
-        const appointmentList = await fetchAppointments();
+        const appointmentList = await fetchAppointments({
+          date: getLocalStartOfToday(),
+        });
 
         if (isMounted) {
           setAppointments(appointmentList);
@@ -144,7 +146,7 @@ export default function ReceptionistAppointments() {
             </div>
 
             <p className="muted-text">
-              {delayDialogVisit.animalName || 'Visita'} - {delayDialogVisit.appointmentDate || delayDialogVisit.appointmentHour}
+              {delayDialogVisit.animalName || 'Visita'} - {delayDialogVisit.appointmentDate} {delayDialogVisit.appointmentHour}
             </p>
 
             <form className="stack-form" onSubmit={handleDelaySubmit}>

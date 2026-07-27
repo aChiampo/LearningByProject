@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
+import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
 import { fetchAnimalsByOwner } from '../../services/animalApi';
-import { fetchAppointments } from '../../services/appointmentApi';
+import { fetchAppointments, getLocalStartOfToday } from '../../services/appointmentApi';
 
 export default function ClientDashboard() {
   const navigate = useNavigate();
@@ -27,7 +28,10 @@ export default function ClientDashboard() {
       try {
         const [animalList, appointmentList] = await Promise.all([
           fetchAnimalsByOwner(ownerId),
-          fetchAppointments({ clientID: ownerId }),
+          fetchAppointments({
+            clientID: ownerId,
+            date: getLocalStartOfToday(),
+          }),
         ]);
 
         if (isMounted) {
@@ -115,30 +119,7 @@ export default function ClientDashboard() {
         <h2>Prossimi Appuntamenti</h2>
 
         {appointments.length > 0 ? (
-          <div className="panel table-responsive">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Animale</th>
-                  <th>Data e Ora</th>
-                  <th>Prestazione</th>
-                  <th>Veterinario</th>
-                  <th>Stato</th>
-                </tr>
-              </thead>
-              <tbody>
-                {appointments.map((appointment, index) => (
-                  <tr key={index}>
-                    <td><strong>{appointment.animalName}</strong></td>
-                    <td>{appointment.appointmentDate || appointment.appointmentHour}</td>
-                    <td>{appointment.visitType}</td>
-                    <td>{appointment.doctorName}</td>
-                    <td><span className="badge badge-success">{appointment.status}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <AppointmentCardList appointments={appointments} />
         ) : (
           <EmptyMessage>Non ci sono appuntamenti in programma.</EmptyMessage>
         )}

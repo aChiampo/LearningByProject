@@ -24,7 +24,7 @@
 
 .appointment-card__summary {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(140px, 0.6fr)) auto;
+  grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(130px, 0.5fr)) auto;
   gap: 14px;
   align-items: center;
   width: 100%;
