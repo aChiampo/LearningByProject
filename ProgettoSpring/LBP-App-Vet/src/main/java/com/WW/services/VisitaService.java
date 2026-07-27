@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.WW.dto.PrenotazioneVisitaRequest;
+import com.WW.dto.RiprogrammazioneVisitaRequest;
 import com.WW.dto.RichiestaSlotDisponibiliDto;
 import com.WW.dto.SlotDisponibileDto;
 import com.WW.dto.VisitParamDTO;
@@ -574,6 +575,44 @@ public class VisitaService {
         }
     }
 
+    @Transactional
+    public Visita riprogrammaVisita(
+            Integer id,
+            RiprogrammazioneVisitaRequest richiesta,
+            Authentication authentication) {
+        if (richiesta == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La richiesta di riprogrammazione non puo essere nulla.");
+        }
+
+        Visita visita = getVisitaById(id);
+        validaAccessoGestioneVisita(visita, authentication, false);
+
+        if (visita.getStato() != VisitaStato.PRENOTATA) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Solo una visita prenotata puo essere riprogrammata.");
+        }
+
+        LocalDateTime nuovoInizio = richiesta.dataVisita();
+        if (nuovoInizio == null || !nuovoInizio.isAfter(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lo slot selezionato deve essere futuro.");
+        }
+
+        LocalDateTime nuovaFine = nuovoInizio.plusMinutes(visita.getTipoVisita().getDurata());
+        validaDisponibilitaCompleta(
+                visita.getAnimale(),
+                visita.getVeterinario(),
+                visita.getTipoVisita(),
+                nuovoInizio,
+                nuovaFine,
+                visita.getId());
+
+        visita.setDataVisita(nuovoInizio);
+        Visita salvata = visitaRepository.save(visita);
+        inviaEmailConfermaPrenotazioneDopoCommit(salvata);
+        return salvata;
+    }
+
     @Transactional(readOnly = true)
     public void inviaNotificaRitardo(Integer visitaId, Integer delayMinutes) {
         if (delayMinutes == null || delayMinutes <= 0) {
@@ -687,13 +726,52 @@ public class VisitaService {
     }
 
     @Transactional
-    public void deleteVisita(Integer id) {
+    public void deleteVisita(Integer id, Authentication authentication) {
         Visita visita = visitaRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Impossibile eliminare: Visita non trovata."));
+
+        if (authentication != null) {
+            validaAccessoGestioneVisita(visita, authentication, false);
+        }
+
         visita.setIsDeleted(true);
         visitaRepository.save(visita);
+        inviaEmailCancellazioneDopoCommit(visita);
+    }
+
+    public void deleteVisita(Integer id) {
+        deleteVisita(id, null);
+    }
+
+    private void validaAccessoGestioneVisita(Visita visita, Authentication authentication, boolean consentiVeterinario) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Autenticazione richiesta.");
+        }
+
+        if (haRuolo(authentication, "ROLE_RECEPTIONIST") || haRuolo(authentication, "ROLE_ADMIN")) {
+            return;
+        }
+
+        if (haRuolo(authentication, "ROLE_CLIENTE")) {
+            Integer utenteId = getAuthenticatedUserId(authentication);
+            if (visita.getAnimale().getUtente() != null
+                    && Objects.equals(visita.getAnimale().getUtente().getId(), utenteId)) {
+                return;
+            }
+        }
+
+        if (consentiVeterinario && haRuolo(authentication, "ROLE_VETERINARIO")) {
+            Integer utenteId = getAuthenticatedUserId(authentication);
+            if (visita.getVeterinario() != null && Objects.equals(visita.getVeterinario().getId(), utenteId)) {
+                return;
+            }
+        }
+
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Non hai i permessi per modificare questo appuntamento.");
     }
 
     @Transactional(readOnly = true)
@@ -786,6 +864,66 @@ public class VisitaService {
             LOGGER.warn(
                     "Prenotazione {} salvata, ma invio email di conferma non riuscito.",
                     visita.getId(),
+                    ex);
+        }
+    }
+
+    private void inviaEmailCancellazione(Visita visita) {
+        Utente cliente = visita.getAnimale().getUtente();
+
+        if (cliente == null || cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Impossibile inviare la cancellazione: email cliente non disponibile.");
+        }
+
+        Map<String, Object> variabili = Map.of(
+                "clientName", getFullName(cliente),
+                "animalName", valueOrFallback(visita.getAnimale().getNome(), "il tuo animale"),
+                "appointmentDateTime", MAIL_DATE_TIME_FORMATTER.format(visita.getDataVisita()),
+                "cancellationReason", "Appuntamento cancellato dalla tua area riservata.",
+                "clinicName", valueOrFallback(clinicName, "la clinica"));
+
+        emailSenderService.inviaCancellazioneAppuntamento(cliente.getEmail(), variabili);
+    }
+
+    private void inviaEmailCancellazioneDopoCommit(Visita visita) {
+        Utente cliente = visita.getAnimale().getUtente();
+        String destinatario = cliente != null ? cliente.getEmail() : null;
+        Map<String, Object> variabili = creaVariabiliEmailCancellazione(visita, cliente);
+
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            inviaEmailCancellazioneSenzaBloccareCancellazione(visita.getId(), destinatario, variabili);
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                inviaEmailCancellazioneSenzaBloccareCancellazione(visita.getId(), destinatario, variabili);
+            }
+        });
+    }
+
+    private Map<String, Object> creaVariabiliEmailCancellazione(Visita visita, Utente cliente) {
+        return Map.of(
+                "clientName", cliente != null ? getFullName(cliente) : "Cliente",
+                "animalName", valueOrFallback(visita.getAnimale().getNome(), "il tuo animale"),
+                "appointmentDateTime", MAIL_DATE_TIME_FORMATTER.format(visita.getDataVisita()),
+                "cancellationReason", "Appuntamento cancellato dalla tua area riservata.",
+                "clinicName", valueOrFallback(clinicName, "la clinica"));
+    }
+
+    private void inviaEmailCancellazioneSenzaBloccareCancellazione(
+            Integer visitaId,
+            String destinatario,
+            Map<String, Object> variabili) {
+        try {
+            emailSenderService.inviaCancellazioneAppuntamento(destinatario, variabili);
+        } catch (RuntimeException ex) {
+            LOGGER.warn(
+                    "Visita {} cancellata, ma invio email di cancellazione non riuscito.",
+                    visitaId,
                     ex);
         }
     }

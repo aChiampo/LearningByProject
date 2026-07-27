@@ -60,6 +60,8 @@ public class ConfigurazioneSicurezza {
                                 "/api/categorieVisite/elimina/*",
                                 "/api/tipiVisite/elimina/*"
                         ).hasAnyRole("ADMIN", "VETERINARIO")
+                        .requestMatchers(HttpMethod.DELETE, "/api/visite/elimina/*")
+                        .hasAnyRole("ADMIN", "CLIENTE", "RECEPTIONIST")
                         .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

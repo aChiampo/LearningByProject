@@ -13,6 +13,7 @@ export function normalizeVisitType(visitType) {
     durata: visitType.durata,
     prezzo: visitType.prezzo,
     attivo: visitType.attivo !== false,
+    dottore: visitType.dottore,
     raw: visitType,
   };
 }
