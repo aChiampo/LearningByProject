@@ -50,7 +50,8 @@ public class ConfigurazioneSicurezza {
                         "/api/auth/login",
                         "/api/auth/signin",
                         "/api/autenticazione/login",
-                        "/api/autenticazione/signin"
+                        "/api/autenticazione/signin",
+                        "/api/visite/prima-visita"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
