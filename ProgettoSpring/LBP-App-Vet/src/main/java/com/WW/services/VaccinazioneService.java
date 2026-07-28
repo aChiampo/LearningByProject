@@ -36,6 +36,7 @@ public class VaccinazioneService {
 
     /**
      * Visualizza tutte le vaccinazioni effettuate.
+     * 
      * @return lista di tutte le vaccinazioni
      */
     public List<Vaccinazione> visualizzaTutteVaccinazioni() {
@@ -44,6 +45,7 @@ public class VaccinazioneService {
 
     /**
      * Visualizza tutte le vaccinazioni effettuate con risposta DTO.
+     * 
      * @return lista DTO di tutte le vaccinazioni
      */
     @Transactional(readOnly = true)
@@ -54,7 +56,8 @@ public class VaccinazioneService {
     }
 
     /**
-     * Ricerca vaccinazioni per animale.
+     * Ricerca vaccinazioni per animale con risposta DTO.
+     * 
      * @param idAnimale identificativo dell'animale
      * @return lista DTO delle vaccinazioni dell'animale
      */
@@ -70,7 +73,22 @@ public class VaccinazioneService {
     }
 
     /**
+     * Recupera lo storico delle vaccinazioni entità di un determinato animale
+     * ordinate per data.
+     * 
+     * @param idAnimale l'ID dell'animale
+     * @return lista delle vaccinazioni dell'animale
+     */
+    public List<Vaccinazione> findByIdAnimaleStorico(Integer idAnimale) {
+        if (idAnimale == null || idAnimale <= 0) {
+            throw new IllegalArgumentException("L'ID dell'animale non puo essere null o negativo");
+        }
+        return vaccinazioneRepo.findByIdAnimaleIdAndIsDeletedFalseOrderByDataVaccinazioneDesc(idAnimale);
+    }
+
+    /**
      * Ricerca vaccinazioni per tipo di vaccino.
+     * 
      * @param idTipoVaccino il tipo di vaccino
      * @return lista di vaccinazioni corrispondenti
      */
@@ -83,6 +101,7 @@ public class VaccinazioneService {
 
     /**
      * Ricerca vaccinazioni per data di vaccinazione.
+     * 
      * @param dataVaccinazione la data di vaccinazione
      * @return lista di vaccinazioni corrispondenti
      */
@@ -95,6 +114,7 @@ public class VaccinazioneService {
 
     /**
      * Ricerca vaccinazioni per lotto.
+     * 
      * @param lotto il numero di lotto
      * @return lista di vaccinazioni corrispondenti
      */
@@ -107,6 +127,7 @@ public class VaccinazioneService {
 
     /**
      * Recupera una vaccinazione per ID.
+     * 
      * @param id l'ID della vaccinazione
      * @return la vaccinazione se presente
      */
@@ -119,6 +140,7 @@ public class VaccinazioneService {
 
     /**
      * Recupera una vaccinazione per ID con risposta DTO.
+     * 
      * @param id l'ID della vaccinazione
      * @return DTO della vaccinazione se presente
      */
@@ -132,7 +154,8 @@ public class VaccinazioneService {
     }
 
     /**
-     * Salva una nuova vaccinazione.
+     * Salva una nuova vaccinazione da entità.
+     * 
      * @param vaccinazione la vaccinazione da salvare
      * @return la vaccinazione salvata
      */
@@ -157,6 +180,7 @@ public class VaccinazioneService {
 
     /**
      * Salva una nuova vaccinazione partendo dal DTO di richiesta.
+     * 
      * @param request dati della vaccinazione da salvare
      * @return DTO della vaccinazione salvata
      */
@@ -166,7 +190,8 @@ public class VaccinazioneService {
     }
 
     /**
-     * Aggiorna una vaccinazione esistente.
+     * Aggiorna una vaccinazione esistente da entità.
+     * 
      * @param vaccinazione la vaccinazione da aggiornare
      * @return la vaccinazione aggiornata
      */
@@ -195,7 +220,8 @@ public class VaccinazioneService {
 
     /**
      * Aggiorna una vaccinazione esistente partendo dal DTO di richiesta.
-     * @param id identificativo della vaccinazione da aggiornare
+     * 
+     * @param id      identificativo della vaccinazione da aggiornare
      * @param request nuovi dati della vaccinazione
      * @return DTO della vaccinazione aggiornata
      */
@@ -212,7 +238,8 @@ public class VaccinazioneService {
     }
 
     /**
-     * Elimina una vaccinazione.
+     * Elimina una vaccinazione eseguendo una soft delete.
+     * 
      * @param id l'ID della vaccinazione da eliminare
      */
     public void eliminaVaccinazione(Integer id) {
@@ -226,6 +253,41 @@ public class VaccinazioneService {
         Vaccinazione vaccinazioneToDelete = vaccinazione.get();
         vaccinazioneToDelete.setIsDeleted(true);
         vaccinazioneRepo.save(vaccinazioneToDelete);
+    }
+
+    /**
+     * Trova le vaccinazioni in scadenza entro un certo numero di giorni.
+     * 
+     * @param giorniFinestra giorni entro cui verificare la scadenza del richiamo
+     * @return lista delle vaccinazioni in scadenza
+     */
+    public List<Vaccinazione> findVaccinazioniInScadenza(int giorniFinestra) {
+        if (giorniFinestra < 0) {
+            throw new IllegalArgumentException("I giorni di finestra non possono essere negativi");
+        }
+        LocalDateTime ora = LocalDateTime.now();
+        LocalDateTime limite = ora.plusDays(giorniFinestra);
+
+        return vaccinazioneRepo.findInScadenzaTra(ora, limite);
+    }
+
+    /**
+     * Predispone e simula l'invio del promemoria al proprietario dell'animale.
+     * 
+     * @param idVaccinazione l'ID della vaccinazione
+     * @return messaggio di conferma dell'invio
+     */
+    public String inviaPromemoriaVaccino(Integer idVaccinazione) {
+        Vaccinazione vaccinazione = getVaccinazioneById(idVaccinazione)
+                .orElseThrow(() -> new IllegalArgumentException("Vaccinazione non trovata con ID: " + idVaccinazione));
+
+        String emailCliente = (vaccinazione.getIdAnimale() != null && vaccinazione.getIdAnimale().getUtente() != null)
+                ? vaccinazione.getIdAnimale().getUtente().getEmail()
+                : "cliente@email.com";
+
+        System.out.println("Invio promemoria richiamo vaccino a: " + emailCliente);
+
+        return "Promemoria inviato con successo a " + emailCliente;
     }
 
     private Vaccinazione toEntity(VaccinazioneRequest request, Integer id) {
@@ -243,9 +305,11 @@ public class VaccinazioneService {
         }
 
         TipoVaccino tipoVaccino = tipoVaccinoRepo.findByIdAndIsDeletedFalse(request.tipoVaccinoId())
-                .orElseThrow(() -> new IllegalArgumentException("Tipo di vaccino con ID " + request.tipoVaccinoId() + " non trovato"));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Tipo di vaccino con ID " + request.tipoVaccinoId() + " non trovato"));
         Animale animale = animaleRepository.findByIdAndIsDeletedFalse(request.animaleId())
-                .orElseThrow(() -> new IllegalArgumentException("Animale con ID " + request.animaleId() + " non trovato"));
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Animale con ID " + request.animaleId() + " non trovato"));
 
         Vaccinazione vaccinazione = new Vaccinazione();
         vaccinazione.setId(id);

@@ -5,6 +5,7 @@ import ManagmentRaces from './ManagmentRaces';
 import ManagmentVaccineType from './ManagmentVaccineType';
 import ManagmentVisitType from './ManagmentVisitType';
 import ManagmentVisitCategory from './ManagmentVisitCategory';
+import ManagmentVaccines from './ManagmentVaccines';
 
 export default function ManagmentConfiguration() {
     // Questo stato memorizza la tabella che il dottore vuole configurare
@@ -35,6 +36,7 @@ export default function ManagmentConfiguration() {
                         <option value="tipiVisita">Tipi Visita</option>
                         <option value="categorieVisita">Categorie Visita</option>
                         <option value="vaccini">Tipi Vaccino</option>
+                        <option value="vaccinazioni">Gestione Vaccinazioni</option>
                     </select>
                 </div>
             </div>
@@ -93,6 +95,14 @@ export default function ManagmentConfiguration() {
                         <h2>Gestione Categorie Visita</h2>
                         <p className="muted-text">Organizza le visite per categorie (es: Chirurgia, Controllo, Diagnostica).</p>
                         <ManagmentVisitCategory />
+                    </div>
+                )}
+
+                {sezioneAttiva === 'vaccinazioni' && (
+                    <div className="panel">
+                        <h2>Gestione Vaccinazioni</h2>
+                        <p className="muted-text">Gestisci e visualizza le vaccinazioni somministrate.</p>
+                        <ManagmentVaccines />
                     </div>
                 )}
 

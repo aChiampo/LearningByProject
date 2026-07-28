@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,6 +40,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint GET per visualizzare tutte le vaccinazioni.
+     * 
      * @return lista DTO di tutte le vaccinazioni
      */
     @GetMapping
@@ -49,6 +51,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint GET per recuperare una vaccinazione per ID.
+     * 
      * @param id l'ID della vaccinazione
      * @return la vaccinazione se trovata
      */
@@ -62,6 +65,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint GET per recuperare le vaccinazioni di un animale.
+     * 
      * @param idAnimale identificativo dell'animale
      * @return lista DTO delle vaccinazioni dell'animale
      */
@@ -73,6 +77,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint GET per ricercare vaccinazioni per tipo di vaccino.
+     * 
      * @param idTipoVaccino l'ID del tipo di vaccino
      * @return lista di vaccinazioni del tipo specificato
      */
@@ -86,6 +91,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint GET per ricercare vaccinazioni per data.
+     * 
      * @param data la data di vaccinazione (formato: yyyy-MM-ddTHH:mm:ss)
      * @return lista di vaccinazioni della data specificata
      */
@@ -97,6 +103,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint GET per ricercare vaccinazioni per lotto.
+     * 
      * @param lotto il numero di lotto
      * @return lista di vaccinazioni del lotto specificato
      */
@@ -108,6 +115,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint POST per creare una nuova vaccinazione.
+     * 
      * @param request i dati della vaccinazione da creare
      * @return la vaccinazione creata
      */
@@ -120,7 +128,8 @@ public class VaccinazioneController {
 
     /**
      * Endpoint PUT per aggiornare una vaccinazione esistente.
-     * @param id l'ID della vaccinazione da aggiornare
+     * 
+     * @param id      l'ID della vaccinazione da aggiornare
      * @param request i nuovi dati della vaccinazione
      * @return la vaccinazione aggiornata
      */
@@ -134,6 +143,7 @@ public class VaccinazioneController {
 
     /**
      * Endpoint DELETE per eliminare una vaccinazione.
+     * 
      * @param id l'ID della vaccinazione da eliminare
      * @return status 204 No Content se eliminata con successo
      */
@@ -142,5 +152,45 @@ public class VaccinazioneController {
     public ResponseEntity<Void> deleteVaccinazione(@PathVariable Integer id) {
         vaccinazioniService.eliminaVaccinazione(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Endpoint GET per ottenere i vaccini in scadenza nei prossimi N giorni
+     * 
+     * @param giorni finestra temporale in giorni (default: 30)
+     * @return lista delle vaccinazioni in scadenza
+     */
+    @GetMapping("/in-scadenza")
+    public ResponseEntity<?> getVaccinazioniInScadenza(@RequestParam(defaultValue = "30") int giorni) {
+        try {
+            List<Vaccinazione> vaccinazioni = vaccinazioniService.findVaccinazioniInScadenza(giorni);
+            return ResponseEntity.ok(vaccinazioni);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore del server");
+        }
+    }
+
+    /**
+     * Endpoint POST per inviare il promemoria di un vaccino
+     * 
+     * @param id l'ID della vaccinazione
+     * @return messaggio di conferma
+     */
+    @PostMapping("/{id}/promemoria")
+    public ResponseEntity<String> inviaPromemoria(@PathVariable Integer id) {
+        try {
+            String esito = vaccinazioniService.inviaPromemoriaVaccino(id);
+            return ResponseEntity.ok(esito);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nell'invio del promemoria");
+        }
+    }
+
+    @PatchMapping("/{id}/elimina")
+    public ResponseEntity<Void> eliminaVaccinazionePatch(@PathVariable Integer id) {
+        vaccinazioniService.eliminaVaccinazione(id);
+        return ResponseEntity.ok().build();
     }
 }
