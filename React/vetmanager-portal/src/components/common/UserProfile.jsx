@@ -64,29 +64,39 @@ function ProfileField({ label, value }) {
   );
 }
 
-export default function UserProfile({ description, fallbackName, title }) {
+export default function UserProfile({
+  description,
+  fallbackName,
+  title,
+  profileUser,
+  onClose,
+  onProfileUpdated,
+  dialogMode = false,
+  dialogTitle = 'Modifica Profilo',
+}) {
   const { currentRole, currentUser, updateCurrentUser } = useContext(AppContext);
   const roleConfig = ROLE_CONFIG[currentRole];
-  const displayName = [currentUser?.nome, currentUser?.cognome].filter(Boolean).join(' ') || fallbackName || roleConfig?.userName || 'Utente';
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [form, setForm] = useState(EMPTY_PROFILE_FORM);
+  const displayedUser = profileUser ?? currentUser;
+  const displayName = [displayedUser?.nome, displayedUser?.cognome].filter(Boolean).join(' ') || fallbackName || roleConfig?.userName || 'Utente';
+  const [isDialogOpen, setIsDialogOpen] = useState(dialogMode);
+  const [form, setForm] = useState(() => (dialogMode ? buildProfileForm(displayedUser) : EMPTY_PROFILE_FORM));
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const profileFields = useMemo(() => {
     const fields = [
-      { label: 'Nome', value: currentUser?.nome },
-      { label: 'Cognome', value: currentUser?.cognome },
-      { label: 'Email', value: currentUser?.email },
-      { label: 'Telefono', value: currentUser?.telefono },
-      { label: 'Indirizzo', value: currentUser?.indirizzo },
-      { label: 'Citta', value: currentUser?.citta },
+      { label: 'Nome', value: displayedUser?.nome },
+      { label: 'Cognome', value: displayedUser?.cognome },
+      { label: 'Email', value: displayedUser?.email },
+      { label: 'Telefono', value: displayedUser?.telefono },
+      { label: 'Indirizzo', value: displayedUser?.indirizzo },
+      { label: 'Citta', value: displayedUser?.citta },
     ];
 
     return fields;
-  }, [currentUser]);
+  }, [displayedUser]);
 
   function openDialog() {
-    setForm(buildProfileForm(currentUser));
+    setForm(buildProfileForm(displayedUser));
     setStatus({ type: '', message: '' });
     setIsDialogOpen(true);
   }
@@ -94,6 +104,7 @@ export default function UserProfile({ description, fallbackName, title }) {
   function closeDialog() {
     if (!isSubmitting) {
       setIsDialogOpen(false);
+      onClose?.();
     }
   }
 
@@ -108,7 +119,7 @@ export default function UserProfile({ description, fallbackName, title }) {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!currentUser?.id) {
+    if (!displayedUser?.id) {
       setStatus({ type: 'error', message: 'Utente non disponibile.' });
       return;
     }
@@ -117,10 +128,16 @@ export default function UserProfile({ description, fallbackName, title }) {
     setStatus({ type: '', message: '' });
 
     try {
-      const updatedUser = await updateUserProfile(currentUser.id, form);
-      updateCurrentUser(updatedUser);
+      const updatedUser = await updateUserProfile(displayedUser.id, form);
+
+      if (updatedUser.id === currentUser?.id) {
+        updateCurrentUser(updatedUser);
+      }
+
+      onProfileUpdated?.(updatedUser);
       setStatus({ type: 'success', message: 'Profilo aggiornato.' });
       setIsDialogOpen(false);
+      onClose?.();
     } catch (error) {
       setStatus({
         type: 'error',
@@ -131,10 +148,59 @@ export default function UserProfile({ description, fallbackName, title }) {
     }
   }
 
+  const profileDialog = isDialogOpen && (
+    <div className="profile-dialog" role="presentation">
+      <div className="profile-dialog__backdrop" onClick={closeDialog} aria-hidden="true"></div>
+      <section className="profile-dialog__window" role="dialog" aria-modal="true" aria-labelledby="profile-dialog-title">
+        <div className="toolbar-row">
+          <h2 id="profile-dialog-title">{dialogTitle}</h2>
+          <button type="button" className="btn btn-outline btn-sm" onClick={closeDialog} disabled={isSubmitting}>
+            Chiudi
+          </button>
+        </div>
+
+        <form className="stack-form" onSubmit={handleSubmit}>
+          <div className="form-grid-two">
+            {PROFILE_FIELDS.map((field) => (
+              <label key={field.name}>
+                {field.label}
+                <input
+                  className="form-control"
+                  name={field.name}
+                  type={field.type}
+                  value={form[field.name]}
+                  onChange={handleChange}
+                  required={field.required}
+                />
+              </label>
+            ))}
+          </div>
+
+          {status.message && (
+            <p className={`form-status form-status--${status.type}`}>{status.message}</p>
+          )}
+
+          <div className="actions-row">
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Salvataggio...' : 'Salva Modifiche'}
+            </button>
+            <button type="button" className="btn btn-outline" onClick={closeDialog} disabled={isSubmitting}>
+              Annulla
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  );
+
+  if (dialogMode) {
+    return profileDialog;
+  }
+
   return (
     <div className="panel panel-narrow user-profile">
       <div className="profile-avatar-row">
-        <div className="profile-avatar" aria-hidden="true">{getInitials(currentUser, displayName)}</div>
+        <div className="profile-avatar" aria-hidden="true">{getInitials(displayedUser, displayName)}</div>
         <div>
           <h2>{displayName}</h2>
           <p className="muted-text">{description ?? title ?? roleConfig?.label}</p>
@@ -155,50 +221,7 @@ export default function UserProfile({ description, fallbackName, title }) {
         Modifica
       </button>
 
-      {isDialogOpen && (
-        <div className="profile-dialog" role="presentation">
-          <div className="profile-dialog__backdrop" onClick={closeDialog} aria-hidden="true"></div>
-          <section className="profile-dialog__window" role="dialog" aria-modal="true" aria-labelledby="profile-dialog-title">
-            <div className="toolbar-row">
-              <h2 id="profile-dialog-title">Modifica Profilo</h2>
-              <button type="button" className="btn btn-outline btn-sm" onClick={closeDialog} disabled={isSubmitting}>
-                Chiudi
-              </button>
-            </div>
-
-            <form className="stack-form" onSubmit={handleSubmit}>
-              <div className="form-grid-two">
-                {PROFILE_FIELDS.map((field) => (
-                  <label key={field.name}>
-                    {field.label}
-                    <input
-                      className="form-control"
-                      name={field.name}
-                      type={field.type}
-                      value={form[field.name]}
-                      onChange={handleChange}
-                      required={field.required}
-                    />
-                  </label>
-                ))}
-              </div>
-
-              {status.message && (
-                <p className={`form-status form-status--${status.type}`}>{status.message}</p>
-              )}
-
-              <div className="actions-row">
-                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                  {isSubmitting ? 'Salvataggio...' : 'Salva Modifiche'}
-                </button>
-                <button type="button" className="btn btn-outline" onClick={closeDialog} disabled={isSubmitting}>
-                  Annulla
-                </button>
-              </div>
-            </form>
-          </section>
-        </div>
-      )}
+      {profileDialog}
     </div>
   );
 }

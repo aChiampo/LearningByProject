@@ -121,6 +121,11 @@ public class UtenteController {
             return true;
         }
 
+        if (hasRole(authentication, "ROLE_RECEPTIONIST")) {
+            Utente targetUser = utenteService.ottieniPerId(id);
+            return targetUser.getRuolo() != null && "CLIENTE".equals(targetUser.getRuolo().getRuolo());
+        }
+
         return Integer.valueOf(authentication.getName()).equals(id);
     }
 
