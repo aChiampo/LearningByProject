@@ -60,7 +60,7 @@ public class PagamentiController {
 
 
     @PostMapping("/crea")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<Pagamento> crea(@RequestBody Pagamento pagamento) {
         Pagamento nuovoPagamento = pagamentiService.creaPagamento(pagamento);
         return new ResponseEntity<>(nuovoPagamento, HttpStatus.CREATED);

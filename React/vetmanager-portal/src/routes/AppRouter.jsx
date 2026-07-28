@@ -68,6 +68,7 @@ export default function AppRouter() {
             <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
             <Route path="/receptionist/profile" element={<ReceptionistProfile />} />
             <Route path="/receptionist/appointments" element={<ReceptionistAppointments />} />
+            <Route path="/receptionist/appointments/new" element={<ClientBooking />} />
             <Route path="/receptionist/clients" element={<ReceptionistClients />} />
             <Route path="/receptionist/payments" element={<ReceptionistPayments />} />
             <Route path="/receptionist/faq" element={<ReceptionistFaq />} />

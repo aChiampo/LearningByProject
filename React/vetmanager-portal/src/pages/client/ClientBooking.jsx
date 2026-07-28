@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import PageTitle from '../../components/common/PageTitle';
-import { fetchAllAnimals, fetchAnimalsByOwner } from '../../services/animalApi';
-import { fetchDoctors } from '../../services/userApi';
+import { fetchAnimalsByOwner } from '../../services/animalApi';
+import { fetchClients, fetchDoctors } from '../../services/userApi';
 import { fetchVisitTypes } from '../../services/visitTypeApi';
 import { bookAppointment, fetchAvailableSlots } from '../../services/appointmentApi';
 import './ClientBooking.css';
@@ -31,6 +31,10 @@ function formatSlotDateTime(value) {
   }).format(date);
 }
 
+function getClientName(client) {
+  return [client.nome, client.cognome].filter(Boolean).join(' ') || client.email || 'Cliente senza nome';
+}
+
 export default function ClientBooking() {
   const navigate = useNavigate();
   const { currentUser, currentRole } = useContext(AppContext);
@@ -40,6 +44,7 @@ export default function ClientBooking() {
   const minDate = useMemo(getTomorrowDate, []);
 
   const [formData, setFormData] = useState({
+    clienteId: '',
     animaleId: '',
     tipoVisitaId: '',
     veterinarioId: '',
@@ -48,11 +53,13 @@ export default function ClientBooking() {
     note: '',
   });
 
+  const [clients, setClients] = useState([]);
   const [animals, setAnimals] = useState([]);
   const [visitTypes, setVisitTypes] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [isOptionsLoading, setIsOptionsLoading] = useState(false);
+  const [isAnimalsLoading, setIsAnimalsLoading] = useState(false);
   const [isSlotsLoading, setIsSlotsLoading] = useState(false);
   const [isBookingLoading, setIsBookingLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -69,13 +76,15 @@ export default function ClientBooking() {
       setError(null);
 
       try {
-        const [animalList, visitTypeList, doctorList] = await Promise.all([
-          isReceptionist ? fetchAllAnimals() : fetchAnimalsByOwner(ownerId),
+        const [clientList, animalList, visitTypeList, doctorList] = await Promise.all([
+          isReceptionist ? fetchClients() : Promise.resolve([]),
+          isReceptionist ? Promise.resolve([]) : fetchAnimalsByOwner(ownerId),
           fetchVisitTypes(),
           fetchDoctors(),
         ]);
 
         if (isMounted) {
+          setClients(clientList);
           setAnimals(animalList);
           setVisitTypes(visitTypeList);
           setDoctors(doctorList);
@@ -83,6 +92,7 @@ export default function ClientBooking() {
       } catch (loadError) {
         if (isMounted) {
           setError(loadError.message || 'Non e stato possibile caricare i dati della prenotazione.');
+          setClients([]);
           setAnimals([]);
           setVisitTypes([]);
           setDoctors([]);
@@ -100,6 +110,49 @@ export default function ClientBooking() {
       isMounted = false;
     };
   }, [ownerId, isReceptionist]);
+
+  useEffect(() => {
+    if (!isReceptionist) {
+      return undefined;
+    }
+
+    if (!formData.clienteId) {
+      setAnimals([]);
+      setIsAnimalsLoading(false);
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    async function loadClientAnimals() {
+      setIsAnimalsLoading(true);
+      setAnimals([]);
+      setError(null);
+
+      try {
+        const animalList = await fetchAnimalsByOwner(formData.clienteId);
+
+        if (isMounted) {
+          setAnimals(animalList);
+        }
+      } catch (loadError) {
+        if (isMounted) {
+          setError(loadError.message || 'Non e stato possibile caricare gli animali del cliente.');
+          setAnimals([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsAnimalsLoading(false);
+        }
+      }
+    }
+
+    loadClientAnimals();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [formData.clienteId, isReceptionist]);
 
   useEffect(() => {
     const { animaleId, tipoVisitaId, veterinarioId, data } = formData;
@@ -162,6 +215,7 @@ export default function ClientBooking() {
     setFormData((currentData) => ({
       ...currentData,
       [name]: value,
+      ...(name === 'clienteId' ? { animaleId: '', dataVisita: '' } : {}),
     }));
   };
 
@@ -182,6 +236,10 @@ export default function ClientBooking() {
     const tipoVisitaId = parseInt(formData.tipoVisitaId, 10);
     const veterinarioId = parseInt(formData.veterinarioId, 10);
 
+    if (isReceptionist && !formData.clienteId) {
+      setError('Seleziona un cliente prima di continuare.');
+      return;
+    }
     if (Number.isNaN(animaleId)) {
       setError('Seleziona un animale valido prima di continuare.');
       return;
@@ -234,15 +292,43 @@ export default function ClientBooking() {
           {error && <p className="form-status form-status--error">{error}</p>}
           {success && <p className="form-status form-status--success">Appuntamento prenotato con successo.</p>}
 
+          {isReceptionist && (
+            <label>
+              Cliente
+              <select
+                name="clienteId"
+                value={formData.clienteId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Seleziona un cliente</option>
+                {clients.length > 0 ? (
+                  clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {getClientName(client)}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Nessun cliente disponibile
+                  </option>
+                )}
+              </select>
+            </label>
+          )}
+
           <label>
             Animale
             <select
               name="animaleId"
               value={formData.animaleId}
               onChange={handleChange}
+              disabled={isReceptionist && (!formData.clienteId || isAnimalsLoading)}
               required
             >
-              <option value="">Seleziona un animale</option>
+              <option value="">
+                {isAnimalsLoading ? 'Caricamento animali...' : 'Seleziona un animale'}
+              </option>
               {animals.length > 0 ? (
                 animals.map((animale) => (
                   <option key={animale.id} value={animale.id}>
@@ -251,7 +337,9 @@ export default function ClientBooking() {
                 ))
               ) : (
                 <option value="" disabled>
-                  Nessun animale disponibile
+                  {isReceptionist && !formData.clienteId
+                    ? 'Seleziona prima un cliente'
+                    : 'Nessun animale disponibile'}
                 </option>
               )}
             </select>
@@ -344,7 +432,7 @@ export default function ClientBooking() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={isBookingLoading || isOptionsLoading || isSlotsLoading}
+              disabled={isBookingLoading || isOptionsLoading || isAnimalsLoading || isSlotsLoading}
             >
               {isBookingLoading ? 'Prenotazione in corso...' : 'Prenota visita'}
             </button>

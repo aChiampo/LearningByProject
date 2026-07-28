@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
@@ -6,6 +7,7 @@ import AppointmentRescheduleDialog from '../../components/appointments/Appointme
 import { deleteAppointment, fetchAppointments, getLocalStartOfToday, sendDelayNotification } from '../../services/appointmentApi';
 
 export default function ReceptionistAppointments() {
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
@@ -135,7 +137,7 @@ export default function ReceptionistAppointments() {
       <div className="panel section-spaced-sm">
         <div className="toolbar-row">
           <h2>Calendario Generale</h2>
-          <button className="btn btn-primary btn-sm" onClick={() => window.alert('Apertura popup per inserire un appuntamento sul posto')}>
+          <button className="btn btn-primary btn-sm" onClick={() => navigate('/receptionist/appointments/new')}>
             + Nuovo Appuntamento
           </button>
         </div>

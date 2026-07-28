@@ -1,4 +1,4 @@
-import { getReceiptDownloadTarget } from '../../services/paymentApi';
+import { downloadReceipt, getReceiptDownloadTarget } from '../../services/paymentApi';
 import './PaymentVisitCards.css';
 
 function formatCurrency(value) {
@@ -28,13 +28,17 @@ function formatDate(value) {
 export default function PaidVisitCard({ visit, onVisitDetails }) {
   const receiptTarget = getReceiptDownloadTarget(visit);
 
-  function handleReceiptDownload() {
+  async function handleReceiptDownload() {
     if (!receiptTarget) {
       window.alert('Ricevuta non disponibile per questa visita.');
       return;
     }
 
-    window.open(receiptTarget, '_blank', 'noopener,noreferrer');
+    try {
+      await downloadReceipt(visit);
+    } catch (error) {
+      window.alert(error.message || 'Impossibile scaricare la ricevuta.');
+    }
   }
 
   return (

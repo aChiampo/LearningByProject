@@ -84,15 +84,46 @@ export async function fetchPaidVisits() {
 export function getReceiptDownloadTarget(visit) {
   const storagePath = visit.receiptStoragePath;
 
-  if (storagePath?.startsWith('http') || storagePath?.startsWith('/')) {
-    return storagePath;
-  }
-
   if (visit.receiptReferenceId) {
     return `/api/file-reference/${visit.receiptReferenceId}/download`;
   }
 
+  if (storagePath?.startsWith('http')) {
+    return storagePath;
+  }
+
   return '';
+}
+
+export async function downloadReceipt(visit) {
+  const receiptTarget = getReceiptDownloadTarget(visit);
+
+  if (!receiptTarget) {
+    throw new Error('Ricevuta non disponibile per questa visita.');
+  }
+
+  if (receiptTarget.startsWith('http')) {
+    window.open(receiptTarget, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  const response = await apiFetch(receiptTarget);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile scaricare la ricevuta.');
+    throw new Error(errorMessage || 'Impossibile scaricare la ricevuta.');
+  }
+
+  const receiptBlob = await response.blob();
+  const receiptUrl = window.URL.createObjectURL(receiptBlob);
+  const downloadLink = document.createElement('a');
+
+  downloadLink.href = receiptUrl;
+  downloadLink.download = visit.receiptFileName || 'ricevuta.pdf';
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  downloadLink.remove();
+  window.URL.revokeObjectURL(receiptUrl);
 }
 
 export async function createPayment(visit, paymentType) {
