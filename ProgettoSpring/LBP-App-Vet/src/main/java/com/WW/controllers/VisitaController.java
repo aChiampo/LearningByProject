@@ -48,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 public class VisitaController {
 
     private final VisitaService visitaService;
+    private final EmailSenderService emailSenderService;
 
     /**
      * Restituisce tutte le visite.
@@ -445,10 +446,11 @@ public class VisitaController {
      * @return
      */
     @PostMapping("prima-visita")
-    public ResponseEntity<String> primaVisita(FirstAppointmentRequestDTO request) {
-        EmailSenderService emailSenderService = new EmailSenderService(null, null);
+    public ResponseEntity<String> primaVisita(@Valid @RequestBody FirstAppointmentRequestDTO request) {
         emailSenderService.inviaEmailPrimaVisita(request);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Endpoint not implemented yet");
+        emailSenderService.inviaEmailPrimaVisitaDottore("camillo.zampetti@clinicazampetti.it", request);
+        emailSenderService.inviaEmailPrimaVisitaDottore("segreteria.clinicaZampetti@gmail.com", request);
+        return ResponseEntity.ok("Richiesta inviata correttamente.");
     }
 
 }

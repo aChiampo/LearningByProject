@@ -15,12 +15,12 @@ export default function FirstAppointmentForm({
   } = copy;
 
   const [formData, setFormData] = useState({
-    owner: '',
+    clientName: '',
     email: '',
     phone: '',
-    animal: '',
-    species: 'Cane',
-    reason: 'Controllo generale',
+    petName: '',
+    animalType: 'Cane',
+    visitReason: 'Controllo generale',
     notes: '',
   });
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
@@ -42,15 +42,7 @@ export default function FirstAppointmentForm({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          clientName: formData.owner,
-          email: formData.email,
-          phone: formData.phone,
-          petName: formData.animal,
-          animalType: formData.species,
-          visitReason: formData.reason,
-          notes: formData.notes,
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -60,12 +52,12 @@ export default function FirstAppointmentForm({
 
       setStatus('success');
       setFormData({
-        owner: '',
+        clientName: '',
         email: '',
         phone: '',
-        animal: '',
-        species: 'Cane',
-        reason: 'Controllo generale',
+        petName: '',
+        animalType: 'Cane',
+        visitReason: 'Controllo generale',
         notes: '',
       });
     } catch (error) {
@@ -102,11 +94,11 @@ export default function FirstAppointmentForm({
             Nome e cognome
             <input
               id="first-owner"
-              name="owner"
+              name="clientName"
               type="text"
               autoComplete="name"
               placeholder="Il tuo nome"
-              value={formData.owner}
+              value={formData.clientName}
               onChange={handleChange}
               required
             />
@@ -144,17 +136,17 @@ export default function FirstAppointmentForm({
               Nome dell'animale
               <input
                 id="first-animal"
-                name="animal"
+                name="petName"
                 type="text"
                 placeholder="Nome"
-                value={formData.animal}
+                value={formData.petName}
                 onChange={handleChange}
                 required
               />
             </label>
             <label htmlFor="first-species">
               Animale
-              <select id="first-species" name="species" value={formData.species} onChange={handleChange}>
+              <select id="first-species" name="animalType" value={formData.animalType} onChange={handleChange}>
                 <option>Cane</option>
                 <option>Gatto</option>
                 <option>Altro piccolo animale</option>
@@ -163,7 +155,7 @@ export default function FirstAppointmentForm({
           </div>
           <label htmlFor="first-reason">
             Motivo della visita
-            <select id="first-reason" name="reason" value={formData.reason} onChange={handleChange}>
+            <select id="first-reason" name="visitReason" value={formData.visitReason} onChange={handleChange}>
               <option>Controllo generale</option>
               <option>Vaccinazione</option>
               <option>Consulenza</option>

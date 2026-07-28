@@ -1,5 +1,6 @@
 package com.WW.mailManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +30,8 @@ public class EmailSenderService {
     private static final String TEMPLATE_CANCELLAZIONE_APPUNTAMENTO = "mail/cancellazione-appuntamento";
     private static final String TEMPLATE_PROMEMORIA_VACCINAZIONE = "mail/promemoria-scadenza-vaccinazione";
     private static final String TEMPLATE_AVVISO_RITARDO = "mail/avviso-ritardo-appuntamento";
-    private static final String TEMPLATE_PRIMA_VISITA = "mail/prima-visita";
+    private static final String TEMPLATE_PRIMA_VISITA = "mail/prima-visita-cliente";
+    private static final String TEMPLATE_PRIMA_VISITA_DOTTORE = "mail/prima-visita-dottore";
 
     private final JavaMailSender mailSender;
     private final TemplateService templateService;
@@ -122,7 +124,7 @@ public class EmailSenderService {
     }
 
     /**
-     * Invia l'avviso di ritardo appuntamento.
+     * Invia l'avviso di conferma invio richiesta prima visita.
      *
      * @param destinatario indirizzo email del cliente
      * @param variabili    dati usati dal template
@@ -132,14 +134,34 @@ public class EmailSenderService {
                 request.email(),
                 "Richiesta prima visita",
                 TEMPLATE_PRIMA_VISITA,
-                Map.of(
-                        "clientName", request.clientName(),
-                        "email", request.email(),
-                        "phone", request.phone(),
-                        "petName", request.petName(),
-                        "animalType", request.animalType(),
-                        "visitReason", request.visitReason(),
-                        "notes", request.notes()));
+                creaVariabiliPrimaVisita(request));
+    }
+
+    /**
+     * Invia l'avviso di conferma invio richiesta prima visita.
+     *
+     * @param destinatario indirizzo email del cliente
+     * @param variabili    dati usati dal template
+     */
+    public void inviaEmailPrimaVisitaDottore(String destinatario, FirstAppointmentRequestDTO request) {
+        inviaEmailTemplate(
+                destinatario,
+                "Richiesta prima visita",
+                TEMPLATE_PRIMA_VISITA_DOTTORE,
+                creaVariabiliPrimaVisita(request));
+    }
+
+    private Map<String, Object> creaVariabiliPrimaVisita(FirstAppointmentRequestDTO request) {
+        Map<String, Object> variabili = new HashMap<>();
+        variabili.put("clientName", request.clientName());
+        variabili.put("email", request.email());
+        variabili.put("phone", request.phone());
+        variabili.put("petName", request.petName());
+        variabili.put("animalType", request.animalType());
+        variabili.put("visitReason", request.visitReason());
+        variabili.put("notes", request.notes());
+        variabili.put("clinicName", "Clinica Zampetti");
+        return variabili;
     }
 
     /**
