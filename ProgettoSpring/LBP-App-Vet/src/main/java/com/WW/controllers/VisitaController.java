@@ -1,6 +1,7 @@
 package com.WW.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,16 @@ import com.WW.dto.SlotDisponibileDto;
 import com.WW.dto.VisitParamDTO;
 import com.WW.dto.VisitaDto;
 import com.WW.entities.Visita;
+import com.WW.mailManager.EmailSenderService;
 import com.WW.sicurezza.UtenteAutenticato;
 import com.WW.services.VisitaService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 /**
- * Controller REST per visite, prenotazioni, riprogrammazioni e pagamenti collegati.
+ * Controller REST per visite, prenotazioni, riprogrammazioni e pagamenti
+ * collegati.
  */
 
 @RestController
@@ -104,7 +108,8 @@ public class VisitaController {
      */
     @GetMapping("/ottieniPerAnimale/{idAnimale}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
-    public ResponseEntity<List<Visita>> ottieniPerAnimale(@PathVariable Integer idAnimale, Authentication authentication) {
+    public ResponseEntity<List<Visita>> ottieniPerAnimale(@PathVariable Integer idAnimale,
+            Authentication authentication) {
         return ResponseEntity.ok(filterAccessibleVisits(visitaService.getVisiteByAnimale(idAnimale), authentication));
     }
 
@@ -150,8 +155,10 @@ public class VisitaController {
      */
     @GetMapping("/ottieniPagatePerAnimale/{idAnimale}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
-    public ResponseEntity<List<Visita>> ottieniPagatePerAnimale(@PathVariable int idAnimale, Authentication authentication) {
-        return ResponseEntity.ok(filterAccessibleVisits(visitaService.OttieniVisitePagatebyAnimale(idAnimale), authentication));
+    public ResponseEntity<List<Visita>> ottieniPagatePerAnimale(@PathVariable int idAnimale,
+            Authentication authentication) {
+        return ResponseEntity
+                .ok(filterAccessibleVisits(visitaService.OttieniVisitePagatebyAnimale(idAnimale), authentication));
     }
 
     /**
@@ -162,8 +169,10 @@ public class VisitaController {
      */
     @GetMapping("/ottieniNonPagatePerAnimale/{idAnimale}")
     @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
-    public ResponseEntity<List<Visita>> ottieniNonPagatePerAnimale(@PathVariable int idAnimale, Authentication authentication) {
-        return ResponseEntity.ok(filterAccessibleVisits(visitaService.OttieniVisiteNonPagateByAnimale(idAnimale), authentication));
+    public ResponseEntity<List<Visita>> ottieniNonPagatePerAnimale(@PathVariable int idAnimale,
+            Authentication authentication) {
+        return ResponseEntity
+                .ok(filterAccessibleVisits(visitaService.OttieniVisiteNonPagateByAnimale(idAnimale), authentication));
     }
 
     /**
@@ -179,10 +188,11 @@ public class VisitaController {
             Authentication authentication) {
         return ResponseEntity.ok(visitaService.getVisiteByParams(applyRoleFilters(params, authentication)));
     }
+
     /**
      * Gestisce la richiesta HTTP per ottieniSlotDisponibili.
      *
-     * @param richiesta parametro richiesto dall'operazione
+     * @param richiesta      parametro richiesto dall'operazione
      * @param authentication parametro richiesto dall'operazione
      * @return risultato dell'operazione
      */
@@ -207,10 +217,11 @@ public class VisitaController {
         Visita nuovaVisita = visitaService.createVisita(visita);
         return new ResponseEntity<Visita>(nuovaVisita, HttpStatus.CREATED);
     }
+
     /**
      * Gestisce la richiesta HTTP per prenotaSlot.
      *
-     * @param richiesta parametro richiesto dall'operazione
+     * @param richiesta      parametro richiesto dall'operazione
      * @param authentication parametro richiesto dall'operazione
      * @return risultato dell'operazione
      */
@@ -266,20 +277,22 @@ public class VisitaController {
     /**
      * Aggiorna lo stato di pagamento di una visita.
      *
-     * @param id     identificativo della visita
+     * @param id        identificativo della visita
      * @param pagamento nuovo stato di pagamento
      * @return visita aggiornata
      */
     @PatchMapping("/aggiornaPagato/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST','CLIENTE')")
-    public ResponseEntity<Visita> aggiornaPagato( @PathVariable Integer id, @RequestParam("pagamento") Integer pagamentoId) {
+    public ResponseEntity<Visita> aggiornaPagato(@PathVariable Integer id,
+            @RequestParam("pagamento") Integer pagamentoId) {
         return ResponseEntity.ok(visitaService.updateVisitaPagato(id, pagamentoId));
     }
+
     /**
      * Gestisce la richiesta HTTP per riprogramma.
      *
-     * @param id parametro richiesto dall'operazione
-     * @param request parametro richiesto dall'operazione
+     * @param id             parametro richiesto dall'operazione
+     * @param request        parametro richiesto dall'operazione
      * @param authentication parametro richiesto dall'operazione
      * @return risultato dell'operazione
      */
@@ -422,4 +435,13 @@ public class VisitaController {
 
         return Integer.valueOf(authentication.getName());
     }
+
+    @PostMapping("prima-visita")
+    public ResponseEntity<String> primaVisita(@RequestBody String destinatario, Map<String, Object> variabili) {
+        EmailSenderService emailSenderService = new EmailSenderService(null, null);
+        emailSenderService.inviaEmailPrimaVisita(destinatario, variabili);
+
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Endpoint not implemented yet");
+    }
+
 }
