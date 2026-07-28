@@ -92,9 +92,9 @@
         <span th:text="${pagamento.utente.indirizzo}"></span>
         <span th:text="${pagamento.utente.citta}"></span>
       </p>
-      <p th:if="${pagamento.utente.riferimento != null}">
-        Riferimento:
-        <span th:text="${pagamento.utente.riferimento}"></span>
+      <p th:if="${pagamento.utente.codiceFiscale != null}">
+        Codice fiscale:
+        <span th:text="${pagamento.utente.codiceFiscale}"></span>
       </p>
     </div>
 
