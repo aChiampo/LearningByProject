@@ -13,6 +13,9 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Servizio per generare PDF da template HTML e salvarli nelle cartelle configurate.
+ */
 @Service
 @RequiredArgsConstructor
 public class PdfFileService {
@@ -28,7 +31,13 @@ public class PdfFileService {
 
     @Value("${app.files.ricette-folder}")
     private String ricetteFolder;
-
+    /**
+     * Genera una fattura PDF per un cliente aziendale.
+     *
+     * @param fileName nome del file PDF da creare
+     * @param variabili dati usati dal template
+     * @return percorso del PDF creato
+     */
     public Path creaFatturaAzienda(String fileName, Map<String, Object> variabili) {
         return creaPdfFromTemplate(
                 TEMPLATE_FATTURA_AZIENDA,
@@ -37,7 +46,13 @@ public class PdfFileService {
                 fattureFolder
         );
     }
-
+    /**
+     * Genera una fattura PDF per un cliente privato.
+     *
+     * @param fileName nome del file PDF da creare
+     * @param variabili dati usati dal template
+     * @return percorso del PDF creato
+     */
     public Path creaFatturaPrivato(String fileName, Map<String, Object> variabili) {
         return creaPdfFromTemplate(
                 TEMPLATE_FATTURA_PRIVATO,
@@ -46,7 +61,13 @@ public class PdfFileService {
                 fattureFolder
         );
     }
-
+    /**
+     * Genera una ricetta medica PDF.
+     *
+     * @param fileName nome del file PDF da creare
+     * @param variabili dati usati dal template
+     * @return percorso del PDF creato
+     */
     public Path creaRicettaMedica(String fileName, Map<String, Object> variabili) {
         return creaPdfFromTemplate(
                 TEMPLATE_RICETTA_MEDICA,
@@ -55,7 +76,15 @@ public class PdfFileService {
                 ricetteFolder
         );
     }
-
+    /**
+     * Renderizza un template Thymeleaf e lo converte in PDF.
+     *
+     * @param templateName nome del template HTML
+     * @param variables variabili da passare al template
+     * @param fileName nome del file PDF
+     * @param folderPath cartella di destinazione
+     * @return percorso del PDF creato
+     */
     public Path creaPdfFromTemplate(
             String templateName,
             Map<String, Object> variables,

@@ -7,13 +7,56 @@ import './AppointmentCard.css';
  * @property {string} animalName
  * @property {string} nome
  * @property {string} cognome
+ * @property {string} ownerName
  * @property {string} visitType
+ * @property {string} appointmentDate
  * @property {string} appointmentHour
  * @property {string} doctorName
+ * @property {string} status
  */
 
 function getClientFullName(appointment) {
-  return [appointment.nome, appointment.cognome].filter(Boolean).join(' ');
+  return appointment.ownerName || [appointment.nome, appointment.cognome].filter(Boolean).join(' ');
+}
+
+function getAppointmentDateTime(appointment) {
+  return [appointment.appointmentDate, appointment.appointmentHour].filter(Boolean).join(' ');
+}
+
+function getSummaryConfig(appointment, variant) {
+  const clientFullName = getClientFullName(appointment);
+
+  if (variant === 'client') {
+    return {
+      title: appointment.animalName,
+      hint: 'Clicca per vedere i dettagli',
+      fields: [
+        { label: 'Data e ora', value: getAppointmentDateTime(appointment) },
+        { label: 'Veterinario', value: appointment.doctorName },
+      ],
+    };
+  }
+
+  if (variant === 'doctor') {
+    return {
+      title: appointment.animalName,
+      hint: 'Clicca per vedere i dettagli',
+      fields: [
+        { label: 'Data e ora', value: getAppointmentDateTime(appointment) },
+        { label: 'Tipo visita', value: appointment.visitType },
+      ],
+    };
+  }
+
+  return {
+    title: clientFullName,
+    hint: 'Clicca per vedere i dettagli',
+    fields: [
+      { label: 'Data', value: appointment.appointmentDate },
+      { label: 'Orario', value: appointment.appointmentHour },
+      { label: 'Medico', value: appointment.doctorName },
+    ],
+  };
 }
 
 /**
@@ -21,17 +64,28 @@ function getClientFullName(appointment) {
  *   appointment: Appointment,
  *   onEdit?: (appointment: Appointment) => void,
  *   onDelete?: (appointment: Appointment) => void,
- *   onDelayNotification?: (appointment: Appointment) => void
+ *   onDelayNotification?: (appointment: Appointment) => void,
+ *   actions?: Array<{ label: string, className?: string, onClick?: (appointment: Appointment) => void }>,
+ *   variant?: 'receptionist' | 'client' | 'doctor'
  * }} props
  */
 export function AppointmentCard({
   appointment,
   onEdit,
   onDelete,
-  onDelayNotification
+  onDelayNotification,
+  actions = [],
+  variant = 'receptionist'
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const clientFullName = getClientFullName(appointment);
+  const summary = getSummaryConfig(appointment, variant);
+  const cardActions = [
+    onEdit && { label: 'Modifica', className: 'btn btn-outline btn-sm', onClick: onEdit },
+    onDelete && { label: 'Cancella', className: 'btn btn-danger btn-sm', onClick: onDelete },
+    onDelayNotification && { label: 'Not. Ritardo', className: 'btn btn-secondary btn-sm', onClick: onDelayNotification },
+    ...actions,
+  ].filter(Boolean);
 
   function toggleDetails() {
     setIsExpanded((currentValue) => !currentValue);
@@ -47,23 +101,21 @@ export function AppointmentCard({
       <button
         type="button"
         className="appointment-card__summary"
+        style={{ '--appointment-summary-field-count': summary.fields.length }}
         aria-expanded={isExpanded}
         onClick={toggleDetails}
       >
         <div className="appointment-card__client">
-          <h3 className="appointment-card__title">{clientFullName}</h3>
-          <span className="appointment-card__hint">Clicca per vedere i dettagli</span>
+          <h3 className="appointment-card__title">{summary.title}</h3>
+          <span className="appointment-card__hint">{summary.hint}</span>
         </div>
 
-        <div className="appointment-card__field">
-          <span>Orario</span>
-          <strong>{appointment.appointmentHour}</strong>
-        </div>
-
-        <div className="appointment-card__field">
-          <span>Medico</span>
-          <strong>{appointment.doctorName}</strong>
-        </div>
+        {summary.fields.map((field) => (
+          <div key={field.label} className="appointment-card__field">
+            <span>{field.label}</span>
+            <strong>{field.value}</strong>
+          </div>
+        ))}
 
         <span className="appointment-card__chevron" aria-hidden="true">
           v
@@ -88,6 +140,11 @@ export function AppointmentCard({
           </div>
 
           <div className="appointment-card__field">
+            <span>Data</span>
+            <strong>{appointment.appointmentDate}</strong>
+          </div>
+
+          <div className="appointment-card__field">
             <span>Orario</span>
             <strong>{appointment.appointmentHour}</strong>
           </div>
@@ -96,34 +153,28 @@ export function AppointmentCard({
             <span>Medico</span>
             <strong>{appointment.doctorName}</strong>
           </div>
+
+          <div className="appointment-card__field">
+            <span>Stato</span>
+            <strong>{appointment.status}</strong>
+          </div>
         </div>
       )}
 
-      <div className="appointment-card__actions" aria-label="Azioni appuntamento">
-        <button
-          type="button"
-          className="btn btn-outline btn-sm"
-          onClick={(event) => handleActionClick(event, onEdit)}
-        >
-          Modifica
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-danger btn-sm"
-          onClick={(event) => handleActionClick(event, onDelete)}
-        >
-          Cancella
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary btn-sm"
-          onClick={(event) => handleActionClick(event, onDelayNotification)}
-        >
-          Not. Ritardo
-        </button>
-      </div>
+      {cardActions.length > 0 && (
+        <div className="appointment-card__actions" aria-label="Azioni appuntamento">
+          {cardActions.map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              className={action.className ?? 'btn btn-outline btn-sm'}
+              onClick={(event) => handleActionClick(event, action.onClick)}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
@@ -133,14 +184,18 @@ export function AppointmentCard({
  *   appointments: Appointment[],
  *   onEdit?: (appointment: Appointment) => void,
  *   onDelete?: (appointment: Appointment) => void,
- *   onDelayNotification?: (appointment: Appointment) => void
+ *   onDelayNotification?: (appointment: Appointment) => void,
+ *   actions?: Array<{ label: string, className?: string, onClick?: (appointment: Appointment) => void }>,
+ *   variant?: 'receptionist' | 'client' | 'doctor'
  * }} props
  */
 export function AppointmentCardList({
   appointments,
   onEdit,
   onDelete,
-  onDelayNotification
+  onDelayNotification,
+  actions = [],
+  variant = 'receptionist'
 }) {
   return (
     <div className="appointment-card-list">
@@ -151,6 +206,8 @@ export function AppointmentCardList({
           onEdit={onEdit}
           onDelete={onDelete}
           onDelayNotification={onDelayNotification}
+          actions={actions}
+          variant={variant}
         />
       ))}
     </div>

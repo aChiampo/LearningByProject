@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
-import { fetchAppointments, sendDelayNotification } from '../../services/appointmentApi';
+import AppointmentRescheduleDialog from '../../components/appointments/AppointmentRescheduleDialog';
+import { deleteAppointment, fetchAppointments, getLocalStartOfToday, sendDelayNotification } from '../../services/appointmentApi';
 
 export default function ReceptionistAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -13,6 +14,7 @@ export default function ReceptionistAppointments() {
   const [delayError, setDelayError] = useState('');
   const [delayStatus, setDelayStatus] = useState('');
   const [isSendingDelay, setIsSendingDelay] = useState(false);
+  const [appointmentToEdit, setAppointmentToEdit] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -22,7 +24,9 @@ export default function ReceptionistAppointments() {
       setLoadError('');
 
       try {
-        const appointmentList = await fetchAppointments();
+        const appointmentList = await fetchAppointments({
+          date: getLocalStartOfToday(),
+        });
 
         if (isMounted) {
           setAppointments(appointmentList);
@@ -46,12 +50,42 @@ export default function ReceptionistAppointments() {
     };
   }, []);
 
-  function handleEditAppointment() {
-    window.alert('Modifica appuntamento');
+  async function reloadAppointments() {
+    const appointmentList = await fetchAppointments({
+      date: getLocalStartOfToday(),
+    });
+
+    setAppointments(appointmentList);
   }
 
-  function handleDeleteAppointment() {
-    window.alert('Appuntamento eliminato');
+  function handleEditAppointment(appointment) {
+    setAppointmentToEdit(appointment);
+    setDelayStatus('');
+  }
+
+  async function handleDeleteAppointment(appointment) {
+    const confirmed = window.confirm(`Cancellare l'appuntamento di ${appointment.animalName}?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteAppointment(appointment.id);
+      setAppointments((currentAppointments) => (
+        currentAppointments.filter((currentAppointment) => currentAppointment.id !== appointment.id)
+      ));
+      setDelayStatus('Appuntamento cancellato. Il cliente ricevera una notifica email.');
+      setLoadError('');
+    } catch (error) {
+      setLoadError(error.message);
+    }
+  }
+
+  async function handleAppointmentSaved() {
+    await reloadAppointments();
+    setAppointmentToEdit(null);
+    setDelayStatus('Appuntamento modificato. Il cliente ricevera una notifica email.');
   }
 
   function handleDelayNotification(appointment) {
@@ -144,7 +178,7 @@ export default function ReceptionistAppointments() {
             </div>
 
             <p className="muted-text">
-              {delayDialogVisit.animalName || 'Visita'} - {delayDialogVisit.appointmentDate || delayDialogVisit.appointmentHour}
+              {delayDialogVisit.animalName || 'Visita'} - {delayDialogVisit.appointmentDate} {delayDialogVisit.appointmentHour}
             </p>
 
             <form className="stack-form" onSubmit={handleDelaySubmit}>
@@ -177,6 +211,14 @@ export default function ReceptionistAppointments() {
             </form>
           </section>
         </div>
+      )}
+
+      {appointmentToEdit && (
+        <AppointmentRescheduleDialog
+          appointment={appointmentToEdit}
+          onClose={() => setAppointmentToEdit(null)}
+          onSaved={handleAppointmentSaved}
+        />
       )}
     </div>
   );

@@ -2,6 +2,7 @@ package com.WW.autenticazione;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,13 +34,26 @@ public class AutenticazioneController {
     public ResponseEntity<RispostaLogin> accedi(@RequestBody RichiestaLogin richiesta) {
         return ResponseEntity.ok(autenticazioneService.accedi(richiesta));
     }
+    /**
+     * Gestisce la richiesta HTTP per registrazione.
+     *
+     * @param richiesta parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PostMapping("/signin")
     public ResponseEntity<RispostaLogin> registrazione(@RequestBody RichiestaRegistrazione richiesta) {
         return ResponseEntity.status(HttpStatus.CREATED).body(autenticazioneService.registra(richiesta));
     }
+    /**
+     * Gestisce la richiesta HTTP per profiloCorrente.
+     *
+     * @param utenteAutenticato parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<ProfiloAutenticato> profiloCorrente(
             @AuthenticationPrincipal UtenteAutenticato utenteAutenticato) {
         return ResponseEntity.ok(autenticazioneService.ottieniProfiloAutenticato(utenteAutenticato.id()));

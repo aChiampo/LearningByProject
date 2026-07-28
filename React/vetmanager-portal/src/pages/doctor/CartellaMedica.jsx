@@ -4,7 +4,7 @@ import EmptyMessage from '../../components/common/EmptyMessage';
 import PageTitle from '../../components/common/PageTitle';
 import AnimalVaccinationCard from '../../components/vaccinations/AnimalVaccinationCard';
 import { fetchAnimalById, updateAnimal } from '../../services/animalApi';
-import { fetchVisitById, fetchVisitsByAnimal, updateVisitNotes } from '../../services/visitApi';
+import { completeVisitReport, fetchVisitById, fetchVisitsByAnimal } from '../../services/visitApi';
 import {
   createVaccination,
   fetchVaccinationsByAnimal,
@@ -166,6 +166,24 @@ export default function CartellaMedica({ readOnly = false }) {
     };
   }, [animalId]);
 
+  useEffect(() => {
+    if (!reportVisit) {
+      return undefined;
+    }
+
+    function closeReportDialogOnEscape(event) {
+      if (event.key === 'Escape' && !isSavingReport) {
+        setReportVisit(null);
+      }
+    }
+
+    window.addEventListener('keydown', closeReportDialogOnEscape);
+
+    return () => {
+      window.removeEventListener('keydown', closeReportDialogOnEscape);
+    };
+  }, [reportVisit, isSavingReport]);
+
   function updateAnimalField(fieldName, value) {
     setAnimalForm((currentForm) => ({
       ...currentForm,
@@ -322,11 +340,10 @@ export default function CartellaMedica({ readOnly = false }) {
     setStatusMessage('');
 
     try {
-      const updatedVisit = await updateVisitNotes(reportVisit.id, reportForm.note);
-      setReportVisit(updatedVisit);
-      setVisits((currentVisits) => currentVisits.map((visit) => (
-        visit.id === updatedVisit.id ? updatedVisit : visit
-      )));
+      await completeVisitReport(reportVisit, reportForm.note);
+      const refreshedVisits = await fetchVisitsByAnimal(animalId);
+      setReportVisit(null);
+      setVisits(refreshedVisits);
       setStatusMessage('Report visita salvato correttamente.');
     } catch (error) {
       setErrorMessage(error.message);
@@ -645,7 +662,7 @@ export default function CartellaMedica({ readOnly = false }) {
                           type="button"
                           onClick={() => handleOpenReportForm(visit)}
                         >
-                          Completa Report
+                          Completa report
                         </button>
                       )}
                     </div>
@@ -696,51 +713,67 @@ export default function CartellaMedica({ readOnly = false }) {
           )}
 
           {reportVisit && (
-            <form className="panel cartella-medica__section cartella-medica__report" onSubmit={handleSaveReport}>
-              <div className="cartella-medica__heading">
-                <div>
-                  <p className="eyebrow">Report visita</p>
-                  <h2>Completa Report</h2>
+            <div className="cartella-medica__dialog" role="presentation">
+              <button
+                className="cartella-medica__dialog-backdrop"
+                type="button"
+                aria-label="Chiudi report"
+                onClick={() => setReportVisit(null)}
+                disabled={isSavingReport}
+              />
+              <form
+                className="cartella-medica__dialog-window"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="report-dialog-title"
+                onSubmit={handleSaveReport}
+              >
+                <div className="cartella-medica__heading">
+                  <div>
+                    <p className="eyebrow">Report visita</p>
+                    <h2 id="report-dialog-title">Completa report</h2>
+                  </div>
+                  <span className="badge badge-neutral">{reportVisit.stato}</span>
                 </div>
-                <span className="badge badge-neutral">{reportVisit.stato}</span>
-              </div>
 
-              <div className="cartella-medica__form-grid">
-                <label htmlFor="report-visit-type">
-                  Tipo visita
-                  <input id="report-visit-type" type="text" value={reportVisit.tipoVisita || 'N/D'} readOnly />
+                <div className="cartella-medica__form-grid">
+                  <label htmlFor="report-visit-type">
+                    Tipo visita
+                    <input id="report-visit-type" type="text" value={reportVisit.tipoVisita || 'N/D'} readOnly />
+                  </label>
+
+                  <label htmlFor="report-visit-date">
+                    Data visita
+                    <input id="report-visit-date" type="text" value={formatDateTime(reportVisit.dataVisita)} readOnly />
+                  </label>
+                </div>
+
+                <label htmlFor="report-visit-notes">
+                  Note visita
+                  <textarea
+                    id="report-visit-notes"
+                    name="note"
+                    value={reportForm.note}
+                    onChange={(event) => setReportForm({ note: event.target.value })}
+                    rows="5"
+                  />
                 </label>
 
-                <label htmlFor="report-visit-date">
-                  Data visita
-                  <input id="report-visit-date" type="text" value={formatDateTime(reportVisit.dataVisita)} readOnly />
-                </label>
-              </div>
-
-              <label htmlFor="report-visit-notes">
-                Note visita
-                <textarea
-                  id="report-visit-notes"
-                  name="note"
-                  value={reportForm.note}
-                  onChange={(event) => setReportForm({ note: event.target.value })}
-                  rows="5"
-                />
-              </label>
-
-              <div className="cartella-medica__actions">
-                <button className="btn btn-primary" type="submit" disabled={isSavingReport}>
-                  {isSavingReport ? 'Salvataggio...' : 'Salva Report'}
-                </button>
-                <button
-                  className="btn btn-outline"
-                  type="button"
-                  onClick={() => setReportVisit(null)}
-                >
-                  Annulla
-                </button>
-              </div>
-            </form>
+                <div className="cartella-medica__actions">
+                  <button className="btn btn-primary" type="submit" disabled={isSavingReport}>
+                    {isSavingReport ? 'Salvataggio...' : 'Salva report'}
+                  </button>
+                  <button
+                    className="btn btn-outline"
+                    type="button"
+                    onClick={() => setReportVisit(null)}
+                    disabled={isSavingReport}
+                  >
+                    Annulla
+                  </button>
+                </div>
+              </form>
+            </div>
           )}
         </>
       )}

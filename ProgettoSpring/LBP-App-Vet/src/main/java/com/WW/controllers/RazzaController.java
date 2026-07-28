@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,9 @@ import com.WW.dto.RazzaRequest;
 import com.WW.entities.Razza;
 import com.WW.entities.Specie;
 import com.WW.services.RazzaService;
+/**
+ * Controller REST per la gestione delle razze animali.
+ */
 
 @RestController
 @RequestMapping("/api/razze")
@@ -55,6 +59,7 @@ public class RazzaController {
      * @return lista di tutte le razze
      */
     @GetMapping("")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Razza>> getAllRazze() {
         try {
             List<Razza> razze = razzaService.visualizzaTutteRazze();
@@ -70,6 +75,7 @@ public class RazzaController {
      * @return la razza se trovata
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<Razza> getRazzaById(@PathVariable Integer id) {
         try {
             Optional<Razza> razza = razzaService.getRazzaById(id);
@@ -88,6 +94,7 @@ public class RazzaController {
      * @return lista di razze corrispondenti alla specie
      */
     @GetMapping("/specie/{specieId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Razza>> findByIdSpecie(@PathVariable Integer specieId) {
         try {
             List<Razza> razze = razzaService.findByIdSpecie_Id(specieId);
@@ -105,6 +112,7 @@ public class RazzaController {
      * @return lista di razze corrispondenti
      */
     @GetMapping("/cerca/nome")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<Razza>> findByNome(@RequestParam String nome) {
         try {
             List<Razza> razze = razzaService.findByNome(nome);
@@ -122,6 +130,7 @@ public class RazzaController {
      * @return la razza creata
      */
     @PostMapping("/aggiungiRazza")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Razza> createRazza(@RequestBody RazzaRequest request) {
         try {
             Razza razza = toRazza(request);
@@ -141,6 +150,7 @@ public class RazzaController {
      * @return la razza aggiornata
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Razza> updateRazza(
             @PathVariable Integer id,
             @RequestBody RazzaRequest request) {
@@ -162,6 +172,7 @@ public class RazzaController {
      * @return status 204 No Content se eliminata con successo
      */
     @PatchMapping("/{id}/elimina")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Void> deleteRazza(@PathVariable Integer id) {
         try {
             razzaService.eliminaRazza(id);
@@ -179,6 +190,7 @@ public class RazzaController {
      * @return status 204 No Content se eliminata con successo
      */
     @DeleteMapping("/{id}/fisico")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteRazzaFisica(@PathVariable Integer id) {
         try {
             razzaService.eliminaRazzaFisica(id);

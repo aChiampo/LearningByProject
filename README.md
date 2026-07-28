@@ -1,254 +1,292 @@
-# Chi siamo
+# VetManager Portal
 
-breve presentazione azienda
+VetManager Portal e un progetto didattico per una web application dedicata a una
+clinica veterinaria. Il progetto e composto da un backend Spring Boot e da un
+frontend React/Vite per medico veterinario, receptionist, clienti e area admin.
 
+Il progetto e attualmente in sviluppo attivo. Contiene basi backend e frontend
+funzionanti, ma non e ancora pronto per un utilizzo in produzione.
 
-## User Requirements:
+## Contesto Del Progetto
 
-Il Dott. Camillo Zampetti gestisce uno studio veterinario a Bergamo Alta.
-Ha circa 280 pazienti attivi tra cani, gatti e piccoli animali.
-Attualmente perde molto tempo nella gestione di attività ripetitive:
-telefonate per prenotazioni, richieste via WhatsApp, ricette smarrite,
-informazioni cliniche incomplete e libretti vaccinali cartacei.
+Il Dott. Camillo Zampetti gestisce uno studio veterinario a Bergamo Alta con
+circa 280 pazienti attivi, tra cani, gatti e piccoli animali.
 
-Vorrebbe uno strumento digitale semplice che aiuti lui, I receptionist e i proprietari degli animali a gestire meglio le informazioni principali.
+L'obiettivo e ridurre il lavoro manuale ripetitivo, come telefonate per le
+prenotazioni, richieste via WhatsApp, ricette smarrite, informazioni cliniche
+incomplete e libretti vaccinali cartacei.
 
-## Componente Tecnica
-### Stack applicativo
+L'applicazione deve permettere agli utenti autenticati di accedere a flussi
+diversi in base al ruolo:
 
+- Cliente: gestione animali, prenotazione appuntamenti, consultazione di
+  appuntamenti, cartelle cliniche, pagamenti e fatture.
+- Receptionist: gestione appuntamenti, clienti, notifiche di ritardo e pagamenti.
+- Medico/Veterinario: agenda giornaliera, cartelle animali, visite, vaccinazioni,
+  report visita e dati di configurazione.
+- Admin/Super admin: gestione amministrativa e aree di sistema.
 
-| Livello             | Tecnologia                     |
-| ------------------- | ------------------------------ |
-| Frontend            | React                          |
-| Backend             | Spring Boot 3.5.x, Java 21 LTS |
-| Database            | PostgreSQL                     |
-| Versionamento       | GitHub                         |
-| Infrastruttura Host | Cloud gestito (AWS) consigliato|
-| Database Hosting    | To be implemented              |
+## Struttura Reale Del Repository
 
-### Struttura del Progetto
-
-```
-veterinary-clinic/
-│
-├── frontend/                          # React Application
-│   ├── public/
-│   │   ├── index.html
-│   │   └── favicon.ico
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Auth/
-│   │   │   │   ├── LoginForm.jsx
-│   │   │   │   └── RoleBasedRoute.jsx
-│   │   │   ├── Common/
-│   │   │   │   ├── Header.jsx
-│   │   │   │   ├── Sidebar.jsx
-│   │   │   │   └── Footer.jsx
-│   │   │   ├── Client/
-│   │   │   │   ├── AppointmentBook.jsx
-│   │   │   │   ├── MedicalRecord.jsx
-│   │   │   │   └── InvoiceView.jsx
-│   │   │   ├── Receptionist/
-│   │   │   │   ├── AppointmentManagement.jsx
-│   │   │   │   ├── WaitingList.jsx
-│   │   │   │   └── PaymentRecording.jsx
-│   │   │   └── Doctor/
-│   │   │       ├── DoctorDashboard.jsx
-│   │   │       ├── PatientChart.jsx
-│   │   │       └── PrescriptionForm.jsx
-│   │   ├── pages/
-│   │   │   ├── HomePage.jsx
-│   │   │   ├── DashboardPage.jsx
-│   │   │   ├── AppointmentsPage.jsx
-│   │   │   └── ProfilePage.jsx
-│   │   ├── services/
-│   │   │   ├── api.js
-│   │   │   ├── authService.js
-│   │   │   ├── appointmentService.js
-│   │   │   └── patientService.js
-│   │   ├── hooks/
-│   │   │   ├── useAuth.js
-│   │   │   └── useFetch.js
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx
-│   │   ├── utils/
-│   │   │   ├── validators.js
-│   │   │   └── formatters.js
-│   │   ├── styles/
-│   │   │   ├── App.css
-│   │   │   └── variables.css
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── package.json
-│   ├── vite.config.js
-│   └── .env.example
-│
-├── backend/                           # Spring Boot Application
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/
-│   │   │   │   └── com/veterinaryapp/
-│   │   │   │       ├── config/
-│   │   │   │       │   ├── SecurityConfig.java
-│   │   │   │       │   ├── CorsConfig.java
-│   │   │   │       │   └── JwtConfig.java
-│   │   │   │       ├── controller/
-│   │   │   │       │   ├── AuthController.java
-│   │   │   │       │   ├── AppointmentController.java
-│   │   │   │       │   ├── PatientController.java
-│   │   │   │       │   ├── UserController.java
-│   │   │   │       │   └── PaymentController.java
-│   │   │   │       ├── service/
-│   │   │   │       │   ├── AuthService.java
-│   │   │   │       │   ├── AppointmentService.java
-│   │   │   │       │   ├── PatientService.java
-│   │   │   │       │   ├── UserService.java
-│   │   │   │       │   └── PaymentService.java
-│   │   │   │       ├── repository/
-│   │   │   │       │   ├── UserRepository.java
-│   │   │   │       │   ├── AppointmentRepository.java
-│   │   │   │       │   ├── PatientRepository.java
-│   │   │   │       │   └── PaymentRepository.java
-│   │   │   │       ├── entity/
-│   │   │   │       │   ├── User.java
-│   │   │   │       │   ├── Patient.java
-│   │   │   │       │   ├── Appointment.java
-│   │   │   │       │   ├── MedicalRecord.java
-│   │   │   │       │   └── Payment.java
-│   │   │   │       ├── dto/
-│   │   │   │       │   ├── UserDTO.java
-│   │   │   │       │   ├── AppointmentDTO.java
-│   │   │   │       │   └── PaymentDTO.java
-│   │   │   │       ├── exception/
-│   │   │   │       │   ├── ResourceNotFoundException.java
-│   │   │   │       │   └── UnauthorizedException.java
-│   │   │   │       ├── security/
-│   │   │   │       │   ├── JwtTokenProvider.java
-│   │   │   │       │   └── CustomUserDetailsService.java
-│   │   │   │       └── VeterinaryClinicApplication.java
-│   │   │   └── resources/
-│   │   │       ├── application.yml
-│   │   │       ├── application-prod.yml
-│   │   │       ├── application-dev.yml
-│   │   │       └── db/
-│   │   │           └── migration/
-│   │   │               ├── V1__initial_schema.sql
-│   │   │               └── V2__seed_data.sql
-│   │   └── test/
-│   │       └── java/
-│   │           └── com/veterinaryapp/
-│   │               ├── service/
-│   │               └── controller/
-│   ├── pom.xml
-│   ├── Dockerfile
-│   └── .gitignore
-│
-├── database/                          # Database Configuration
-│   ├── schema/
-│   │   ├── users.sql
-│   │   ├── patients.sql
-│   │   ├── appointments.sql
-│   │   ├── medical_records.sql
-│   │   └── payments.sql
-│   ├── migrations/
-│   │   └── (Flyway migrations)
-│   └── seed/
-│       └── sample_data.sql
-│
-├── docs/                              # Documentation
-│   ├── API_DOCUMENTATION.md
-│   ├── DATABASE_SCHEMA.md
-│   ├── ARCHITECTURE.md
-│   ├── DEPLOYMENT.md
-│   └── USER_GUIDE.md
-│
-├── .github/
-│   └── workflows/                     # CI/CD Pipelines
-│       ├── frontend-tests.yml
-│       ├── backend-tests.yml
-│       └── deploy.yml
-│
-├── docker-compose.yml                 # Local Development Setup
-├── .gitignore
-├── LICENSE
-└── README.md
+```text
+LearningByProject/
+|-- ProgettoSpring/
+|   `-- LBP-App-Vet/
+|       |-- pom.xml
+|       |-- mvnw
+|       |-- mvnw.cmd
+|       `-- src/
+|           |-- main/
+|           |   |-- java/com/WW/
+|           |   |   |-- autenticazione/
+|           |   |   |-- controllers/
+|           |   |   |-- dto/
+|           |   |   |-- entities/
+|           |   |   |-- enums/
+|           |   |   |-- exception/
+|           |   |   |-- fileManager/
+|           |   |   |-- mailManager/
+|           |   |   |-- repositories/
+|           |   |   |-- sicurezza/
+|           |   |   `-- services/
+|           |   `-- resources/
+|           |       |-- application.yml
+|           |       `-- templates/
+|           |           |-- fatture/
+|           |           |-- mail/
+|           |           `-- ricette/
+|           `-- test/java/com/WW/
+|-- React/
+|   `-- vetmanager-portal/
+|       |-- package.json
+|       |-- vite.config.js
+|       |-- public/
+|       `-- src/
+|           |-- components/
+|           |-- context/
+|           |-- data/
+|           |-- layouts/
+|           |-- pages/
+|           |-- routes/
+|           `-- services/
+|-- DatiExcel/
+|-- Documentazione/
+|-- Mockup/
+|-- StudyMaterial/
+|-- CodeRequirements.md
+|-- TODO.md
+`-- README.md
 ```
 
-**Descrizione Struttura:**
+Al momento nel repository reale non sono presenti una directory
+`.github/workflows`, un file `docker-compose.yml` o una cartella `database/`
+dedicata alle migrazioni.
 
-- **frontend/** - Applicazione React con componenti organizzati per ruolo (Client, Receptionist, Doctor)
-- **backend/** - Applicazione Spring Boot con architettura a layer (Controller → Service → Repository)
-- **database/** - Script SQL per schema, migrazioni e dati di seed
-- **docs/** - Documentazione tecnica e guide utente
-- **.github/workflows/** - Pipeline CI/CD per testing e deployment automatico
+## Stack Tecnico
 
-# Descrizione Progetto
+| Livello | Tecnologia attuale |
+| --- | --- |
+| Frontend | React 19, Vite 8, React Router 7 |
+| Backend | Java 21, Spring Boot 4.1.0 |
+| Sicurezza | Spring Security, JWT, BCrypt |
+| Database | PostgreSQL |
+| Persistenza | Spring Data JPA |
+| Template | Template HTML Thymeleaf |
+| Generazione PDF | openhtmltopdf |
+| Mail | Spring Mail |
+| Package manager | npm, Maven Wrapper |
 
- Il progetto deve essere strutturato come una web application.
+## Stato Attuale Del Backend
 
- Deve essere accessibile dal web presentando una home page dalla quale si può essere reindirizzati ad altre pagine dopo essersi autenticati. In base al ruolo saranno accessibili diverse funzionalità.
+Il backend si trova in `ProgettoSpring/LBP-App-Vet`.
 
- Gli utilizzatori saranno di tre tipi:
- - Il dottore/veterinario proprietario dello studio
- - La receptionist 
- - I clienti dello studio ovvero i proprietari degli animali
+Aree implementate o parzialmente implementate:
 
-## Tasks and Functionalities
+- Applicazione Spring Boot nel package `com.WW`.
+- Layer entity, repository, service e controller per i principali modelli di
+  dominio.
+- Endpoint di login e registrazione JWT sotto `/api/auth` e
+  `/api/autenticazione`.
+- Filtro JWT collegato a Spring Security.
+- Supporto ai ruoli tramite entita `Ruolo`.
+- Hashing BCrypt quando gli utenti vengono creati o aggiornati tramite
+  `UtenteService`.
+- Gestore globale delle eccezioni per errori di validazione, response status e
+  illegal argument.
+- Flussi appuntamento/visita basati su `Visita`.
+- Ricerca slot disponibili, prenotazione, riprogrammazione, cancellazione e
+  chiusura visita.
+- Animali, utenti, visite, tipi visita, categorie, specie, razze, vaccinazioni,
+  pagamenti, orari, aziende, riferimenti file e richieste di valutazione animale.
+- Template mail per registrazione, conferma appuntamento, cancellazione
+  appuntamento, avviso ritardo, notifica fattura e promemoria vaccinale.
+- Servizi PDF e template HTML per fatture e ricette.
 
-### Authentication & Access
-- Sign in / sign out
-- Access role-based dashboards (Client, Receptionist, Doctor, Admin)
+Gap importanti del backend:
 
-### Client (Patient) Actions
-- Browse services and view available visit slots
-- Book an appointment
-- View, modify, or cancel own appointments
-- View personal medical record (read-only)
-- Pay for appointments and download invoices
-- Receive confirmations and reminders (notifications)
+- I segreti sono ancora presenti in `application.yml`; devono essere spostati in
+  variabili d'ambiente e le credenziali esposte devono essere ruotate prima di
+  usare ambienti condivisi.
+- Non esiste ancora una configurazione separata per profili local/test/prod.
+- Diversi controller accettano o restituiscono direttamente entita JPA invece di
+  DTO stabili per request/response.
+- I path API e le convenzioni di naming alternano stile italiano e inglese.
+- L'autorizzazione esiste, ma i permessi per ruolo devono ancora essere
+  verificati endpoint per endpoint.
+- Lo schema database non e ancora gestito tramite file di migrazione versionati.
+- I test backend sono minimi: e presente solo uno smoke test del contesto Spring.
 
-### Receptionist Actions
-- View receptionist dashboard with incoming appointments
-- Create, modify, and cancel appointments for clients
-- Confirm bookings and manage waiting lists
-- Record payments and reconcile invoices
+## Stato Attuale Del Frontend
 
-### Doctor Actions
-- View own dashboard and today's/filtered appointments
-- Open and update patient medical charts
-- Add visit notes and prescriptions
-- Reschedule or close appointments
+Il frontend si trova in `React/vetmanager-portal`.
 
-### Records & Files
-- Upload and download clinical documents and attachments
-- Edit patient charts (role-based permissions)
-- View file history and versioning (audit trail)
+Aree implementate o parzialmente implementate:
 
-### Payments & Billing
-- Mark invoices as paid or unpaid
-- Trigger payment requests and process receipts
-- Export or download invoices and payment reports
+- App React/Vite con pagine basate su routing.
+- Home page pubblica, pagina login, pagina registrazione e pagina primo
+  appuntamento.
+- Rotte protette e rotte basate sul ruolo.
+- Context condiviso per stato di autenticazione e sessione.
+- Client API che salva la sessione JWT nel local storage del browser e invia
+  header `Authorization: Bearer ...`.
+- Integrazione backend avviata per autenticazione, utente corrente, animali,
+  appuntamenti/visite, tipi visita, vaccinazioni, utenti e pagamenti.
+- Aree di ruolo per cliente, medico, receptionist e super admin.
+- Flusso di prenotazione cliente con ricerca degli slot disponibili.
+- Registro animali del medico e schermate cartella clinica/report visita.
+- Schermate receptionist per appuntamenti e pagamenti.
 
-### Administration & Reporting
-- Manage user roles and permissions
-- Configure services, availability, and schedules
-- Generate reports (appointments, payments, activity)
+Gap importanti del frontend:
 
-### Notifications & Communication
-- Send confirmations, reminders, and status updates to users
-- Allow users to confirm or respond to messages
+- Alcune sezioni frontend sono ancora mock o placeholder.
+- Non sono ancora presenti test frontend.
+- `npm run lint` richiede ancora interventi prima di poter essere considerato una
+  quality gate pulita.
+- Stati di errore, caricamento e vuoto sono presenti in diversi punti, ma non
+  sono ancora completi in tutte le schermate.
+- Il frontend dipende dalla disponibilita del backend tramite proxy Vite `/api`.
 
-### Miscellaneous
-- Search and filter appointments, patients, and records
-- Long-term storage and backup 
-- Reporting and statistics
+## Sviluppo Locale
 
+### Backend
 
+Dalla cartella del backend:
 
+```powershell
+cd ProgettoSpring\LBP-App-Vet
+.\mvnw.cmd spring-boot:run
+```
 
+Il backend e configurato per partire sulla porta `9020`.
 
+Importante: controllare `src/main/resources/application.yml` prima di avviare il
+backend. Attualmente contiene configurazioni specifiche dell'ambiente e segreti
+che devono essere rimossi dal codice sorgente.
 
+### Frontend
 
+Dalla cartella del frontend:
 
+```powershell
+cd React\vetmanager-portal
+npm install
+npm run dev
+```
 
-possibilità di hostare il server in locale oppure comprare un servizio cloud (AWS)
+Il server di sviluppo Vite inoltra le richieste `/api` verso:
+
+```text
+http://localhost:9020
+```
+
+### Comandi Utili Frontend
+
+```powershell
+npm run dev
+npm run lint
+npm run build
+npm run preview
+```
+
+### Comandi Utili Backend
+
+```powershell
+.\mvnw.cmd spring-boot:run
+.\mvnw.cmd test
+```
+
+I test backend attualmente dipendono dalla configurazione Spring attiva, quindi
+devono essere rivisti dopo l'aggiunta di un profilo di test dedicato.
+
+## Scope Funzionale Attuale
+
+### Autenticazione E Accesso
+
+- Login con email e password.
+- Flusso di registrazione per clienti.
+- Richieste autenticate tramite JWT.
+- Navigazione frontend basata sul ruolo e rotte protette.
+- Sicurezza backend a livello metodo con annotazioni di ruolo e alcuni controlli
+  manuali di proprieta.
+
+### Area Cliente
+
+- Visualizzazione dei propri animali.
+- Aggiunta di un animale.
+- Prenotazione di un appuntamento da slot disponibili.
+- Visualizzazione e gestione appuntamenti.
+- Schermate orientate a fatture e pagamenti.
+- Visualizzazione della cartella clinica animale in sola lettura dove collegata.
+
+### Area Receptionist
+
+- Visualizzazione dashboard operativa.
+- Gestione appuntamenti.
+- Riprogrammazione o cancellazione appuntamenti.
+- Invio notifiche di ritardo.
+- Schermate orientate a clienti e pagamenti.
+
+### Area Medico
+
+- Visualizzazione dashboard e dati agenda.
+- Visualizzazione registro animali.
+- Apertura cartella clinica animale.
+- Gestione dati animale, vaccinazioni e report visita.
+- Gestione entita di configurazione come specie, razze, tipi vaccino, categorie
+  visita e tipi visita.
+
+### File, Mail E PDF
+
+- Esistono template HTML per mail, fatture e ricette.
+- Esiste un servizio di generazione PDF.
+- Esiste la persistenza dei riferimenti file.
+- Il ciclo completo di upload/download e audit deve ancora essere completato.
+
+## Rischi Noti E Priorita Di Cleanup
+
+1. Rimuovere i segreti dalla configurazione versionata e ruotare le credenziali
+   esposte.
+2. Aggiungere `application-example.yml`, `application-local.yml` e
+   `application-test.yml`.
+3. Fare in modo che i test backend usino un database locale/test sicuro.
+4. Convertire lo schema database attivo in migrazioni versionate.
+5. Sostituire i payload request/response basati su entita con DTO e validazioni.
+6. Standardizzare nomi dei ruoli, path API e convenzioni di naming.
+7. Completare i test di autorizzazione basati sui ruoli.
+8. Aggiungere test frontend e integrare lint/build nel flusso normale.
+9. Aggiungere documentazione per l'infrastruttura locale o un `docker-compose.yml`.
+10. Allineare `TODO.md` dopo ogni fase di sviluppo completata.
+
+## Documentazione
+
+Ulteriori note di progetto sono archiviate in:
+
+- `TODO.md`
+- `CodeRequirements.md`
+- `Documentazione/`
+- `Mockup/`
+- `DatiExcel/`
+
+Parte della documentazione piu vecchia descrive ancora strutture pianificate o
+mockup invece dello stato corrente del repository. Considerare questo README
+come punto di ingresso aggiornato.

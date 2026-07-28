@@ -78,11 +78,20 @@ public record VisitaDto(
     }
 
     public static VisitaDto fromEntity(Visita visita) {
+        var veterinario = visita.getVeterinario();
+
         return new VisitaDto(
                 visita.getId(),
                 new AnimaleDto(visita.getAnimale().getId()),
                 new TipoVisitaDto(visita.getTipoVisita().getId()),
-                new UtenteDto(visita.getVeterinario().getId()),
+                new UtenteDto(
+                        veterinario.getId(),
+                        veterinario.getNome(),
+                        veterinario.getCognome(),
+                        veterinario.getEmail(),
+                        veterinario.getTelefono(),
+                        veterinario.getIndirizzo(),
+                        veterinario.getCitta()),
                 visita.getDataVisita().toLocalDate(),
                 visita.getDataVisita().toLocalTime().isBefore(LocalTime.of(12, 30)) ? "Mattina" : "Pomeriggio",
                 visita.getDataVisita(),

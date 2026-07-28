@@ -22,6 +22,9 @@ import com.WW.sicurezza.UtenteAutenticato;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+/**
+ * Controller REST per le richieste cliente di valutazione animale.
+ */
 
 @RestController
 @RequestMapping("/api/richieste-animali")
@@ -32,6 +35,13 @@ public class RichiestaValutazioneAnimaleController {
             "Richiesta inviata correttamente. Riceverai una risposta via mail.";
 
     private final RichiestaValutazioneAnimaleService richiestaValutazioneAnimaleService;
+    /**
+     * Gestisce la richiesta HTTP per richiediValutazione.
+     *
+     * @param utenteAutenticato parametro richiesto dall'operazione
+     * @param richiesta parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PostMapping("/valutazione")
     @PreAuthorize("hasRole('CLIENTE')")
@@ -47,13 +57,26 @@ public class RichiestaValutazioneAnimaleController {
                         MESSAGGIO_RICHIESTA_INVIATA,
                         richiestaSalvata.id()));
     }
+    /**
+     * Gestisce la richiesta HTTP per ottieniAperte.
+     *
+     * @return risultato dell'operazione
+     */
 
     @GetMapping("/aperte")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<List<RichiestaValutazioneAnimaleDettaglioDto>> ottieniAperte() {
         return ResponseEntity.ok(richiestaValutazioneAnimaleService.ottieniRichiesteAperte());
     }
+    /**
+     * Gestisce la richiesta HTTP per chiudi.
+     *
+     * @param id parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @PatchMapping("/{id}/chiudi")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Void> chiudi(@PathVariable Integer id) {
         richiestaValutazioneAnimaleService.chiudiRichiesta(id);
         return ResponseEntity.noContent().build();

@@ -1,4 +1,4 @@
-import { apiFetch, readApiError } from './apiClient';
+import { apiFetch, apiFetchWithPayload, readApiError } from './apiClient';
 
 const VISITS_API_BASE = '/api/visite';
 
@@ -70,6 +70,47 @@ export async function updateVisitNotes(visitId, note) {
 
   if (!response.ok) {
     const errorMessage = await readApiError(response, 'Impossibile salvare il report della visita.');
+    throw new Error(errorMessage);
+  }
+
+  return normalizeVisit(await response.json());
+}
+
+function getEntityId(value) {
+  if (value && typeof value === 'object') {
+    return value.id ?? value.Id ?? null;
+  }
+
+  return value ?? null;
+}
+
+function createVisitReference(value, fallbackId) {
+  const id = getEntityId(value) ?? fallbackId;
+  return id == null ? null : { id };
+}
+
+function buildCompleteVisitPayload(visit, note) {
+  const rawVisit = visit?.raw ?? visit ?? {};
+
+  return {
+    id: rawVisit.id ?? visit?.id,
+    animale: createVisitReference(rawVisit.animale ?? visit?.animale, visit?.animale?.id),
+    tipoVisita: createVisitReference(rawVisit.tipoVisita, visit?.tipoVisitaId),
+    veterinario: createVisitReference(rawVisit.veterinario ?? visit?.veterinario, visit?.veterinario?.id),
+    dataVisita: rawVisit.dataVisita ?? visit?.dataVisita,
+    pagamento: rawVisit.pagamento ? createVisitReference(rawVisit.pagamento, visit?.pagamento?.id) : null,
+    note,
+    notaPrivata: rawVisit.notaPrivata ?? visit?.notaPrivata ?? null,
+  };
+}
+
+export async function completeVisitReport(visit, note) {
+  const response = await apiFetchWithPayload(`${VISITS_API_BASE}/chiudivisita`, [
+    buildCompleteVisitPayload(visit, note),
+  ]);
+
+  if (!response.ok) {
+    const errorMessage = await readApiError(response, 'Impossibile completare il report della visita.');
     throw new Error(errorMessage);
   }
 

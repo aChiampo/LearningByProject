@@ -4,20 +4,12 @@ import { AppContext } from '../../context/AppContext';
 import PageTitle from '../../components/common/PageTitle';
 import EmptyMessage from '../../components/common/EmptyMessage';
 import AddAnimalForm from '../../components/animals/AddAnimalForm';
-import { fetchAppointments } from '../../services/appointmentApi';
+import { AppointmentCardList } from '../../components/appointments/AppointmentCard';
+import { fetchAppointments, getLocalStartOfToday } from '../../services/appointmentApi';
 import {
   closeAnimalEvaluationRequest,
   fetchOpenAnimalEvaluationRequests,
 } from '../../services/animalApi';
-
-function getLocalStartOfToday() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}T00:00:00`;
-}
 
 export default function DoctorDashboard() {
   const navigate = useNavigate();
@@ -223,34 +215,24 @@ export default function DoctorDashboard() {
         )}
 
         {!isLoading && todayAppointments.length > 0 ? (
-          <div className="table-responsive">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Orario</th>
-                  <th>Paziente</th>
-                  <th>Proprietario</th>
-                  <th>Motivo</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {todayAppointments.map((visit, index) => (
-                  <tr key={index}>
-                    <td><strong>{visit.appointmentHour}</strong></td>
-                    <td>{visit.animalName} {visit.animalBreed ? `(${visit.animalBreed})` : ''}</td>
-                    <td>{visit.ownerName}</td>
-                    <td>{visit.visitType}</td>
-                    <td>
-                      <button className="btn btn-primary btn-sm" onClick={() => window.alert(`Apertura cartella clinica di ${visit.animalName}`)}>
-                        Visita
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <AppointmentCardList
+            appointments={todayAppointments}
+            variant="doctor"
+            actions={[
+              {
+                label: 'Vedi Cartella',
+                className: 'btn btn-primary btn-sm',
+                onClick: (visit) => {
+                  if (!visit.animalId) {
+                    window.alert('Cartella medica non disponibile per questo animale.');
+                    return;
+                  }
+
+                  navigate(`/doctor/animals/${visit.animalId}/cartella`);
+                },
+              },
+            ]}
+          />
         ) : !isLoading && (
           <EmptyMessage>Nessun appuntamento programmato per la giornata di oggi.</EmptyMessage>
         )}

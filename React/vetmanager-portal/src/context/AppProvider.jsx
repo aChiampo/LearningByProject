@@ -11,7 +11,6 @@ export const AppProvider = ({ children }) => {
   const [authSession, setAuthSession] = useState(() => readStoredAuthSession());
   const [currentUser, setCurrentUser] = useState(() => authSession?.user ?? null);
   const [currentRole, setCurrentRole] = useState(() => authSession?.user?.role ?? 'client');
-  const [palette, setPalette] = useState('aurora');
   const [isAuthLoading, setIsAuthLoading] = useState(Boolean(authSession?.token));
   const isLogged = Boolean(authSession?.token && currentUser);
 
@@ -107,8 +106,6 @@ export const AppProvider = ({ children }) => {
         currentUser,
         currentRole,
         setCurrentRole,
-        palette,
-        setPalette,
         isLogged,
         isAuthLoading,
         login,

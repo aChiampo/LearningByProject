@@ -21,13 +21,13 @@ public class TipoVisitaService {
 
     private final TipoVisitaRepo tipoVisitaRepo;
 
-    @Transactional
     /**
      * Salva un nuovo tipo visita.
      *
      * @param tipoVisite dati del tipo visita da salvare
      * @return tipo visita creato
      */
+    @Transactional
     public TipoVisita aggiungiTipoVisite(TipoVisita tipoVisite) {
         if (tipoVisite.getIsDeleted() == null) {
             tipoVisite.setIsDeleted(false);
@@ -35,8 +35,6 @@ public class TipoVisitaService {
         return tipoVisitaRepo.save(tipoVisite);
     }
     
-    @Transactional
-
     /**
      * Aggiorna un tipo visita esistente.
      *
@@ -44,6 +42,7 @@ public class TipoVisitaService {
      * @param modificato nuovi dati da applicare
      * @return tipo visita aggiornato
      */
+    @Transactional
     public TipoVisita modificaTipoVisite(Integer id, TipoVisita modificato) {
         TipoVisita originale = ottieniPerId(id);
 
@@ -89,12 +88,12 @@ public class TipoVisitaService {
                         "Tipo visite non trovato."));
     }
 
-    @Transactional
     /**
      * Elimina un tipo visita esistente.
      *
      * @param id identificativo del tipo visita da eliminare
      */
+    @Transactional
     public void eliminaTipoVisite(Integer id) {
         TipoVisita tipoVisita = tipoVisitaRepo.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResponseStatusException(

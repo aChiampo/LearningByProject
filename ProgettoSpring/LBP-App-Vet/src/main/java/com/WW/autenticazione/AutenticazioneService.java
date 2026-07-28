@@ -26,18 +26,29 @@ public class AutenticazioneService {
     private final AziendaService aziendaService;
     private final PasswordEncoder codificatorePassword;
     private final ServizioJwt servizioJwt;
-
+    /**
+     * Autentica un utente e restituisce token JWT e profilo essenziale.
+     *
+     * @param richiesta credenziali inviate dal client
+     * @return risposta di login con token Bearer
+     */
     public RispostaLogin accedi(RichiestaLogin richiesta) {
         Utente utente = utenteService.ottieniPerEmail(richiesta.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide."));
 
+        // Usa sempre lo stesso messaggio per email e password errate, evitando di rivelare quale campo e valido.
         if (!codificatorePassword.matches(richiesta.password(), utente.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide.");
         }
 
         return creaRispostaLogin(utente);
     }
-
+    /**
+     * Registra un nuovo cliente e lo autentica subito dopo il salvataggio.
+     *
+     * @param richiesta dati anagrafici e credenziali del nuovo account
+     * @return risposta di login per l'utente appena creato
+     */
     public RispostaLogin registra(RichiestaRegistrazione richiesta) {
         validaRegistrazione(richiesta);
 
@@ -61,6 +72,7 @@ public class AutenticazioneService {
             nuovoUtente.setAzienda(aziendaService.ottieniPerId(richiesta.aziendaId()));
         }
 
+        // La registrazione pubblica crea sempre account CLIENTE; ruoli operativi vanno assegnati da flussi admin.
         Ruolo ruolo = ruoloService.ottieniPerRuolo("CLIENTE")
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ruolo CLIENTE non trovato"));
         nuovoUtente.setRuolo(ruolo);
@@ -73,7 +85,12 @@ public class AutenticazioneService {
         String token = servizioJwt.creaToken(utente);
         return new RispostaLogin(token, "Bearer", servizioJwt.ottieniScadenzaSecondi(), creaProfilo(utente));
     }
-
+    /**
+     * Restituisce il profilo pubblico dell'utente autenticato.
+     *
+     * @param idUtente identificativo dell'utente autenticato
+     * @return profilo esposto al frontend
+     */
     public ProfiloAutenticato ottieniProfiloAutenticato(Integer idUtente) {
         return creaProfilo(utenteService.ottieniPerId(idUtente));
     }

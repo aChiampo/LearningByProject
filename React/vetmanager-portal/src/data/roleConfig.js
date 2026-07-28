@@ -1,5 +1,3 @@
-export const PALETTES = ['aurora', 'lago', 'energia', 'iris', 'cielo', 'rosa'];
-
 export const BACKEND_ROLE_TO_FRONTEND_ROLE = {
   CLIENTE: 'client',
   VETERINARIO: 'doctor',

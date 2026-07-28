@@ -67,5 +67,15 @@ public interface VisitaRepository extends JpaRepository<Visita, Integer> {
             @Param("veterinarioId") int veterinarioId,
             @Param("windowStart") LocalDateTime windowStart,
             @Param("windowEnd") LocalDateTime windowEnd);
-}
 
+    @Query("""
+        SELECT v FROM Visita v
+        WHERE v.animale.id = :animaleId
+          AND v.isDeleted = false
+          AND v.dataVisita BETWEEN :windowStart AND :windowEnd
+        """)
+    List<Visita> findVisiteAnimaleNelPeriodo(
+            @Param("animaleId") int animaleId,
+            @Param("windowStart") LocalDateTime windowStart,
+            @Param("windowEnd") LocalDateTime windowEnd);
+}

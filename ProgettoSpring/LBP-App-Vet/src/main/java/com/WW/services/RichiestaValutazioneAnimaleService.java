@@ -14,6 +14,9 @@ import com.WW.entities.Utente;
 import com.WW.repositories.RichiestaValutazioneAnimaleRepository;
 
 import lombok.RequiredArgsConstructor;
+/**
+ * Servizio per gestire richieste cliente di valutazione animale.
+ */
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,13 @@ public class RichiestaValutazioneAnimaleService {
 
     private final UtenteService utenteService;
     private final RichiestaValutazioneAnimaleRepository richiestaValutazioneAnimaleRepository;
+    /**
+     * Esegue la logica applicativa per inviaRichiesta.
+     *
+     * @param utenteId parametro richiesto dall'operazione
+     * @param richiesta parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     @Transactional
     public RichiestaValutazioneAnimaleDettaglioDto inviaRichiesta(Integer utenteId, RichiestaValutazioneAnimaleDto richiesta) {
@@ -29,6 +39,11 @@ public class RichiestaValutazioneAnimaleService {
 
         return toDto(richiestaSalvata);
     }
+    /**
+     * Esegue la logica applicativa per ottieniRichiesteAperte.
+     *
+     * @return risultato dell'operazione
+     */
 
     @Transactional(readOnly = true)
     public List<RichiestaValutazioneAnimaleDettaglioDto> ottieniRichiesteAperte() {
@@ -37,6 +52,11 @@ public class RichiestaValutazioneAnimaleService {
                 .map(this::toDto)
                 .toList();
     }
+    /**
+     * Esegue la logica applicativa per chiudiRichiesta.
+     *
+     * @param id parametro richiesto dall'operazione
+     */
 
     @Transactional
     public void chiudiRichiesta(Integer id) {

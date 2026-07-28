@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,8 +40,20 @@ public class UtenteController {
      * @return elenco degli utenti
      */
     @GetMapping("/ottieniTutti")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST')")
     public ResponseEntity<List<Utente>> ottieniTutti() {
         return ResponseEntity.ok(utenteService.ottieniTutti());
+    }
+    /**
+     * Gestisce la richiesta HTTP per ottieniVeterinari.
+     *
+     * @return risultato dell'operazione
+     */
+
+    @GetMapping("/ottieniVeterinari")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<List<Utente>> ottieniVeterinari() {
+        return ResponseEntity.ok(utenteService.ottieniVeterinariAttivi());
     }
 
     /**
@@ -48,7 +63,12 @@ public class UtenteController {
      * @return utente trovato
      */
     @GetMapping("/ottieni/{id}")
-    public ResponseEntity<Utente> ottieni(@PathVariable Integer id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<Utente> ottieni(@PathVariable Integer id, Authentication authentication) {
+        if (!canAccessUser(id, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(utenteService.ottieniPerId(id));
     }
 
@@ -59,6 +79,7 @@ public class UtenteController {
      * @return utente creato
      */
     @PostMapping("/aggiungi")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Utente> crea(@RequestBody Utente utente) {
         Utente nuovoUtente = utenteService.aggiungiUtente(utente);
         return new ResponseEntity<>(nuovoUtente, HttpStatus.CREATED);
@@ -72,7 +93,12 @@ public class UtenteController {
      * @return utente aggiornato
      */
     @PatchMapping("/modifica/{id}")
-    public ResponseEntity<Utente> modifica(@PathVariable Integer id, @RequestBody UtenteDto utente) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
+    public ResponseEntity<Utente> modifica(@PathVariable Integer id, @RequestBody UtenteDto utente, Authentication authentication) {
+        if (!canAccessUser(id, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Utente utenteAggiornato = utenteService.modificaUtente(id, utente);
         return ResponseEntity.ok(utenteAggiornato);
     }
@@ -84,8 +110,23 @@ public class UtenteController {
      * @return risposta senza contenuto
      */
     @DeleteMapping("/elimina/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> elimina(@PathVariable Integer id) {
         utenteService.eliminaUtente(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private boolean canAccessUser(Integer id, Authentication authentication) {
+        if (hasRole(authentication, "ROLE_ADMIN")) {
+            return true;
+        }
+
+        return Integer.valueOf(authentication.getName()).equals(id);
+    }
+
+    private boolean hasRole(Authentication authentication, String role) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role::equals);
     }
 }

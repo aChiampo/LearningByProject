@@ -10,8 +10,8 @@ export default function SuperAdminFaq() {
           <p>Usa la schermata di accesso per selezionare il ruolo dimostrativo. Sidebar e contenuti si adatteranno al profilo scelto.</p>
         </details>
         <details>
-          <summary>Come si cambia la palette di colori dell'interfaccia?</summary>
-          <p>Nell'header seleziona una palette per applicare istantaneamente le variabili CSS corrispondenti su tutta l'applicazione.</p>
+          <summary>Quale palette di colori usa l'interfaccia?</summary>
+          <p>L'interfaccia usa la palette Cielo in modo predefinito per tutti gli utenti.</p>
         </details>
       </section>
     </div>

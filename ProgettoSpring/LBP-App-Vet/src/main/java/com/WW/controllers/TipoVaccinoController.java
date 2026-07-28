@@ -5,10 +5,14 @@ import com.WW.entities.TipoVaccino;
 import com.WW.services.TipoVaccinoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+/**
+ * Controller REST per la gestione dei tipi vaccino.
+ */
 
 @RestController
 @RequestMapping("/api/tipi-vaccino")
@@ -26,6 +30,7 @@ public class TipoVaccinoController {
      * @return lista di tutti i tipi di vaccino
      */
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<TipoVaccino>> getAllTipiVaccino() {
         try {
             List<TipoVaccino> tipiVaccino = tipoVaccinoService.visualizzaTuttiTipiVaccino();
@@ -41,6 +46,7 @@ public class TipoVaccinoController {
      * @return il tipo di vaccino se trovato
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<TipoVaccino> getTipoVaccinoById(@PathVariable Integer id) {
         try {
             Optional<TipoVaccino> tipoVaccino = tipoVaccinoService.getTipoVaccinoById(id);
@@ -59,6 +65,7 @@ public class TipoVaccinoController {
      * @return lista di tipi di vaccino corrispondenti
      */
     @GetMapping("/cerca/tipologia")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<TipoVaccino>> getTipiVaccinoByTipologia(@RequestParam String tipologia) {
         try {
             List<TipoVaccino> tipiVaccino = tipoVaccinoService.findByTipologia(tipologia);
@@ -76,6 +83,7 @@ public class TipoVaccinoController {
      * @return lista di tipi di vaccino con la durata specificata
      */
     @GetMapping("/cerca/durata")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO', 'RECEPTIONIST', 'CLIENTE')")
     public ResponseEntity<List<TipoVaccino>> getTipiVaccinoByDurata(@RequestParam int durata) {
         try {
             List<TipoVaccino> tipiVaccino = tipoVaccinoService.findByDurata(durata);
@@ -93,6 +101,7 @@ public class TipoVaccinoController {
      * @return il tipo di vaccino creato
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<TipoVaccino> createTipoVaccino(@RequestBody TipoVaccinoRequest request) {
         try {
             TipoVaccino tipoVaccinoCreato = tipoVaccinoService.salvaTipoVaccino(toEntity(request));
@@ -111,6 +120,7 @@ public class TipoVaccinoController {
      * @return il tipo di vaccino aggiornato
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<TipoVaccino> updateTipoVaccino(
             @PathVariable Integer id,
             @RequestBody TipoVaccinoRequest request) {
@@ -143,6 +153,7 @@ public class TipoVaccinoController {
      * @return status 204 No Content se eliminato con successo
      */
     @PatchMapping("/{id}/elimina")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VETERINARIO')")
     public ResponseEntity<Void> deleteTipoVaccino(@PathVariable Integer id) {
         try {
             tipoVaccinoService.eliminaTipoVaccino(id);

@@ -46,21 +46,12 @@ public class ConfigurazioneSicurezza {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/auth/login",
-                                "/api/auth/signin",
-                                "/api/autenticazione/login",
-                                "/api/autenticazione/signin"
+                        HttpMethod.POST,
+                        "/api/auth/login",
+                        "/api/auth/signin",
+                        "/api/autenticazione/login",
+                        "/api/autenticazione/signin"
                         ).permitAll()
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/api/specie/*/elimina",
-                                "/api/razze/*/elimina",
-                                "/api/tipi-vaccino/*/elimina",
-                                "/api/categorieVisite/elimina/*",
-                                "/api/tipiVisite/elimina/*"
-                        ).hasAnyRole("ADMIN", "VETERINARIO")
-                        .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filtroAutenticazioneJwt, UsernamePasswordAuthenticationFilter.class)

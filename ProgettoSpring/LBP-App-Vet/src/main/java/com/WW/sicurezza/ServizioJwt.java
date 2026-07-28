@@ -80,6 +80,12 @@ public class ServizioJwt {
     public long ottieniScadenzaSecondi() {
         return scadenzaSecondi;
     }
+    /**
+     * Esegue la logica applicativa per estraiMappaClaims.
+     *
+     * @param token parametro richiesto dall'operazione
+     * @return risultato dell'operazione
+     */
 
     public Map<String, Object> estraiMappaClaims(String token) {
         Claims claims = leggiEValida(token);
