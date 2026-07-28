@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.WW.dto.DelayNotificationRequest;
+import com.WW.dto.FirstAppointmentRequestDTO;
 import com.WW.dto.PrenotazioneVisitaRequest;
 import com.WW.dto.RiprogrammazioneVisitaRequest;
 import com.WW.dto.RichiestaSlotDisponibiliDto;
@@ -436,11 +437,17 @@ public class VisitaController {
         return Integer.valueOf(authentication.getName());
     }
 
+    /**
+     * Gestisce la richiesta HTTP per invia email di prima visita.
+     * 
+     * @param destinatario
+     * @param variabili
+     * @return
+     */
     @PostMapping("prima-visita")
-    public ResponseEntity<String> primaVisita(@RequestBody String destinatario, Map<String, Object> variabili) {
+    public ResponseEntity<String> primaVisita(FirstAppointmentRequestDTO request) {
         EmailSenderService emailSenderService = new EmailSenderService(null, null);
-        emailSenderService.inviaEmailPrimaVisita(destinatario, variabili);
-
+        emailSenderService.inviaEmailPrimaVisita(request);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Endpoint not implemented yet");
     }
 

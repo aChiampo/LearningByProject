@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.WW.dto.FirstAppointmentRequestDTO;
 import com.WW.fileManager.TemplateService;
 
 import jakarta.mail.MessagingException;
@@ -126,12 +127,19 @@ public class EmailSenderService {
      * @param destinatario indirizzo email del cliente
      * @param variabili    dati usati dal template
      */
-    public void inviaEmailPrimaVisita(String destinatario, Map<String, Object> variabili) {
+    public void inviaEmailPrimaVisita(FirstAppointmentRequestDTO request) {
         inviaEmailTemplate(
-                destinatario,
+                request.email(),
                 "Richiesta prima visita",
                 TEMPLATE_PRIMA_VISITA,
-                variabili);
+                Map.of(
+                        "clientName", request.clientName(),
+                        "email", request.email(),
+                        "phone", request.phone(),
+                        "petName", request.petName(),
+                        "animalType", request.animalType(),
+                        "visitReason", request.visitReason(),
+                        "notes", request.notes()));
     }
 
     /**
