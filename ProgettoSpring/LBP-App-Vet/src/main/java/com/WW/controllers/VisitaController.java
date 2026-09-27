@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,6 +50,9 @@ public class VisitaController {
 
     private final VisitaService visitaService;
     private final EmailSenderService emailSenderService;
+
+    @Value("${app.mail.first-appointment-recipients}")
+    private List<String> destinatariPrimaVisita;
 
     /**
      * Restituisce tutte le visite.
@@ -448,8 +452,11 @@ public class VisitaController {
     @PostMapping("prima-visita")
     public ResponseEntity<String> primaVisita(@Valid @RequestBody FirstAppointmentRequestDTO request) {
         emailSenderService.inviaEmailPrimaVisita(request);
-        emailSenderService.inviaEmailPrimaVisitaDottore("camillo.zampetti@clinicazampetti.it", request);
-        emailSenderService.inviaEmailPrimaVisitaDottore("segreteria.clinicaZampetti@gmail.com", request);
+        destinatariPrimaVisita.stream()
+                .map(String::trim)
+                .filter(destinatario -> !destinatario.isEmpty())
+                .distinct()
+                .forEach(destinatario -> emailSenderService.inviaEmailPrimaVisitaDottore(destinatario, request));
         return ResponseEntity.ok("Richiesta inviata correttamente.");
     }
 

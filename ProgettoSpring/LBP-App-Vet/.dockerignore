@@ -1,0 +1,48 @@
+# Build output and generated content
+target/
+**/target/
+build/
+**/build/
+storage/
+**/storage/
+logs/
+**/logs/
+*.log
+
+# Version-control and IDE metadata
+.git/
+.github/
+.idea/
+.vscode/
+.settings/
+.classpath
+.factorypath
+.project
+.apt_generated/
+.sts4-cache/
+*.iml
+*.ipr
+*.iws
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+**/secrets/
+*.key
+**/*.key
+*.pem
+**/*.pem
+*.p12
+**/*.p12
+*.pfx
+**/*.pfx
+*.jks
+**/*.jks
+*.keystore
+**/*.keystore
+
+# Files not needed by the Linux image build
+mvnw.cmd
+README*
+HELP.md

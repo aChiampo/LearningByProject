@@ -45,6 +45,7 @@ public class ConfigurazioneSicurezza {
                 .authorizeHttpRequests(autorizzazioni -> autorizzazioni
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers(
                         HttpMethod.POST,
                         "/api/auth/login",

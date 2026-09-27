@@ -41,7 +41,7 @@ export default function ClientBooking() {
   const ownerId = currentUser?.id;
   const isReceptionist = currentRole === 'receptionist' || currentUser?.backendRole === 'RECEPTIONIST';
   const backPath = isReceptionist ? '/receptionist/appointments' : '/client/dashboard';
-  const minDate = useMemo(getTomorrowDate, []);
+  const minDate = useMemo(() => getTomorrowDate(), []);
 
   const [formData, setFormData] = useState({
     clienteId: '',
@@ -65,6 +65,12 @@ export default function ClientBooking() {
   const [error, setError] = useState(null);
   const [slotMessage, setSlotMessage] = useState('');
   const [success, setSuccess] = useState(false);
+  const {
+    animaleId: selectedAnimalId,
+    tipoVisitaId: selectedVisitTypeId,
+    veterinarioId: selectedDoctorId,
+    data: selectedDate,
+  } = formData;
 
   useEffect(() => {
     if (!ownerId && !isReceptionist) return;
@@ -116,15 +122,15 @@ export default function ClientBooking() {
       return undefined;
     }
 
-    if (!formData.clienteId) {
-      setAnimals([]);
-      setIsAnimalsLoading(false);
-      return undefined;
-    }
-
     let isMounted = true;
 
     async function loadClientAnimals() {
+      if (!formData.clienteId) {
+        setAnimals([]);
+        setIsAnimalsLoading(false);
+        return;
+      }
+
       setIsAnimalsLoading(true);
       setAnimals([]);
       setError(null);
@@ -155,35 +161,33 @@ export default function ClientBooking() {
   }, [formData.clienteId, isReceptionist]);
 
   useEffect(() => {
-    const { animaleId, tipoVisitaId, veterinarioId, data } = formData;
-
-    setAvailableSlots([]);
-    setSlotMessage('');
-    setFormData((currentData) => (
-      currentData.dataVisita ? { ...currentData, dataVisita: '' } : currentData
-    ));
-
-    if (!animaleId || !tipoVisitaId || !veterinarioId || !data) {
-      return undefined;
-    }
-
-    if (data < minDate) {
-      setSlotMessage('Seleziona una data futura per cercare gli slot disponibili.');
-      return undefined;
-    }
-
     let isMounted = true;
 
     async function loadSlots() {
+      setAvailableSlots([]);
+      setSlotMessage('');
+      setFormData((currentData) => (
+        currentData.dataVisita ? { ...currentData, dataVisita: '' } : currentData
+      ));
+
+      if (!selectedAnimalId || !selectedVisitTypeId || !selectedDoctorId || !selectedDate) {
+        return;
+      }
+
+      if (selectedDate < minDate) {
+        setSlotMessage('Seleziona una data futura per cercare gli slot disponibili.');
+        return;
+      }
+
       setIsSlotsLoading(true);
       setError(null);
 
       try {
         const slots = await fetchAvailableSlots({
-          animaleId: parseInt(animaleId, 10),
-          tipoVisitaId: parseInt(tipoVisitaId, 10),
-          veterinarioId: parseInt(veterinarioId, 10),
-          data,
+          animaleId: parseInt(selectedAnimalId, 10),
+          tipoVisitaId: parseInt(selectedVisitTypeId, 10),
+          veterinarioId: parseInt(selectedDoctorId, 10),
+          data: selectedDate,
         });
 
         if (isMounted) {
@@ -207,7 +211,7 @@ export default function ClientBooking() {
     return () => {
       isMounted = false;
     };
-  }, [formData.animaleId, formData.tipoVisitaId, formData.veterinarioId, formData.data, minDate]);
+  }, [selectedAnimalId, selectedVisitTypeId, selectedDoctorId, selectedDate, minDate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

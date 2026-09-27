@@ -27,7 +27,7 @@ export default function AppointmentRescheduleDialog({
   onClose,
   onSaved,
 }) {
-  const minDate = useMemo(getTomorrowDate, []);
+  const minDate = useMemo(() => getTomorrowDate(), []);
   const [selectedDate, setSelectedDate] = useState(() => getAppointmentDateValue(appointment));
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState('');
@@ -37,24 +37,24 @@ export default function AppointmentRescheduleDialog({
   const [error, setError] = useState('');
 
   useEffect(() => {
-    setSelectedSlot('');
-    setAvailableSlots([]);
-    setSlotMessage('');
-    setError('');
-
-    if (!appointment?.animalId || !appointment?.visitTypeId || !appointment?.doctorId || !selectedDate) {
-      setSlotMessage('Dati appuntamento incompleti.');
-      return undefined;
-    }
-
-    if (selectedDate < minDate) {
-      setSlotMessage('Seleziona una data futura.');
-      return undefined;
-    }
-
     let isMounted = true;
 
     async function loadSlots() {
+      setSelectedSlot('');
+      setAvailableSlots([]);
+      setSlotMessage('');
+      setError('');
+
+      if (!appointment?.animalId || !appointment?.visitTypeId || !appointment?.doctorId || !selectedDate) {
+        setSlotMessage('Dati appuntamento incompleti.');
+        return;
+      }
+
+      if (selectedDate < minDate) {
+        setSlotMessage('Seleziona una data futura.');
+        return;
+      }
+
       setIsLoadingSlots(true);
 
       try {

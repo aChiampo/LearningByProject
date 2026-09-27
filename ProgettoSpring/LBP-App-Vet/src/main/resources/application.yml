@@ -2,20 +2,33 @@ spring:
   application:
     name: LBP-App-Vet
   datasource:
-    url: jdbc:postgresql://psql-database-01-edu-0b7e.j.aivencloud.com:11216/defaultdb?sslmode=require
-    username: avnadmin
-    password: AVNS_bbjXNdSDpMo1dF4DBAg
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: segreteria.clinicaZampetti@gmail.com
-    password: sltessbcvsvqypxf
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: ${MAIL_PROTOCOL:smtp}
+    test-connection: ${MAIL_TEST_CONNECTION:false}
     properties:
       mail:
         smtp:
-          auth: true
+          auth: ${MAIL_SMTP_AUTH:true}
+          connectiontimeout: ${MAIL_SMTP_CONNECTION_TIMEOUT:5000}
+          timeout: ${MAIL_SMTP_TIMEOUT:5000}
+          writetimeout: ${MAIL_SMTP_WRITE_TIMEOUT:5000}
           starttls:
-            enable: true
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:true}
+            required: ${MAIL_SMTP_STARTTLS_REQUIRED:true}
 
 server:
   port: 9020
@@ -23,11 +36,25 @@ server:
 app:
   security:
     jwt:
-      # Local development fallback; override with JWT_SECRET outside dev.
-      secret: ${JWT_SECRET:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
-      expiration-seconds: 3600
+      secret: ${JWT_SECRET}
+      expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
   mail:
-    from: segreteria.clinicaZampetti@gmail.com
+    from: ${MAIL_FROM}
+    first-appointment-recipients: ${MAIL_FIRST_APPOINTMENT_RECIPIENTS}
   files:
-    fatture-folder: storage/fatture
-    ricette-folder: storage/ricette
+    fatture-folder: ${INVOICE_STORAGE_PATH:/app/storage/fatture}
+    ricette-folder: ${PRESCRIPTION_STORAGE_PATH:/app/storage/ricette}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db

@@ -1,0 +1,7 @@
+INSERT INTO ruoli (ruolo)
+VALUES
+    ('CLIENTE'),
+    ('VETERINARIO'),
+    ('RECEPTIONIST'),
+    ('ADMIN')
+ON CONFLICT (ruolo) DO NOTHING;

@@ -1,0 +1,84 @@
+name: vetmanager
+
+services:
+  frontend:
+    build:
+      context: ./React/vetmanager-portal
+    depends_on:
+      backend:
+        condition: service_healthy
+        restart: true
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    restart: unless-stopped
+    networks:
+      - application
+
+  backend:
+    build:
+      context: ./ProgettoSpring/LBP-App-Vet
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+    environment:
+      DB_URL: jdbc:postgresql://database:5432/${POSTGRES_DB:?POSTGRES_DB must be set}
+      DB_USERNAME: ${POSTGRES_USER:?POSTGRES_USER must be set}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
+      JWT_EXPIRATION_SECONDS: "${JWT_EXPIRATION_SECONDS:-3600}"
+      MAIL_HOST: ${MAIL_HOST:-smtp.example.invalid}
+      MAIL_PORT: "${MAIL_PORT:-587}"
+      MAIL_USERNAME: ${MAIL_USERNAME:-not-configured}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-not-configured}
+      MAIL_PROTOCOL: ${MAIL_PROTOCOL:-smtp}
+      MAIL_FROM: ${MAIL_FROM:-noreply@example.invalid}
+      MAIL_FIRST_APPOINTMENT_RECIPIENTS: ${MAIL_FIRST_APPOINTMENT_RECIPIENTS:-noreply@example.invalid}
+      MAIL_TEST_CONNECTION: "${MAIL_TEST_CONNECTION:-false}"
+      MAIL_SMTP_AUTH: "${MAIL_SMTP_AUTH:-true}"
+      MAIL_SMTP_CONNECTION_TIMEOUT: "${MAIL_SMTP_CONNECTION_TIMEOUT:-5000}"
+      MAIL_SMTP_TIMEOUT: "${MAIL_SMTP_TIMEOUT:-5000}"
+      MAIL_SMTP_WRITE_TIMEOUT: "${MAIL_SMTP_WRITE_TIMEOUT:-5000}"
+      MAIL_SMTP_STARTTLS_ENABLE: "${MAIL_SMTP_STARTTLS_ENABLE:-true}"
+      MAIL_SMTP_STARTTLS_REQUIRED: "${MAIL_SMTP_STARTTLS_REQUIRED:-true}"
+      INVOICE_STORAGE_PATH: /app/storage/fatture
+      PRESCRIPTION_STORAGE_PATH: /app/storage/ricette
+    expose:
+      - "9020"
+    volumes:
+      - invoice_data:/app/storage/fatture
+      - prescription_data:/app/storage/ricette
+    restart: unless-stopped
+    networks:
+      - application
+
+  database:
+    image: postgres:17.10-alpine3.22
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+    expose:
+      - "5432"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - application
+
+volumes:
+  database_data:
+  invoice_data:
+  prescription_data:
+
+networks:
+  application:
+    driver: bridge

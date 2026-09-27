@@ -56,24 +56,9 @@ Click **Next**.
 
 ## 5. Set the Database Password
 
-When the installer asks for the password of the default PostgreSQL user, use:
+When the installer asks for the password of the default `postgres` user, choose a unique local-development password. Do not use `root`, reuse a personal password, or commit the selected value to this repository.
 
-```text
-root
-```
-
-The default PostgreSQL user is:
-
-```text
-postgres
-```
-
-So your local database credentials will be:
-
-```text
-Username: postgres
-Password: root
-```
+Store project-specific local credentials in the ignored root `.env` file or in your development environment. The committed `.env.example` contains placeholders only.
 
 Click **Next**.
 
@@ -115,22 +100,18 @@ You should see a PostgreSQL 17 version, for example:
 psql (PostgreSQL) 17.x
 ```
 
-## 10. Setting BD connection
- 
-1. Open pgAdmin
-2. Open `Add New Server`
-    
-   ![alt](./../assets/point1.jpg)
-     
-1. Put any name in `General` Page
-     
-   ![alt](./../assets/point3.jpg)
-     
-1. Paste this settings in connection:
-   - **Host** : `psql-database-01-edu-0b7e.j.aivencloud.com`
-   - **Port** : `11216`
-   - **Maintenance database** : `defaultdb`
-   - **Username** : `avnadmin`
-   - **Password** : `AVNS_bbjXNdSDpMo1dF4DBAg`
- 
-![alt](./../assets/point4.jpg)
+## 10. Configure a Local Connection
+
+1. Open pgAdmin.
+2. Select **Add New Server**.
+3. Enter any descriptive name on the **General** page.
+4. Configure the connection with values from your local installation:
+   - **Host**: `localhost`
+   - **Port**: `5432`
+   - **Maintenance database**: `postgres`
+   - **Username**: `postgres`
+   - **Password**: the unique password selected during installation
+
+The PostgreSQL container in `compose.yml` is intentionally not published to the host. Use `docker compose exec database psql ...` to inspect the containerized database, or run a separate local PostgreSQL instance for non-Docker development.
+
+The remote database and email credentials previously committed to this project must be rotated. They can remain recoverable from Git history even after the current files are corrected; coordinate history cleanup before treating the repository as sanitized.
